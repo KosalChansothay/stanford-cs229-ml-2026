@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 2: Supervised Learning Setup — CS229 ML Notes</title>
+  <meta name="description" content="Lecture 2 notes for Stanford CS229 ML: supervised learning setup, linear regression, gradient descent, and normal equations.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<nav class="sidebar" role="navigation" aria-label="Main navigation">
+  <div class="sidebar-profile">
+    <div class="sidebar-avatar" aria-hidden="true">&#x1F4DA;</div>
+    <div class="sidebar-name">CS229 Notes</div>
+    <div class="sidebar-role">Stanford ML — Spring 2026</div>
+  </div>
+  <ul class="sidebar-nav">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../about.html">About</a></li>
+    <li><a href="../notes.html" class="active">Lecture Notes</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    Built with static HTML/CSS/JS<br>
+    &copy; 2026
+  </div>
+</nav>
+
+<main class="main" role="main">
+  <header class="page-header">
+    <h1>Lecture 2: Supervised Learning Setup</h1>
+    <p class="subtitle">Stanford CS229 — Foundations and Paradigms of Machine Learning</p>
+  </header>
+
+  <div class="card">
+    <h2>1. Summary</h2>
+    <p>
+      This lecture formally sets up the supervised learning paradigm, utilizing linear regression with least squares as the foundational learning algorithm [65, 72]. The instructor, Chris, breaks down the core notations, defining the hypothesis function, the training set, and the features [77, 80, 107]. He introduces the concept of Empirical Risk Minimization (ERM) through the Least Squares cost function [97, 115]. The lecture then investigates two primary mathematical pathways for optimization: iterative methods via Batch, Stochastic (SGD), and Minibatch Gradient Descent, and an analytical closed-form solution via the Normal Equations [74, 75, 157]. Chris also highlights critical engineering and hardware realities of modern machine learning&#8212;such as GPU memory constraints, step-size (learning rate) scheduling, and the distinct focus of machine learning on generalization over the parameter recovery focus of classical statistics [150, 172, 174, 201].
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>2. Key Concepts &amp; Definitions</h2>
+    <ul>
+      <li><strong>Supervised Machine Learning</strong>: A paradigm where the learning algorithm is trained on explicit pairs of inputs and target labels [65, 80].</li>
+      <li><strong>Hypothesis (<span class="math">\(h\)</span>)</strong>: A function <span class="math">\(h: \mathcal{X} \to \mathcal{Y}\)</span> mapping the input space <span class="math">\(\mathcal{X}\)</span> to the output space <span class="math">\(\mathcal{Y}\)</span> [77].</li>
+      <li><strong>Training Set</strong>: A collection of <span class="math">\(n\)</span> training examples denoted as <span class="math">\(\{(x^{(i)}, y^{(i)})\}_{i=1}^n\)</span> [80, 110].</li>
+      <li><strong>Notation Conventions</strong>:
+        <ul>
+          <li><span class="math">\(x^{(i)}\)</span>: The input vector (features) for the <span class="math">\(i\)</span>-th training example [81, 107].</li>
+          <li><span class="math">\(y^{(i)}\)</span>: The target output/label for the <span class="math">\(i\)</span>-th training example [80, 107].</li>
+          <li><span class="math">\(n\)</span>: The total number of training examples [110].</li>
+          <li><span class="math">\(d\)</span>: The number of input features or dimensions [110].</li>
+          <li><span class="math">\(x_0 = 1\)</span>: The intercept/bias term convention, meaning <span class="math">\(x \in \mathbb{R}^{d+1}\)</span> and the parameters <span class="math">\(\theta \in \mathbb{R}^{d+1}\)</span> [105, 110].</li>
+        </ul>
+      </li>
+      <li><strong>Regression</strong>: A supervised learning task where the output space <span class="math">\(\mathcal{Y}\)</span> is continuous (e.g., predicting housing prices) [66, 79, 86].</li>
+      <li><strong>Classification</strong>: A supervised learning task where the output space <span class="math">\(\mathcal{Y}\)</span> is discrete (e.g., predicting cat vs. dog or predicting the next token in a sequence) [65, 78, 87].</li>
+      <li><strong>Empirical Risk Minimization (ERM)</strong>: The process of choosing parameters <span class="math">\(\theta\)</span> that minimize the average loss (risk) over the training set [97, 100].</li>
+      <li><strong>Positive Semidefinite (PSD)</strong>: A symmetric matrix <span class="math">\(M\)</span> is PSD if <span class="math">\(z^T M z \ge 0\)</span> for all vectors <span class="math">\(z\)</span> [227]. The matrix <span class="math">\(X^T X\)</span> is positive semidefinite, which ensures the cost function is convex (bowl-shaped) and gradient descent will converge to a global minimum [208, 214, 227].</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>3. Mathematical Formulations &amp; Derivations</h2>
+
+    <h3>The Linear Hypothesis</h3>
+    <p>The linear hypothesis is formulated as:</p>
+    <div class="math">\(h_\theta(x) = \theta_0 + \theta_1 x_1 + \dots + \theta_d x_d = \sum_{j=0}^d \theta_j x_j = \theta^T x\)</div>
+    <p>where <span class="math">\(\theta\)</span> represents the parameter vector (weights) and <span class="math">\(x_0 = 1\)</span> is the intercept term [91, 105, 106].</p>
+  </div>
+
+  <div class="card">
+    <h3>Least Squares Cost Function</h3>
+    <p>To measure how well the hypothesis fits the training data, we define the Least Squares cost function <span class="math">\(J(\theta)\)</span> [115, 116]:</p>
+    <div class="math">\(J(\theta) = \frac{1}{2} \sum_{i=1}^n \left(h_\theta(x^{(i)}) - y^{(i)}\right)^2\)</div>
+    <ul>
+      <li><strong>Why Square?</strong> Squaring ensures positive error penalties, places a heavier penalty on larger outliers, and results in a smooth, differentiable quadratic "bowl" shape [116, 118, 136].</li>
+      <li><strong>Why <span class="math">\(\frac{1}{2}\)</span>?</strong> The constant is added by convention so that the factor of 2 from the derivative of the squared term cancels out, simplifying the gradient update rule [123, 143].</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Analytical Derivation of the Gradient</h3>
+    <p>For a single training example <span class="math">\((x, y)\)</span>, the partial derivative of <span class="math">\(J(\theta)\)</span> with respect to a single parameter <span class="math">\(\theta_j\)</span> is derived using the chain rule [143]:</p>
+    <div class="math">\(\frac{\partial}{\partial \theta_j} \left( \frac{1}{2} (h_\theta(x) - y)^2 \right) = (h_\theta(x) - y) \cdot \frac{\partial}{\partial \theta_j} (h_\theta(x) - y)\)</div>
+    <p>Since <span class="math">\(h_\theta(x) = \sum_{k=0}^d \theta_k x_k\)</span>, we have <span class="math">\(\frac{\partial}{\partial \theta_j} h_\theta(x) = x_j\)</span>. Therefore:</p>
+    <div class="math">\(\frac{\partial}{\partial \theta_j} J(\theta) = (h_\theta(x) - y)x_j\)</div>
+  </div>
+
+  <div class="card">
+    <h2>4. Step-by-Step Optimization Algorithms</h2>
+
+    <h3>A. Batch Gradient Descent (BGD)</h3>
+    <p>Batch gradient descent computes the gradient over the entire training set before performing a single parameter update [145].</p>
+    <ol>
+      <li><strong>Initialize</strong> parameters <span class="math">\(\theta\)</span> randomly or to 0 [140].</li>
+      <li><strong>Loop until convergence</strong>:
+        For every parameter <span class="math">\(j \in \{0, \dots, d\}\)</span>, update:
+        <div class="math">\(\theta_j := \theta_j - \alpha \sum_{i=1}^n \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_j^{(i)}\)</div>
+        where <span class="math">\(\alpha\)</span> is the learning rate (step size) [140, 141].
+      </li>
+    </ol>
+    <p><strong>Properties</strong>: Mathematically guaranteed to converge to the global minimum for convex bowl-shaped functions like Least Squares [208, 214]. However, it is computationally prohibitive for large datasets (e.g., scanning the entire internet) because each step requires summing over all <span class="math">\(n\)</span> examples [145].</p>
+  </div>
+
+  <div class="card">
+    <h3>B. Stochastic Gradient Descent (SGD)</h3>
+    <p>To address the computational bottleneck of batch updates, Stochastic Gradient Descent updates parameters incrementally after examining a single training example [155, 157].</p>
+    <ol>
+      <li><strong>Shuffle</strong> the training set randomly to ensure independent, representative samples [160, 163, 194].</li>
+      <li><strong>Loop through the training set</strong>:
+        For each training example <span class="math">\(i \in \{1, \dots, n\}\)</span>:
+        For every parameter <span class="math">\(j \in \{0, \dots, d\}\)</span>, update:
+        <div class="math">\(\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}\)</div>
+        where <span class="math">\(\theta^{(t)}\)</span> is the parameter vector from the previous step [162, 163].
+      </li>
+    </ol>
+    <p><strong>Properties</strong>: Much faster to start making progress [157]. Instead of taking a direct path to the minimum, it "drunkenly stumbles" or wiggles [207, 209]. As it nears the optimum, it bounces around in a high-dimensional ball proportional to the step size <span class="math">\(\alpha\)</span> [150, 207].</p>
+  </div>
+
+  <div class="card">
+    <h3>C. Minibatch Gradient Descent</h3>
+    <p>Minibatch gradient descent is the modern workhorse of deep learning (e.g., PyTorch defaults) [158]. It strikes a balance between BGD and SGD by computing the gradient over a small subset of size <span class="math">\(B\)</span> (batch size) [158, 185].</p>
+    <ol>
+      <li><strong>Form a random batch</strong> <span class="math">\(\mathcal{B}\)</span> of size <span class="math">\(B\)</span> from the training set [159, 185].</li>
+      <li><strong>Update rule</strong>:
+        <div class="math">\(\theta := \theta - \alpha_{\mathcal{B}} \frac{1}{B} \sum_{i \in \mathcal{B}} \left( h_\theta(x^{(i)}) - y^{(i)} \right) x^{(i)}\)</div>
+        where <span class="math">\(\alpha_{\mathcal{B}}\)</span> is the normalized learning rate adjusted for the batch size [185, 186, 204].
+      </li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>5. Analytical Solution: The Normal Equations</h2>
+    <p>For linear regression with least squares, we can bypass iterative optimization and solve for the optimal parameters <span class="math">\(\theta\)</span> analytically in closed form [75, 217].</p>
+
+    <h3>Matrix Setup</h3>
+    <p>Let the <strong>Design Matrix</strong> <span class="math">\(X \in \mathbb{R}^{n \times (d+1)}\)</span> contain all training inputs stacked by rows, and <span class="math">\(y \in \mathbb{R}^n\)</span> be the target output vector [218]:</p>
+    <div class="math">\(X = \begin{bmatrix} (x^{(1)})^T \\ (x^{(2)})^T \\ \vdots \\ (x^{(n)})^T \end{bmatrix} = \begin{bmatrix} 1 &amp; x_1^{(1)} &amp; \dots &amp; x_d^{(1)} \\ 1 &amp; x_1^{(2)} &amp; \dots &amp; x_d^{(2)} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 1 &amp; x_1^{(n)} &amp; \dots &amp; x_d^{(n)} \end{bmatrix}, \quad y = \begin{bmatrix} y^{(1)} \\ y^{(2)} \\ \vdots \\ y^{(n)} \end{bmatrix}\)</div>
+  </div>
+
+  <div class="card">
+    <h3>Matrix Derivation</h3>
+    <p>We can rewrite the Least Squares cost function in vector-matrix form using the <span class="math">\(L_2\)</span> norm inner product [219, 220]:</p>
+    <div class="math">\(J(\theta) = \frac{1}{2} (X\theta - y)^T (X\theta - y)\)</div>
+    <p>Expanding the terms:</p>
+    <div class="math">\(J(\theta) = \frac{1}{2} \left( (X\theta)^T X\theta - (X\theta)^T y - y^T X\theta + y^T y \right)\)</div>
+    <p>Since <span class="math">\((X\theta)^T y\)</span> is a scalar, it is equal to its transpose <span class="math">\(y^T X\theta\)</span>:</p>
+    <div class="math">\(J(\theta) = \frac{1}{2} \left( \theta^T X^T X \theta - 2\theta^T X^T y + y^T y \right)\)</div>
+    <p>Taking the gradient with respect to the vector <span class="math">\(\theta\)</span> and setting it to 0 to find the minimum [221, 222, 223]:</p>
+    <div class="math">\(\nabla_\theta J(\theta) = \frac{1}{2} \left( 2 X^T X \theta - 2 X^T y \right) = 0\)</div>
+    <div class="math">\(X^T X \theta = X^T y\)</div>
+    <p>This system is known as the <strong>Normal Equations</strong> [75, 217].</p>
+    <p>Solving for <span class="math">\(\theta\)</span> yields the closed-form least-squares estimator [224]:</p>
+    <div class="math">\(\theta = (X^T X)^{-1} X^T y\)</div>
+  </div>
+
+  <div class="card">
+    <h3>Invertibility &amp; Redundancy</h3>
+    <p>This derivation assumes that <span class="math">\(X^T X\)</span> is invertible [225].</p>
+    <ul>
+      <li>If <span class="math">\(X^T X\)</span> is <strong>singular (non-invertible)</strong>, it occurs when there are redundant, linearly dependent features or when there are fewer training examples than features (<span class="math">\(n &lt; d\)</span>) [225].</li>
+      <li>In this case, there exists a non-trivial <strong>null space</strong> [226]. Any vector added from this null space results in an equally optimal parameter set, meaning there is an entire subspace of valid solutions [226].</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>6. Engineering &amp; Hardware Lore in Modern ML</h2>
+    <p>The lecture features a rich discussion on how optimization choices in practice deviate from pure statistical theory:</p>
+    <ul>
+      <li><strong>CapEx and Model Flops Utilization (MFU)</strong>: Modern deep learning is heavily gated by massive capital expenditures (CapEx) for hardware infrastructure [200]. Selecting batch sizes and step-size schedules (e.g., cosine decay schedules) is often dictated by hardware constraints to keep GPU memory (High Bandwidth Memory, or HBM) fully utilized and maximize computation speed [172, 182, 191, 201].</li>
+      <li><strong>The Redundancy Trade-off</strong>: Smaller batches have higher variance, but they excel in highly redundant datasets [176]. If a dataset has 90 copies of the same image, processing them in a large batch is wasteful; a smaller batch allows the model to update 90 times, converging faster [177, 178].</li>
+      <li><strong>Why Machine Learning is Not Just Statistics</strong>: Traditional statistics focus on parameter recovery guarantees (finding the true <span class="math">\(\theta^*\)</span>) and rigorous convergence tests [150, 151, 174]. Modern ML focuses on generalization error on unseen test sets [102, 131]. We often train models until we run out of compute credits, stop there, and find that they still generalize beautifully [152, 174, 215, 216].</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>7. Applications</h2>
+    <ul>
+      <li><strong>Real Estate Valuation</strong>: Using features like square footage, lot area, and number of bedrooms to predict continuous home sale prices (e.g., using real-world data like the Ames Housing Dataset) [88, 89, 102].</li>
+      <li><strong>Sequence Modeling (Classifier Heads)</strong>: Although linear models are simple, they serve as the crucial final output step (the "classification head") of modern deep learning architectures, such as predicting the next token in Large Language Models using softmax activations [87, 90, 127].</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>8. Reflection Questions</h2>
+    <ol>
+      <li><strong>Step-Size Divergence</strong>: What mathematically occurs to the parameter updates in gradient descent if the learning rate <span class="math">\(\alpha\)</span> is chosen to be excessively large, and how does this manifest visually on the cost curve <span class="math">\(J(\theta)\)</span>? [149, 207, 208]</li>
+      <li><strong>Singular Design Matrices</strong>: If a dataset contains fewer training examples than dimensions (<span class="math">\(n &lt; d\)</span>), why does <span class="math">\(X^T X\)</span> become non-invertible? What does this imply about the uniqueness of the parameter vector <span class="math">\(\theta\)</span> that minimizes the least squares cost? [225, 226]</li>
+      <li><strong>Statistics vs. Machine Learning Goals</strong>: Explain the conceptual conflict between minimizing the training loss <span class="math">\(J(\theta)\)</span> to the highest degree of numerical precision and maximizing the model's generalization capabilities on a test set, particularly in the context of batch size selection. [150, 151, 171, 174]</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>9. Further Reading &amp; Resources</h2>
+    <ul>
+      <li><strong>Steven Boyd's Convex Optimization</strong>: Highly recommended by the instructors for mastering vector/matrix calculus and the properties of semidefinite matrices [214].</li>
+      <li><strong>Friday TA Sections</strong>: The essential venue for mastering matrix gradients, rank, null spaces, and vector derivatives [75, 76, 227].</li>
+      <li><strong>Data Mixing &amp; Cosine Scheduling Literature</strong>: Academic papers on how foundation models schedule learning rates (e.g., Leslie's cosine scaling) and mix training corpora [191, 195, 196].</li>
+    </ul>
+  </div>
+
+  <footer class="site-footer">
+    <p>Stanford CS229 ML Lecture Notes &mdash; Spring 2026</p>
+  </footer>
+  </main>
+
+<script src="../js/script.js"></script>
+</body>
+</html>
