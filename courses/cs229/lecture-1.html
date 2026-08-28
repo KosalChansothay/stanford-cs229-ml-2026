@@ -1,256 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lecture 1: Introduction — CS229 ML Notes</title>
-  <meta name="description" content="Lecture 1 notes for Stanford CS229 ML: course overview, ML paradigms, and definitions.">
+  <meta name="description"
+    content="Lecture 1 notes for Stanford CS229 ML: course overview, ML paradigms, and definitions.">
   <link rel="stylesheet" href="../../css/style.css">
   <script>
     MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
       svg: { fontCache: 'global' }
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
+
 <body>
 
-<nav class="sidebar" role="navigation" aria-label="Main navigation">
-  <div class="sidebar-profile">
-    <div class="sidebar-avatar" aria-hidden="true">&#x1F4DA;</div>
-    <div class="sidebar-name">CS229 Notes</div>
-    <div class="sidebar-role">Stanford ML — Spring 2026</div>
-    <div class="sidebar-bio">Lecture notes and study materials for Stanford CS229: Foundations and Paradigms of Machine Learning.</div>
-  </div>
-  <ul class="sidebar-nav">
-    <li class="nav-label">Site</li>
-    <li><a href="../../index.html">Home</a></li>
-    <li><a href="../../about.html">About</a></li>
-    <li><a href="../../notes.html">Lecture Notes</a></li>
-    <li><a href="../index.html">Courses</a></li>
-  </ul>
-  <div class="sidebar-social">
-    <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank" rel="noopener">&#x1F9EC;</a>
-  </div>
-  <div class="sidebar-footer">
-    Built with static HTML/CSS/JS<br>
-    &copy; 2026
-  </div>
-</nav>
-
-<main class="main" role="main">
-  <header class="page-header">
-    <h1>Lecture 1: Introduction</h1>
-    <p class="subtitle">Stanford CS229 — Foundations and Paradigms of Machine Learning</p>
-  </header>
-
-  <div class="breadcrumb">
-    <a href="../../index.html">Home</a> <span>/</span> <a href="../index.html">Courses</a> <span>/</span> <a href="index.html">CS229</a> <span>/</span> Lecture 1
-  </div>
-
-  <div class="card">
-    <h2>1. Summary of Main Ideas</h2>
-    <p>
-      This lecture serves as a high-level introduction to the CS229 course structure, philosophy, grading policies, and machine learning taxonomy [1]. The instructors emphasize that while the <em>usage</em> of machine learning has shifted drastically over the past decade&#8212;from building complex bespoke pipelines to prompting general-purpose agents [8]&#8212;the <em>fundamental technology</em> for training these models remains highly consistent with classical mathematical foundations [7, 9].
-    </p>
-    <p>
-      CS229 is a mathematically intense course [4]. It focuses heavily on:
-    </p>
-    <ul>
-      <li><strong>Mathematical modeling, derivations, and formulations</strong> rather than pure programming or application usage [4, 5, 31].</li>
-      <li>Understanding the fundamental algorithms behind the code, including probability and linear algebra [3, 4, 5].</li>
-      <li>An AI policy that permits the use of AI tools as collaborators but strictly forbids direct copying of generated code or solutions into submissions to enforce actual learning of the material [5, 6, 7].</li>
+  <nav class="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-profile">
+      <div class="sidebar-avatar" aria-hidden="true">&#x1F4DA;</div>
+      <div class="sidebar-name">CS229 Notes</div>
+      <div class="sidebar-role">Stanford ML — Spring 2026</div>
+      <div class="sidebar-bio">Lecture notes and study materials for Stanford CS229: Foundations and Paradigms of
+        Machine Learning.</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">Site</li>
+      <li><a href="../../index.html">Home</a></li>
+      <li><a href="../../about.html">About</a></li>
+      <li><a href="../../notes.html">Lecture Notes</a></li>
+      <li><a href="../index.html">Courses</a></li>
     </ul>
-    <p>
-      The lecture categorizes the field of machine learning into three key paradigms: <strong>Supervised Learning</strong>, <strong>Unsupervised Learning</strong>, and <strong>Reinforcement Learning</strong> [15], highlighting how each traditional paradigm remains vital in the modern era of Deep Learning and Large Language Models (LLMs) [16, 24, 46, 52].
-    </p>
-  </div>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+    </div>
+    <div class="sidebar-footer">
+      Built with static HTML/CSS/JS<br>
+      &copy; 2026
+    </div>
+  </nav>
 
-  <div class="card">
-    <h2>2. Key Concepts &amp; Definitions</h2>
+  <main class="main lecture-document" role="main" data-markdown="../../cs229-lecture-1-study-notes.md">
+    <header class="page-header">
+      <h1>Lecture 1: Introduction</h1>
+      <p class="subtitle">Stanford CS229 — Foundations and Paradigms of Machine Learning</p>
+    </header>
 
-    <h3>General Machine Learning Definitions</h3>
-    <ul>
-      <li><strong>Arthur Samuel's Definition (1959)</strong>: The field of study that gives computers the ability to learn without being explicitly programmed [9, 10].</li>
-      <li><strong>Tom Mitchell's Definition (1998)</strong>: A computer program is said to learn from experience \(E\) with respect to some class of tasks \(T\) and performance measure \(P\), if its performance at tasks \(T\), as measured by \(P\), improves with experience \(E\) [10, 11].
-        <ul>
-          <li><strong>Experience (\(E\))</strong>: The data used for learning, which includes web text, real-world measurements, human-labeled pairs, or synthetic data (such as "thinking tokens" generated by models) [11, 12].</li>
-          <li><strong>Task (\(T\))</strong>: The goal or problem domain. Historically highly specific (e.g., classifying an image) [12], but modernly generalized (e.g., a single LLM solving millions of distinct tasks) [12].</li>
-          <li><strong>Performance Measure (\(P\))</strong>: The metric used to evaluate and drive learning (e.g., classification accuracy, model perplexity, or game win rate) [12, 13].</li>
-        </ul>
-      </li>
-    </ul>
+    <div class="lecture-video">
+      <iframe src="https://www.youtube-nocookie.com/embed/J7CossjMvEg?rel=0" title="Stanford CS229 Lecture 1"
+        loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+      <p class="lecture-video-fallback">Video not available here? <a href="https://youtu.be/J7CossjMvEg" target="_blank"
+          rel="noopener">Open it on YouTube</a>.</p>
+    </div>
 
-    <h3>Machine Learning Paradigms</h3>
-    <ul>
-      <li><strong>Supervised Learning</strong>: Learning where every training example consists of an input \(x\) and an associated output/label \(y\) [18, 21]. The model's objective is to learn a mapping \(f(x) \approx y\) [18, 19].
-        <ul>
-          <li><strong>Regression</strong>: A supervised learning task where the output \(y\) is a continuous numerical variable (e.g., predicting housing prices) [22].</li>
-          <li><strong>Classification</strong>: A supervised learning task where the output \(y\) is a discrete categorical variable or label (e.g., classifying townhouse vs. single-family house, or predicting the next token in an LLM from a large vocabulary) [22, 23, 24].</li>
-        </ul>
-      </li>
-      <li><strong>Unsupervised Learning</strong>: Learning from a dataset containing only inputs \(x\) without any ground-truth labels or outputs \(y\) [34, 35]. The goal is to discover "interesting structure" in the data [35, 36].
-        <ul>
-          <li><strong>Clustering</strong>: The process of grouping data points together based on similarity so that points in the same group are more similar than those in other groups [36, 37].</li>
-          <li><strong>Representation Learning / Embeddings</strong>: Mapping raw, high-dimensional inputs (e.g., words, images) into lower-dimensional continuous vectors that capture semantic relationships [41, 42].</li>
-        </ul>
-      </li>
-      <li><strong>Reinforcement Learning (RL)</strong>: A paradigm where an agent learns to make sequential decisions through trial-and-error interaction with an environment [49, 50, 56].
-        <ul>
-          <li><strong>Sequential Decision-Making</strong>: Actions taken by the agent at the current step affect future states and future feedback, meaning decisions cannot be evaluated in isolation [51, 54].</li>
-          <li><strong>Stochastic Sampling</strong>: Generation of discrete tokens/actions by sampling from a probability distribution. This step is non-differentiable, meaning standard gradient backpropagation cannot flow directly through the sampling process, which makes RL necessary [53, 54, 60].</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>/</span> <a href="../index.html">Courses</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> Lecture 1
+    </div>
 
-  <div class="card">
-    <h2>3. Step-by-Step Workflows &amp; Explanations</h2>
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
 
-    <h3>A. The Supervised Learning Workflow</h3>
-    <p>To fit a model using supervised learning, the following pipeline is executed:</p>
-    <ol>
-      <li><strong>Formulate Inputs (\(x\)) and Outputs (\(y\))</strong>: Define what features describe the input and what target needs to be predicted [18, 21].</li>
-      <li><strong>Collect Training Examples</strong>: Construct a dataset of pairs:
-        \[\mathcal{D} = \{ (x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \dots, (x^{(N)}, y^{(N)}) \}\]
-      </li>
-      <li><strong>Define Model Architecture</strong>: Select a hypothesis family \(h_\theta(x)\) parameterized by parameters \(\theta\) (e.g., linear regression, quadratic curve, or neural network) [19, 32].</li>
-      <li><strong>Define a Loss Function</strong>: Establish a mathematical function \(\mathcal{L}(\theta)\) that penalizes deviations between the predicted output \(h_\theta(x)\) and the true label \(y\) [20, 33].</li>
-      <li><strong>Optimize (Compute Gradients)</strong>: Compute the gradient of the loss function with respect to the parameters \(\theta\) and update the parameters using optimizers (e.g., Gradient Descent) [20, 33]:
-        \[\theta \leftarrow \theta - \alpha \nabla_\theta \mathcal{L}(\theta)\]
-        <p>For deep neural networks, this is implemented using <strong>backpropagation</strong> to automatically compute gradients across millions/billions of parameters [32, 33, 34].</p>
-      </li>
-      <li><strong>Evaluate</strong>: Test the trained model \(h_{\theta^*}(x)\) on unseen inputs to ensure generalizability.</li>
-    </ol>
-  </div>
+    <div class="card">
+      <h2>1. Summary of Main Ideas</h2>
+      <p>
+        This lecture serves as a high-level introduction to the CS229 course structure, philosophy, grading policies,
+        and machine learning taxonomy [1]. The instructors emphasize that while the <em>usage</em> of machine learning
+        has shifted drastically over the past decade&#8212;from building complex bespoke pipelines to prompting
+        general-purpose agents [8]&#8212;the <em>fundamental technology</em> for training these models remains highly
+        consistent with classical mathematical foundations [7, 9].
+      </p>
+      <p>
+        CS229 is a mathematically intense course [4]. It focuses heavily on:
+      </p>
+      <ul>
+        <li><strong>Mathematical modeling, derivations, and formulations</strong> rather than pure programming or
+          application usage [4, 5, 31].</li>
+        <li>Understanding the fundamental algorithms behind the code, including probability and linear algebra [3, 4,
+          5].</li>
+        <li>An AI policy that permits the use of AI tools as collaborators but strictly forbids direct copying of
+          generated code or solutions into submissions to enforce actual learning of the material [5, 6, 7].</li>
+      </ul>
+      <p>
+        The lecture categorizes the field of machine learning into three key paradigms: <strong>Supervised
+          Learning</strong>, <strong>Unsupervised Learning</strong>, and <strong>Reinforcement Learning</strong> [15],
+        highlighting how each traditional paradigm remains vital in the modern era of Deep Learning and Large Language
+        Models (LLMs) [16, 24, 46, 52].
+      </p>
+    </div>
 
-  <div class="card">
-    <h3>B. The Unsupervised Clustering Workflow</h3>
-    <p>Unsupervised clustering groups data points without pre-existing labels:</p>
-    <ol>
-      <li><strong>Collect Unlabeled Data</strong>: Construct a dataset \(\mathcal{D} = \{ x^{(1)}, x^{(2)}, \dots, x^{(N)} \}\) [35].</li>
-      <li><strong>Define Distance Metric</strong>: Establish how similarity is measured (e.g., Euclidean distance or Cosine similarity) [36, 37].</li>
-      <li><strong>Apply Clustering Algorithm</strong>: Partition the \(N\) points into \(K\) distinct clusters [37] (detailed in Lectures 9 &amp; 10).</li>
-      <li><strong>Analyze Structure</strong>: Reorder, visualize, or sort the clusters to uncover latent biological, document, or behavioral groupings [38, 40].</li>
-    </ol>
-  </div>
+    <div class="card">
+      <h2>2. Key Concepts &amp; Definitions</h2>
 
-  <div class="card">
-    <h3>C. The Reinforcement Learning (Trial-and-Error) Loop</h3>
-    <p>Unlike supervised learning where data is static, RL involves active, iterative collection and policy optimization [55, 56]:</p>
-    <ol>
-      <li><strong>Initialize Policy</strong>: Set up a policy \(\pi_\theta(a|s)\) that maps current state \(s\) to a probability distribution over actions \(a\) [53].</li>
-      <li><strong>Interact &amp; Collect Trajectories</strong>: Run the policy in the environment to generate sequence data (trajectories \(\tau\)) [57]:
-        \[\tau = (s_1, a_1, r_1, s_2, a_2, r_2, \dots)\]
-      </li>
-      <li><strong>Verify &amp; Reward</strong>: Use a reward model or an automated verifier to evaluate the sequence of actions and return a scalar reward \(r_t\) [59, 60].</li>
-      <li><strong>Update via Policy Gradient</strong>: Since the sampling of actions is a stochastic, non-differentiable step, use RL algorithms (e.g., Policy Gradient) to update \(\theta\), increasing the likelihood of actions that yielded higher rewards [53, 54, 60, 61].</li>
-      <li><strong>Bootstrap</strong>: Use the updated, stronger policy to generate better trial data, and repeat the loop [58, 59].</li>
-    </ol>
-  </div>
+      <h3>General Machine Learning Definitions</h3>
+      <ul>
+        <li><strong>Arthur Samuel's Definition (1959)</strong>: The field of study that gives computers the ability to
+          learn without being explicitly programmed [9, 10].</li>
+        <li><strong>Tom Mitchell's Definition (1998)</strong>: A computer program is said to learn from experience \(E\)
+          with respect to some class of tasks \(T\) and performance measure \(P\), if its performance at tasks \(T\), as
+          measured by \(P\), improves with experience \(E\) [10, 11].
+          <ul>
+            <li><strong>Experience (\(E\))</strong>: The data used for learning, which includes web text, real-world
+              measurements, human-labeled pairs, or synthetic data (such as "thinking tokens" generated by models) [11,
+              12].</li>
+            <li><strong>Task (\(T\))</strong>: The goal or problem domain. Historically highly specific (e.g.,
+              classifying an image) [12], but modernly generalized (e.g., a single LLM solving millions of distinct
+              tasks) [12].</li>
+            <li><strong>Performance Measure (\(P\))</strong>: The metric used to evaluate and drive learning (e.g.,
+              classification accuracy, model perplexity, or game win rate) [12, 13].</li>
+          </ul>
+        </li>
+      </ul>
 
-  <div class="card">
-    <h2>4. Practical Examples &amp; Case Studies</h2>
+      <h3>Machine Learning Paradigms</h3>
+      <ul>
+        <li><strong>Supervised Learning</strong>: Learning where every training example consists of an input \(x\) and
+          an associated output/label \(y\) [18, 21]. The model's objective is to learn a mapping \(f(x) \approx y\) [18,
+          19].
+          <ul>
+            <li><strong>Regression</strong>: A supervised learning task where the output \(y\) is a continuous numerical
+              variable (e.g., predicting housing prices) [22].</li>
+            <li><strong>Classification</strong>: A supervised learning task where the output \(y\) is a discrete
+              categorical variable or label (e.g., classifying townhouse vs. single-family house, or predicting the next
+              token in an LLM from a large vocabulary) [22, 23, 24].</li>
+          </ul>
+        </li>
+        <li><strong>Unsupervised Learning</strong>: Learning from a dataset containing only inputs \(x\) without any
+          ground-truth labels or outputs \(y\) [34, 35]. The goal is to discover "interesting structure" in the data
+          [35, 36].
+          <ul>
+            <li><strong>Clustering</strong>: The process of grouping data points together based on similarity so that
+              points in the same group are more similar than those in other groups [36, 37].</li>
+            <li><strong>Representation Learning / Embeddings</strong>: Mapping raw, high-dimensional inputs (e.g.,
+              words, images) into lower-dimensional continuous vectors that capture semantic relationships [41, 42].
+            </li>
+          </ul>
+        </li>
+        <li><strong>Reinforcement Learning (RL)</strong>: A paradigm where an agent learns to make sequential decisions
+          through trial-and-error interaction with an environment [49, 50, 56].
+          <ul>
+            <li><strong>Sequential Decision-Making</strong>: Actions taken by the agent at the current step affect
+              future states and future feedback, meaning decisions cannot be evaluated in isolation [51, 54].</li>
+            <li><strong>Stochastic Sampling</strong>: Generation of discrete tokens/actions by sampling from a
+              probability distribution. This step is non-differentiable, meaning standard gradient backpropagation
+              cannot flow directly through the sampling process, which makes RL necessary [53, 54, 60].</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
 
-    <h3>1. House Price Prediction (Regression) [17]</h3>
-    <ul>
-      <li><strong>Input (\(x\))</strong>: Continuous 1D feature (e.g., square feet) [17, 18] or multi-dimensional features (e.g., \(x_1 = \text{square feet}\), \(x_2 = \text{lot size}\), along with zip code, floors, conditions) [20, 25].</li>
-      <li><strong>Output (\(y\))</strong>: Continuous housing price [18, 22].</li>
-      <li><strong>Approach</strong>: Fit a linear \(h_\theta(x) = \theta_0 + \theta_1 x\) or quadratic \(h_\theta(x) = \theta_0 + \theta_1 x + \theta_2 x^2\) function [19].</li>
-    </ul>
-  </div>
+    <div class="card">
+      <h2>3. Step-by-Step Workflows &amp; Explanations</h2>
 
-  <div class="card">
-    <h3>2. Townhouse vs. Single-Family House (Classification) [23, 24]</h3>
-    <ul>
-      <li><strong>Input (\(x\))</strong>: 2D inputs (lot size and square feet) [23].</li>
-      <li><strong>Output (\(y\))</strong>: Discrete class label (e.g., House \(\triangle\) or Townhouse \(\bigcirc\)) [23].</li>
-      <li><strong>Approach</strong>: Construct a linear decision boundary (classifier) that divides the 2D plane [24].</li>
-    </ul>
-  </div>
+      <h3>A. The Supervised Learning Workflow</h3>
+      <p>To fit a model using supervised learning, the following pipeline is executed:</p>
+      <ol>
+        <li><strong>Formulate Inputs (\(x\)) and Outputs (\(y\))</strong>: Define what features describe the input and
+          what target needs to be predicted [18, 21].</li>
+        <li><strong>Collect Training Examples</strong>: Construct a dataset of pairs:
+          \[\mathcal{D} = \{ (x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \dots, (x^{(N)}, y^{(N)}) \}\]
+        </li>
+        <li><strong>Define Model Architecture</strong>: Select a hypothesis family \(h_\theta(x)\) parameterized by
+          parameters \(\theta\) (e.g., linear regression, quadratic curve, or neural network) [19, 32].</li>
+        <li><strong>Define a Loss Function</strong>: Establish a mathematical function \(\mathcal{L}(\theta)\) that
+          penalizes deviations between the predicted output \(h_\theta(x)\) and the true label \(y\) [20, 33].</li>
+        <li><strong>Optimize (Compute Gradients)</strong>: Compute the gradient of the loss function with respect to the
+          parameters \(\theta\) and update the parameters using optimizers (e.g., Gradient Descent) [20, 33]:
+          \[\theta \leftarrow \theta - \alpha \nabla_\theta \mathcal{L}(\theta)\]
+          <p>For deep neural networks, this is implemented using <strong>backpropagation</strong> to automatically
+            compute gradients across millions/billions of parameters [32, 33, 34].</p>
+        </li>
+        <li><strong>Evaluate</strong>: Test the trained model \(h_{\theta^*}(x)\) on unseen inputs to ensure
+          generalizability.</li>
+      </ol>
+    </div>
 
-  <div class="card">
-    <h3>3. Image Classification &amp; Bounding Box Detection [26, 29]</h3>
-    <ul>
-      <li><strong>Image Classification</strong>: Raw pixel inputs (\(x\)) map to a discrete categorical object class (\(y\), e.g., flamingo, Egyptian cat) [26, 29].
-        <ul>
-          <li><em>ImageNet Case Study</em>: Fei-Fei Li's team collected 1 million image-label pairs (20x larger than the next largest dataset at the time) [26, 27]. AlexNet (Hinton, Krizhevsky, Sutskever) was trained on this, triggering the modern deep learning era [27, 28].</li>
-        </ul>
-      </li>
-      <li><strong>Bounding Box Localization</strong>: Outputting continuous boundaries [29].
-        <ul>
-          <li><strong>Input (\(x\))</strong>: Raw pixels [30].</li>
-          <li><strong>Output (\(y\))</strong>: Four continuous numbers \((x_1, y_1)\) representing the bottom-left corner, and \((x_2, y_2)\) representing the top-right corner to uniquely localize the object [30].</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+    <div class="card">
+      <h3>B. The Unsupervised Clustering Workflow</h3>
+      <p>Unsupervised clustering groups data points without pre-existing labels:</p>
+      <ol>
+        <li><strong>Collect Unlabeled Data</strong>: Construct a dataset \(\mathcal{D} = \{ x^{(1)}, x^{(2)}, \dots,
+          x^{(N)} \}\) [35].</li>
+        <li><strong>Define Distance Metric</strong>: Establish how similarity is measured (e.g., Euclidean distance or
+          Cosine similarity) [36, 37].</li>
+        <li><strong>Apply Clustering Algorithm</strong>: Partition the \(N\) points into \(K\) distinct clusters [37]
+          (detailed in Lectures 9 &amp; 10).</li>
+        <li><strong>Analyze Structure</strong>: Reorder, visualize, or sort the clusters to uncover latent biological,
+          document, or behavioral groupings [38, 40].</li>
+      </ol>
+    </div>
 
-  <div class="card">
-    <h3>4. Latent Semantic Analysis (LSA) for Document Clustering [41]</h3>
-    <ul>
-      <li><strong>Unsupervised Document Clustering</strong>: Create a matrix where rows are words (e.g., shuttle, booster, space launch, pollution, environment) and columns are documents [39, 40].</li>
-      <li><strong>Sorting Pattern</strong>: Reordering columns and rows dynamically clusters similar words and documents (e.g., separating space exploration documents from environmental science documents) [40, 41].</li>
-    </ul>
-  </div>
+    <div class="card">
+      <h3>C. The Reinforcement Learning (Trial-and-Error) Loop</h3>
+      <p>Unlike supervised learning where data is static, RL involves active, iterative collection and policy
+        optimization [55, 56]:</p>
+      <ol>
+        <li><strong>Initialize Policy</strong>: Set up a policy \(\pi_\theta(a|s)\) that maps current state \(s\) to a
+          probability distribution over actions \(a\) [53].</li>
+        <li><strong>Interact &amp; Collect Trajectories</strong>: Run the policy in the environment to generate sequence
+          data (trajectories \(\tau\)) [57]:
+          \[\tau = (s_1, a_1, r_1, s_2, a_2, r_2, \dots)\]
+        </li>
+        <li><strong>Verify &amp; Reward</strong>: Use a reward model or an automated verifier to evaluate the sequence
+          of actions and return a scalar reward \(r_t\) [59, 60].</li>
+        <li><strong>Update via Policy Gradient</strong>: Since the sampling of actions is a stochastic,
+          non-differentiable step, use RL algorithms (e.g., Policy Gradient) to update \(\theta\), increasing the
+          likelihood of actions that yielded higher rewards [53, 54, 60, 61].</li>
+        <li><strong>Bootstrap</strong>: Use the updated, stronger policy to generate better trial data, and repeat the
+          loop [58, 59].</li>
+      </ol>
+    </div>
 
-  <div class="card">
-    <h3>5. Word Embeddings &amp; Semantic Vector Projections [41]</h3>
-    <ul>
-      <li>Words are represented as continuous vectors in a high-dimensional space (e.g., 1000-D) [41].</li>
-      <li><strong>Semantic Direction</strong>: Vector differences encode semantic relationships. For example, the difference vector representing "Capital of Country" is consistent across different countries [42]:
-        \[v_{\text{Rome}} - v_{\text{Italy}} \approx v_{\text{Paris}} - v_{\text{France}}\]
-      </li>
-    </ul>
-  </div>
+    <div class="card">
+      <h2>4. Practical Examples &amp; Case Studies</h2>
 
-  <div class="card">
-    <h3>6. Reinforcement Learning for Robots and LLMs [50, 59]</h3>
-    <ul>
-      <li><strong>Robotics Walking</strong>: A quadruped robot's policy outputs joint motor controls at each timestep [50, 51]. At Iteration 10, it cannot walk, but through trial-and-error, it optimizes its walking trajectory over many iterations [50, 56, 57].</li>
-      <li><strong>Large Language Model Alignment (RLHF / RLVR)</strong>:
-        <ul>
-          <li>An LLM generates long chains of thought or text via stochastic token sampling [52, 53, 61].</li>
-          <li>Since token generation involves sampling from a vocabulary (e.g., 50k to 250k options) [25] and is non-differentiable [53], standard backpropagation cannot be used end-to-end [53, 60].</li>
-          <li>Instead, a reward model or automated verifier evaluates the output to provide a scalar reward [59, 60], and <strong>policy gradients</strong> are used to adjust token probabilities [60, 61].</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+      <h3>1. House Price Prediction (Regression) [17]</h3>
+      <ul>
+        <li><strong>Input (\(x\))</strong>: Continuous 1D feature (e.g., square feet) [17, 18] or multi-dimensional
+          features (e.g., \(x_1 = \text{square feet}\), \(x_2 = \text{lot size}\), along with zip code, floors,
+          conditions) [20, 25].</li>
+        <li><strong>Output (\(y\))</strong>: Continuous housing price [18, 22].</li>
+        <li><strong>Approach</strong>: Fit a linear \(h_\theta(x) = \theta_0 + \theta_1 x\) or quadratic \(h_\theta(x) =
+          \theta_0 + \theta_1 x + \theta_2 x^2\) function [19].</li>
+      </ul>
+    </div>
 
-  <div class="card">
-    <h2>5. Reflection Questions</h2>
-    <ol>
-      <li><strong>Paradigms and Shift</strong>: The lecture notes that while the <em>methodology</em> of training models remains mathematically similar to the past, the <em>way</em> we utilize models has shifted from complex multi-stage pipelines to direct prompt engineering and alignment [7, 8]. Explain why solid foundations in probability, linear algebra, and gradient derivations (as taught in CS229) remain crucial for an AI practitioner today who primarily interacts with models via prompts. [4, 5, 8, 9]</li>
-      <li><strong>Differentiability and LLMs</strong>: Describe why the process of generating a sentence word-by-word (token sampling) in a large language model is mathematically non-differentiable [53]. Why does this characteristic prevent the direct use of standard backpropagation, and how does reinforcement learning (specifically policy gradient methods) bypass this restriction? [53, 54, 60]</li>
-      <li><strong>Experiences vs. Labels</strong>: According to Tom Mitchell's 1998 definition of learning (\(E, T, P\)), experience \(E\) represents the training data [10, 11]. How does the concept of "experience" differ between Supervised Learning and Unsupervised Learning? In your answer, reference the role of synthetic data (such as model thinking tokens) under Mitchell's framework. [11, 12, 18, 34, 35]</li>
-    </ol>
-  </div>
+    <div class="card">
+      <h3>2. Townhouse vs. Single-Family House (Classification) [23, 24]</h3>
+      <ul>
+        <li><strong>Input (\(x\))</strong>: 2D inputs (lot size and square feet) [23].</li>
+        <li><strong>Output (\(y\))</strong>: Discrete class label (e.g., House \(\triangle\) or Townhouse \(\bigcirc\))
+          [23].</li>
+        <li><strong>Approach</strong>: Construct a linear decision boundary (classifier) that divides the 2D plane [24].
+        </li>
+      </ul>
+    </div>
 
-  <div class="card">
-    <h2>6. References &amp; Further Reading</h2>
-    <ul>
-      <li><strong>Arthur Samuel (1959)</strong>: <em>"Some Studies in Machine Learning Using the Game of Checkers"</em>, IBM Journal of Research and Development. (The origin of classical machine learning definition) [9, 10].</li>
-      <li><strong>Tom Mitchell (1997)</strong>: <em>Machine Learning</em>, McGraw-Hill Education. (Sourced for the formal \(E, T, P\) learning definition) [10, 11].</li>
-      <li><strong>AlexNet Case Study (2012)</strong>: Krizhevsky, A., Sutskever, I., &amp; Hinton, G. E. <em>"ImageNet Classification with Deep Convolutional Neural Networks"</em>, NeurIPS. (Marked the beginning of the modern deep-learning era on the ImageNet dataset) [27].</li>
-      <li><strong>Syllabus Topics (Lecture 2 onwards)</strong>:
-        <ul>
-          <li>Lectures 2 &amp; 3: Linear &amp; Quadratic Regression, optimizers, and loss functions [19].</li>
-          <li>Lectures 3 to 5: Classification techniques and decision boundaries [24].</li>
-          <li>Lectures 7 &amp; 8: Deep Learning, Multi-Layer Neural Networks, Backpropagation [33, 34].</li>
-          <li>Lectures 9 &amp; 10: Unsupervised Clustering &amp; Latent Semantic Analysis (LSA) [37, 41].</li>
-          <li>Reinforcement Learning: Policy gradients and reinforcement learning with verified rewards (RLVR) [61].</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+    <div class="card">
+      <h3>3. Image Classification &amp; Bounding Box Detection [26, 29]</h3>
+      <ul>
+        <li><strong>Image Classification</strong>: Raw pixel inputs (\(x\)) map to a discrete categorical object class
+          (\(y\), e.g., flamingo, Egyptian cat) [26, 29].
+          <ul>
+            <li><em>ImageNet Case Study</em>: Fei-Fei Li's team collected 1 million image-label pairs (20x larger than
+              the next largest dataset at the time) [26, 27]. AlexNet (Hinton, Krizhevsky, Sutskever) was trained on
+              this, triggering the modern deep learning era [27, 28].</li>
+          </ul>
+        </li>
+        <li><strong>Bounding Box Localization</strong>: Outputting continuous boundaries [29].
+          <ul>
+            <li><strong>Input (\(x\))</strong>: Raw pixels [30].</li>
+            <li><strong>Output (\(y\))</strong>: Four continuous numbers \((x_1, y_1)\) representing the bottom-left
+              corner, and \((x_2, y_2)\) representing the top-right corner to uniquely localize the object [30].</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
 
-  <footer class="site-footer">
-    <p>Stanford CS229 ML Lecture Notes &mdash; Spring 2026</p>
-  </footer>
+    <div class="card">
+      <h3>4. Latent Semantic Analysis (LSA) for Document Clustering [41]</h3>
+      <ul>
+        <li><strong>Unsupervised Document Clustering</strong>: Create a matrix where rows are words (e.g., shuttle,
+          booster, space launch, pollution, environment) and columns are documents [39, 40].</li>
+        <li><strong>Sorting Pattern</strong>: Reordering columns and rows dynamically clusters similar words and
+          documents (e.g., separating space exploration documents from environmental science documents) [40, 41].</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>5. Word Embeddings &amp; Semantic Vector Projections [41]</h3>
+      <ul>
+        <li>Words are represented as continuous vectors in a high-dimensional space (e.g., 1000-D) [41].</li>
+        <li><strong>Semantic Direction</strong>: Vector differences encode semantic relationships. For example, the
+          difference vector representing "Capital of Country" is consistent across different countries [42]:
+          \[v_{\text{Rome}} - v_{\text{Italy}} \approx v_{\text{Paris}} - v_{\text{France}}\]
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>6. Reinforcement Learning for Robots and LLMs [50, 59]</h3>
+      <ul>
+        <li><strong>Robotics Walking</strong>: A quadruped robot's policy outputs joint motor controls at each timestep
+          [50, 51]. At Iteration 10, it cannot walk, but through trial-and-error, it optimizes its walking trajectory
+          over many iterations [50, 56, 57].</li>
+        <li><strong>Large Language Model Alignment (RLHF / RLVR)</strong>:
+          <ul>
+            <li>An LLM generates long chains of thought or text via stochastic token sampling [52, 53, 61].</li>
+            <li>Since token generation involves sampling from a vocabulary (e.g., 50k to 250k options) [25] and is
+              non-differentiable [53], standard backpropagation cannot be used end-to-end [53, 60].</li>
+            <li>Instead, a reward model or automated verifier evaluates the output to provide a scalar reward [59, 60],
+              and <strong>policy gradients</strong> are used to adjust token probabilities [60, 61].</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>5. Reflection Questions</h2>
+      <ol>
+        <li><strong>Paradigms and Shift</strong>: The lecture notes that while the <em>methodology</em> of training
+          models remains mathematically similar to the past, the <em>way</em> we utilize models has shifted from complex
+          multi-stage pipelines to direct prompt engineering and alignment [7, 8]. Explain why solid foundations in
+          probability, linear algebra, and gradient derivations (as taught in CS229) remain crucial for an AI
+          practitioner today who primarily interacts with models via prompts. [4, 5, 8, 9]</li>
+        <li><strong>Differentiability and LLMs</strong>: Describe why the process of generating a sentence word-by-word
+          (token sampling) in a large language model is mathematically non-differentiable [53]. Why does this
+          characteristic prevent the direct use of standard backpropagation, and how does reinforcement learning
+          (specifically policy gradient methods) bypass this restriction? [53, 54, 60]</li>
+        <li><strong>Experiences vs. Labels</strong>: According to Tom Mitchell's 1998 definition of learning (\(E, T,
+          P\)), experience \(E\) represents the training data [10, 11]. How does the concept of "experience" differ
+          between Supervised Learning and Unsupervised Learning? In your answer, reference the role of synthetic data
+          (such as model thinking tokens) under Mitchell's framework. [11, 12, 18, 34, 35]</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>6. References &amp; Further Reading</h2>
+      <ul>
+        <li><strong>Arthur Samuel (1959)</strong>: <em>"Some Studies in Machine Learning Using the Game of
+            Checkers"</em>, IBM Journal of Research and Development. (The origin of classical machine learning
+          definition) [9, 10].</li>
+        <li><strong>Tom Mitchell (1997)</strong>: <em>Machine Learning</em>, McGraw-Hill Education. (Sourced for the
+          formal \(E, T, P\) learning definition) [10, 11].</li>
+        <li><strong>AlexNet Case Study (2012)</strong>: Krizhevsky, A., Sutskever, I., &amp; Hinton, G. E. <em>"ImageNet
+            Classification with Deep Convolutional Neural Networks"</em>, NeurIPS. (Marked the beginning of the modern
+          deep-learning era on the ImageNet dataset) [27].</li>
+        <li><strong>Syllabus Topics (Lecture 2 onwards)</strong>:
+          <ul>
+            <li>Lectures 2 &amp; 3: Linear &amp; Quadratic Regression, optimizers, and loss functions [19].</li>
+            <li>Lectures 3 to 5: Classification techniques and decision boundaries [24].</li>
+            <li>Lectures 7 &amp; 8: Deep Learning, Multi-Layer Neural Networks, Backpropagation [33, 34].</li>
+            <li>Lectures 9 &amp; 10: Unsupervised Clustering &amp; Latent Semantic Analysis (LSA) [37, 41].</li>
+            <li>Reinforcement Learning: Policy gradients and reinforcement learning with verified rewards (RLVR) [61].
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML Lecture Notes &mdash; Spring 2026</p>
+    </footer>
   </main>
 
-<script src="../../js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="../../js/script.js"></script>
 </body>
+
 </html>
