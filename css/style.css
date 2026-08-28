@@ -329,6 +329,17 @@ a {
   line-height: 1.85;
 }
 
+/* Interactive Plotly charts embedded in lecture markdown. */
+.plotly-chart {
+  width: 100%;
+  max-width: 820px;
+  margin: 1.5rem auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,

@@ -8,10 +8,11 @@ Read this file before changing the project. Prefer the existing patterns and mak
 
 ## Current Source Of Truth
 
-Lecture content is maintained in Markdown files at the repository root:
+Lecture content is maintained in Markdown files in the `notes/` folder:
 
-- `cs229-lecture-1-study-notes.md` -> `courses/cs229/lecture-1.html`
-- `cs229-lecture-2-study-notes.md` -> `courses/cs229/lecture-2.html`
+- `notes/cs229-lecture-1-study-notes.md` -> `courses/cs229/lecture-1.html`
+- `notes/cs229-lecture-2-study-notes.md` -> `courses/cs229/lecture-2.html`
+- `notes/cs229-lecture-3-study-notes.md` -> `courses/cs229/lecture-3.html`
 
 Edit the Markdown files for lecture content. Do not copy new lecture content into the HTML pages unless a fallback is intentionally being updated.
 
@@ -23,6 +24,7 @@ Markdown supports:
 - Inline math: `$x$`
 - Display math: `$$ ... $$`
 - Horizontal rules: `---`
+- Plotly chart containers: `<div id="plotly-..." class="plotly-chart"></div>` rendered by page-specific scripts in `js/` (see `js/lecture3-charts.js` for the pattern)
 
 Keep the Markdown readable and structured like academic notes: summary, definitions, derivations, algorithms or workflows, examples, reflection questions, and references.
 
@@ -40,11 +42,13 @@ Course pages:
 - `courses/cs229/index.html`: CS229 course home
 - `courses/cs229/lecture-1.html`: Lecture 1 shell and Markdown renderer
 - `courses/cs229/lecture-2.html`: Lecture 2 shell and Markdown renderer
+- `courses/cs229/lecture-3.html`: Lecture 3 shell, Markdown renderer, and Plotly.js charts
 
 Shared assets:
 
-- `css/style.css`: all layout, typography, responsive, academic document, and component styles
-- `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, and MathJax re-typesetting
+- `css/style.css`: all layout, typography, responsive, academic document, and component styles (including `.plotly-chart` containers)
+- `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, MathJax re-typesetting, and the `markdown:rendered` event
+- `js/lecture3-charts.js`: page-specific Plotly charts for Lecture 3, drawn after `markdown:rendered` fires
 
 ## Lecture HTML Contract
 
@@ -80,13 +84,14 @@ displayMath: [['\\[', '\\]'], ['$$', '$$']]
 
 ## How To Add A New Lecture
 
-1. Create a root Markdown file, for example `cs229-lecture-3-study-notes.md`.
+1. Create a Markdown file in the `notes/` folder, for example `notes/cs229-lecture-4-study-notes.md`.
 2. Start with a clear Markdown structure and include the lecture title as the first heading.
 3. Copy `courses/cs229/lecture-2.html` to a new lecture HTML file.
 4. Update the HTML title, description, visible `h1`, subtitle, breadcrumb, and `data-markdown` path.
 5. Remove or update the video block if the new lecture has a different video.
 6. Add the lecture link to `notes.html` and `courses/cs229/index.html`.
 7. Keep the existing shared stylesheet and script unless the new content needs a genuinely reusable style.
+8. If the lecture needs interactive charts: add `<div id="plotly-..." class="plotly-chart"></div>` containers in the Markdown, create a `js/lectureN-charts.js` that listens for the `markdown:rendered` event, load Plotly.js (`https://cdn.plot.ly/plotly-2.35.2.min.js`) and the chart script in the lecture HTML after `js/script.js`. See `courses/cs229/lecture-3.html` and `js/lecture3-charts.js` as the reference implementation.
 
 ## Rendering And Local Testing
 

@@ -44,11 +44,20 @@
     </div>
   </nav>
 
-  <main class="main lecture-document" role="main" data-markdown="../../cs229-lecture-2-study-notes.md">
+  <main class="main lecture-document" role="main" data-markdown="../../notes/cs229-lecture-2-study-notes.md">
     <header class="page-header">
       <h1>Lecture 2: Supervised Learning Setup</h1>
       <p class="subtitle">Stanford CS229 — Foundations and Paradigms of Machine Learning</p>
     </header>
+
+    <div class="lecture-video">
+      <iframe src="https://www.youtube-nocookie.com/embed/cmNIMjPYdgM?rel=0" title="Stanford CS229 Lecture 2"
+        loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+      <p class="lecture-video-fallback">Video not available here? <a href="https://youtu.be/cmNIMjPYdgM" target="_blank"
+          rel="noopener">Open it on YouTube</a>.</p>
+    </div>
 
     <div class="breadcrumb">
       <a href="../../index.html">Home</a> <span>/</span> <a href="../index.html">Courses</a> <span>/</span> <a
@@ -61,14 +70,15 @@
       <h2>1. Summary</h2>
       <p>
         This lecture formally sets up the supervised learning paradigm, utilizing linear regression with least squares
-        as the foundational learning algorithm [65, 72]. The instructor, Chris, breaks down the core notations, defining
-        the hypothesis function, the training set, and the features [77, 80, 107]. He introduces the concept of
-        Empirical Risk Minimization (ERM) through the Least Squares cost function [97, 115]. The lecture then
+        as the foundational learning algorithm. The instructor, Chris Ré, breaks down the core notations, defining
+        the hypothesis function, the training set, and the features. He introduces the concept of
+        Empirical Risk Minimization (ERM) through the Least Squares cost function. The lecture then
         investigates two primary mathematical pathways for optimization: iterative methods via Batch, Stochastic (SGD),
-        and Minibatch Gradient Descent, and an analytical closed-form solution via the Normal Equations [74, 75, 157].
-        Chris also highlights critical engineering and hardware realities of modern machine learning&#8212;such as GPU
+        and Minibatch Gradient Descent, and an analytical closed-form solution via the Normal Equations.
+        Chris Ré also highlights critical engineering and hardware realities of modern machine learning&#8212;such as
+        GPU
         memory constraints, step-size (learning rate) scheduling, and the distinct focus of machine learning on
-        generalization over the parameter recovery focus of classical statistics [150, 172, 174, 201].
+        generalization over the parameter recovery focus of classical statistics.
       </p>
     </div>
 
@@ -76,30 +86,30 @@
       <h2>2. Key Concepts &amp; Definitions</h2>
       <ul>
         <li><strong>Supervised Machine Learning</strong>: A paradigm where the learning algorithm is trained on explicit
-          pairs of inputs and target labels [65, 80].</li>
+          pairs of inputs and target labels.</li>
         <li><strong>Hypothesis (\(h\))</strong>: A function \(h: \mathcal{X} \to \mathcal{Y}\) mapping the input space
-          \(\mathcal{X}\) to the output space \(\mathcal{Y}\) [77].</li>
+          \(\mathcal{X}\) to the output space \(\mathcal{Y}\).</li>
         <li><strong>Training Set</strong>: A collection of \(n\) training examples denoted as \(\{(x^{(i)},
-          y^{(i)})\}_{i=1}^n\) [80, 110].</li>
+          y^{(i)})\}_{i=1}^n\).</li>
         <li><strong>Notation Conventions</strong>:
           <ul>
-            <li>\(x^{(i)}\): The input vector (features) for the \(i\)-th training example [81, 107].</li>
-            <li>\(y^{(i)}\): The target output/label for the \(i\)-th training example [80, 107].</li>
-            <li>\(n\): The total number of training examples [110].</li>
-            <li>\(d\): The number of input features or dimensions [110].</li>
+            <li>\(x^{(i)}\): The input vector (features) for the \(i\)-th training example.</li>
+            <li>\(y^{(i)}\): The target output/label for the \(i\)-th training example.</li>
+            <li>\(n\): The total number of training examples.</li>
+            <li>\(d\): The number of input features or dimensions.</li>
             <li>\(x_0 = 1\): The intercept/bias term convention, meaning \(x \in \mathbb{R}^{d+1}\) and the parameters
-              \(\theta \in \mathbb{R}^{d+1}\) [105, 110].</li>
+              \(\theta \in \mathbb{R}^{d+1}\).</li>
           </ul>
         </li>
         <li><strong>Regression</strong>: A supervised learning task where the output space \(\mathcal{Y}\) is continuous
-          (e.g., predicting housing prices) [66, 79, 86].</li>
+          (e.g., predicting housing prices).</li>
         <li><strong>Classification</strong>: A supervised learning task where the output space \(\mathcal{Y}\) is
-          discrete (e.g., predicting cat vs. dog or predicting the next token in a sequence) [65, 78, 87].</li>
+          discrete (e.g., predicting cat vs. dog or predicting the next token in a sequence).</li>
         <li><strong>Empirical Risk Minimization (ERM)</strong>: The process of choosing parameters \(\theta\) that
-          minimize the average loss (risk) over the training set [97, 100].</li>
+          minimize the average loss (risk) over the training set.</li>
         <li><strong>Positive Semidefinite (PSD)</strong>: A symmetric matrix \(M\) is PSD if \(z^T M z \ge 0\) for all
-          vectors \(z\) [227]. The matrix \(X^T X\) is positive semidefinite, which ensures the cost function is convex
-          (bowl-shaped) and gradient descent will converge to a global minimum [208, 214, 227].</li>
+          vectors \(z\). The matrix \(X^T X\) is positive semidefinite, which ensures the cost function is convex
+          (bowl-shaped) and gradient descent will converge to a global minimum.</li>
       </ul>
     </div>
 
@@ -109,27 +119,26 @@
       <h3>The Linear Hypothesis</h3>
       <p>The linear hypothesis is formulated as:</p>
       \[h_\theta(x) = \theta_0 + \theta_1 x_1 + \dots + \theta_d x_d = \sum_{j=0}^d \theta_j x_j = \theta^T x\]
-      <p>where \(\theta\) represents the parameter vector (weights) and \(x_0 = 1\) is the intercept term [91, 105,
-        106].</p>
+      <p>where \(\theta\) represents the parameter vector (weights) and \(x_0 = 1\) is the intercept term.</p>
     </div>
 
     <div class="card">
       <h3>Least Squares Cost Function</h3>
       <p>To measure how well the hypothesis fits the training data, we define the Least Squares cost function
-        \(J(\theta)\) [115, 116]:</p>
+        \(J(\theta)\):</p>
       \[J(\theta) = \frac{1}{2} \sum_{i=1}^n \left(h_\theta(x^{(i)}) - y^{(i)}\right)^2\]
       <ul>
         <li><strong>Why Square?</strong> Squaring ensures positive error penalties, places a heavier penalty on larger
-          outliers, and results in a smooth, differentiable quadratic "bowl" shape [116, 118, 136].</li>
+          outliers, and results in a smooth, differentiable quadratic "bowl" shape.</li>
         <li><strong>Why \(\frac{1}{2}\)?</strong> The constant is added by convention so that the factor of 2 from the
-          derivative of the squared term cancels out, simplifying the gradient update rule [123, 143].</li>
+          derivative of the squared term cancels out, simplifying the gradient update rule.</li>
       </ul>
     </div>
 
     <div class="card">
       <h3>Analytical Derivation of the Gradient</h3>
       <p>For a single training example \((x, y)\), the partial derivative of \(J(\theta)\) with respect to a single
-        parameter \(\theta_j\) is derived using the chain rule [143]:</p>
+        parameter \(\theta_j\) is derived using the chain rule:</p>
       \[\frac{\partial}{\partial \theta_j} \left( \frac{1}{2} (h_\theta(x) - y)^2 \right) = (h_\theta(x) - y) \cdot
       \frac{\partial}{\partial \theta_j} (h_\theta(x) - y)\]
       <p>Since \(h_\theta(x) = \sum_{k=0}^d \theta_k x_k\), we have \(\frac{\partial}{\partial \theta_j} h_\theta(x) =
@@ -142,50 +151,57 @@
 
       <h3>A. Batch Gradient Descent (BGD)</h3>
       <p>Batch gradient descent computes the gradient over the entire training set before performing a single parameter
-        update [145].</p>
+        update.</p>
       <ol>
-        <li><strong>Initialize</strong> parameters \(\theta\) randomly or to 0 [140].</li>
+        <li><strong>Initialize</strong> parameters \(\theta\) randomly or to 0.</li>
         <li><strong>Loop until convergence</strong>:
           For every parameter \(j \in \{0, \dots, d\}\), update:
           \[\theta_j := \theta_j - \alpha \sum_{i=1}^n \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_j^{(i)}\]
-          where \(\alpha\) is the learning rate (step size) [140, 141].
+          where \(\alpha\) is the learning rate (step size).
         </li>
       </ol>
       <p><strong>Properties</strong>: Mathematically guaranteed to converge to the global minimum for convex bowl-shaped
-        functions like Least Squares [208, 214]. However, it is computationally prohibitive for large datasets (e.g.,
-        scanning the entire internet) because each step requires summing over all \(n\) examples [145].</p>
+        functions like Least Squares. However, it is computationally prohibitive for large datasets (e.g.,
+        scanning the entire internet) because each step requires summing over all \(n\) examples.</p>
+      <h3>Step-Size (Learning Rate) Convergence Condition</h3>
+      <p>The update \(\theta_{t+1} = \theta_t - \alpha \nabla J(\theta_t)\) only converges when the step size is small
+        enough relative to the curvature of \(J\). For least squares, the curvature is governed by the eigenvalues of
+        \(X^T X\):</p>
+      \[0 &lt; \alpha &lt; \frac{2}{\lambda_{\max}(X^T X)}\]
+      <p>where \(\lambda_{\max}\) is the largest eigenvalue of \(X^T X\). If \(\alpha\) exceeds this threshold, each
+        update overshoots the minimum and the iterates diverge — on the cost curve, \(J(\theta)\) oscillates with
+        growing amplitude instead of descending into the bowl. This is why practical training uses step-size schedules
+        (e.g., decay or cosine schedules) rather than a fixed \(\alpha\).</p>
     </div>
 
     <div class="card">
       <h3>B. Stochastic Gradient Descent (SGD)</h3>
       <p>To address the computational bottleneck of batch updates, Stochastic Gradient Descent updates parameters
-        incrementally after examining a single training example [155, 157].</p>
+        incrementally after examining a single training example.</p>
       <ol>
-        <li><strong>Shuffle</strong> the training set randomly to ensure independent, representative samples [160, 163,
-          194].</li>
+        <li><strong>Shuffle</strong> the training set randomly to ensure independent, representative samples.</li>
         <li><strong>Loop through the training set</strong>:
           For each training example \(i \in \{1, \dots, n\}\):
           For every parameter \(j \in \{0, \dots, d\}\), update:
           \[\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}\]
-          where \(\theta^{(t)}\) is the parameter vector from the previous step [162, 163].
+          where \(\theta^{(t)}\) is the parameter vector from the previous step.
         </li>
       </ol>
-      <p><strong>Properties</strong>: Much faster to start making progress [157]. Instead of taking a direct path to the
-        minimum, it "drunkenly stumbles" or wiggles [207, 209]. As it nears the optimum, it bounces around in a
-        high-dimensional ball proportional to the step size \(\alpha\) [150, 207].</p>
+      <p><strong>Properties</strong>: Much faster to start making progress. Instead of taking a direct path to the
+        minimum, it "drunkenly stumbles" or wiggles. As it nears the optimum, it bounces around in a
+        high-dimensional ball proportional to the step size \(\alpha\).</p>
     </div>
 
     <div class="card">
       <h3>C. Minibatch Gradient Descent</h3>
-      <p>Minibatch gradient descent is the modern workhorse of deep learning (e.g., PyTorch defaults) [158]. It strikes
-        a balance between BGD and SGD by computing the gradient over a small subset of size \(B\) (batch size) [158,
-        185].</p>
+      <p>Minibatch gradient descent is the modern workhorse of deep learning (e.g., PyTorch defaults). It strikes
+        a balance between BGD and SGD by computing the gradient over a small subset of size \(B\) (batch size).</p>
       <ol>
-        <li><strong>Form a random batch</strong> \(\mathcal{B}\) of size \(B\) from the training set [159, 185].</li>
+        <li><strong>Form a random batch</strong> \(\mathcal{B}\) of size \(B\) from the training set.</li>
         <li><strong>Update rule</strong>:
           \[\theta := \theta - \alpha_{\mathcal{B}} \frac{1}{B} \sum_{i \in \mathcal{B}} \left( h_\theta(x^{(i)}) -
           y^{(i)} \right) x^{(i)}\]
-          where \(\alpha_{\mathcal{B}}\) is the normalized learning rate adjusted for the batch size [185, 186, 204].
+          where \(\alpha_{\mathcal{B}}\) is the normalized learning rate adjusted for the batch size.
         </li>
       </ol>
     </div>
@@ -193,11 +209,11 @@
     <div class="card">
       <h2>5. Analytical Solution: The Normal Equations</h2>
       <p>For linear regression with least squares, we can bypass iterative optimization and solve for the optimal
-        parameters \(\theta\) analytically in closed form [75, 217].</p>
+        parameters \(\theta\) analytically in closed form.</p>
 
       <h3>Matrix Setup</h3>
       <p>Let the <strong>Design Matrix</strong> \(X \in \mathbb{R}^{n \times (d+1)}\) contain all training inputs
-        stacked by rows, and \(y \in \mathbb{R}^n\) be the target output vector [218]:</p>
+        stacked by rows, and \(y \in \mathbb{R}^n\) be the target output vector:</p>
       \[X = \begin{bmatrix} (x^{(1)})^T \\ (x^{(2)})^T \\ \vdots \\ (x^{(n)})^T \end{bmatrix} = \begin{bmatrix} 1 &amp;
       x_1^{(1)} &amp; \dots &amp; x_d^{(1)} \\ 1 &amp; x_1^{(2)} &amp; \dots &amp; x_d^{(2)} \\ \vdots &amp; \vdots
       &amp; \ddots &amp; \vdots \\ 1 &amp; x_1^{(n)} &amp; \dots &amp; x_d^{(n)} \end{bmatrix}, \quad y =
@@ -206,31 +222,52 @@
 
     <div class="card">
       <h3>Matrix Derivation</h3>
-      <p>We can rewrite the Least Squares cost function in vector-matrix form using the \(L_2\) norm inner product [219,
-        220]:</p>
+      <p>We can rewrite the Least Squares cost function in vector-matrix form using the \(L_2\) norm inner product:</p>
       \[J(\theta) = \frac{1}{2} (X\theta - y)^T (X\theta - y)\]
       <p>Expanding the terms:</p>
       \[J(\theta) = \frac{1}{2} \left( (X\theta)^T X\theta - (X\theta)^T y - y^T X\theta + y^T y \right)\]
       <p>Since \((X\theta)^T y\) is a scalar, it is equal to its transpose \(y^T X\theta\):</p>
       \[J(\theta) = \frac{1}{2} \left( \theta^T X^T X \theta - 2\theta^T X^T y + y^T y \right)\]
-      <p>Taking the gradient with respect to the vector \(\theta\) and setting it to 0 to find the minimum [221, 222,
-        223]:</p>
+      <p>Taking the gradient with respect to the vector \(\theta\) and setting it to 0 to find the minimum:</p>
       \[\nabla_\theta J(\theta) = \frac{1}{2} \left( 2 X^T X \theta - 2 X^T y \right) = 0\]
       \[X^T X \theta = X^T y\]
-      <p>This system is known as the <strong>Normal Equations</strong> [75, 217].</p>
-      <p>Solving for \(\theta\) yields the closed-form least-squares estimator [224]:</p>
+      <p>This system is known as the <strong>Normal Equations</strong>.</p>
+      <p>Solving for \(\theta\) yields the closed-form least-squares estimator:</p>
       \[\theta = (X^T X)^{-1} X^T y\]
+      <h3>Worked Micro-Example</h3>
+      <p>Take two training points, \((x^{(1)}, y^{(1)}) = (0, 1)\) and \((x^{(2)}, y^{(2)}) = (1, 3)\), with the
+        intercept convention \(x_0 = 1\):</p>
+      \[X = \begin{bmatrix} 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 3 \end{bmatrix}\]
+      <p><strong>Normal Equations path:</strong></p>
+      \[X^T X = \begin{bmatrix} 2 &amp; 1 \\ 1 &amp; 1 \end{bmatrix}, \quad X^T y = \begin{bmatrix} 4 \\ 3
+      \end{bmatrix} \implies \theta = (X^T X)^{-1} X^T y = \begin{bmatrix} 1 \\ 2 \end{bmatrix}\]
+      <p>So \(h_\theta(x) = 1 + 2x\), which passes exactly through both points (zero training error).</p>
+      <p><strong>Gradient descent path:</strong> starting at \(\theta = (0, 0)\) with \(\alpha = 0.1\), the first update
+        gives residuals \((1, 3)\), so:</p>
+      \[\theta_1 = \begin{bmatrix} 0 \\ 0 \end{bmatrix} - 0.1 \begin{bmatrix} 4 \\ 3 \end{bmatrix} = \begin{bmatrix}
+      -0.4 \\ -0.3 \end{bmatrix}\]
+      <p>Iterating converges toward \((1, 2)\) — the same solution the Normal Equations give in one step. This
+        illustrates the trade-off: iterative methods scale to huge \(n\) and \(d\), while the closed form is exact but
+        requires an \(O(d^3)\) matrix inversion.</p>
+      <h3>Probabilistic Interpretation</h3>
+      <p>Least squares is not an arbitrary choice: it is the <strong>maximum likelihood estimator (MLE)</strong> under
+        the assumption that targets are linear plus Gaussian noise:</p>
+      \[y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \quad \epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)\]
+      <p>Maximizing the Gaussian log-likelihood \(\sum_i \log p(y^{(i)} \mid x^{(i)}; \theta)\) reduces exactly to
+        minimizing \(J(\theta)\) — the \(\frac{1}{2}\) factor and the squared error both fall out of the Gaussian
+        exponent. This connects least squares to the broader ERM framework and foreshadows other losses (e.g., logistic
+        loss for classification) derived from other noise/likelihood assumptions.</p>
     </div>
 
     <div class="card">
       <h3>Invertibility &amp; Redundancy</h3>
-      <p>This derivation assumes that \(X^T X\) is invertible [225].</p>
+      <p>This derivation assumes that \(X^T X\) is invertible.</p>
       <ul>
         <li>If \(X^T X\) is <strong>singular (non-invertible)</strong>, it occurs when there are redundant, linearly
-          dependent features or when there are fewer training examples than dimensions (\(n &lt; d\)) [225].</li>
-        <li>In this case, there exists a non-trivial <strong>null space</strong> [226]. Any vector added from this null
-          space results in an equally optimal parameter set, meaning there is an entire subspace of valid solutions
-          [226].</li>
+          dependent features or when there are fewer training examples than dimensions (\(n &lt; d\)).</li>
+        <li>In this case, there exists a non-trivial <strong>null space</strong>. Any vector added from this null
+          space results in an equally optimal parameter set, meaning there is an entire subspace of valid solutions.
+        </li>
       </ul>
     </div>
 
@@ -240,16 +277,16 @@
         theory:</p>
       <ul>
         <li><strong>CapEx and Model Flops Utilization (MFU)</strong>: Modern deep learning is heavily gated by massive
-          capital expenditures (CapEx) for hardware infrastructure [200]. Selecting batch sizes and step-size schedules
+          capital expenditures (CapEx) for hardware infrastructure. Selecting batch sizes and step-size schedules
           (e.g., cosine decay schedules) is often dictated by hardware constraints to keep GPU memory (High Bandwidth
-          Memory, or HBM) fully utilized and maximize computation speed [172, 182, 191, 201].</li>
+          Memory, or HBM) fully utilized and maximize computation speed.</li>
         <li><strong>The Redundancy Trade-off</strong>: Smaller batches have higher variance, but they excel in highly
-          redundant datasets [176]. If a dataset has 90 copies of the same image, processing them in a large batch is
-          wasteful; a smaller batch allows the model to update 90 times, converging faster [177, 178].</li>
+          redundant datasets. If a dataset has 90 copies of the same image, processing them in a large batch is
+          wasteful; a smaller batch allows the model to update 90 times, converging faster.</li>
         <li><strong>Why Machine Learning is Not Just Statistics</strong>: Traditional statistics focus on parameter
-          recovery guarantees (finding the true \(\theta^*\)) and rigorous convergence tests [150, 151, 174]. Modern ML
-          focuses on generalization error on unseen test sets [102, 131]. We often train models until we run out of
-          compute credits, stop there, and find that they still generalize beautifully [152, 174, 215, 216].</li>
+          recovery guarantees (finding the true \(\theta^*\)) and rigorous convergence tests. Modern ML
+          focuses on generalization error on unseen test sets. We often train models until we run out of
+          compute credits, stop there, and find that they still generalize beautifully.</li>
       </ul>
     </div>
 
@@ -257,11 +294,10 @@
       <h2>7. Applications</h2>
       <ul>
         <li><strong>Real Estate Valuation</strong>: Using features like square footage, lot area, and number of bedrooms
-          to predict continuous home sale prices (e.g., using real-world data like the Ames Housing Dataset) [88, 89,
-          102].</li>
+          to predict continuous home sale prices (e.g., using real-world data like the Ames Housing Dataset).</li>
         <li><strong>Sequence Modeling (Classifier Heads)</strong>: Although linear models are simple, they serve as the
           crucial final output step (the "classification head") of modern deep learning architectures, such as
-          predicting the next token in Large Language Models using softmax activations [87, 90, 127].</li>
+          predicting the next token in Large Language Models using softmax activations.</li>
       </ul>
     </div>
 
@@ -270,14 +306,13 @@
       <ol>
         <li><strong>Step-Size Divergence</strong>: What mathematically occurs to the parameter updates in gradient
           descent if the learning rate \(\alpha\) is chosen to be excessively large, and how does this manifest visually
-          on the cost curve \(J(\theta)\)? [149, 207, 208]</li>
+          on the cost curve \(J(\theta)\)?</li>
         <li><strong>Singular Design Matrices</strong>: If a dataset contains fewer training examples than dimensions
           (\(n &lt; d\)), why does \(X^T X\) become non-invertible? What does this imply about the uniqueness of the
-          parameter vector \(\theta\) that minimizes the least squares cost? [225, 226]</li>
+          parameter vector \(\theta\) that minimizes the least squares cost?</li>
         <li><strong>Statistics vs. Machine Learning Goals</strong>: Explain the conceptual conflict between minimizing
           the training loss \(J(\theta)\) to the highest degree of numerical precision and maximizing the model's
-          generalization capabilities on a test set, particularly in the context of batch size selection. [150, 151,
-          171, 174]</li>
+          generalization capabilities on a test set, particularly in the context of batch size selection.</li>
       </ol>
     </div>
 
@@ -285,11 +320,11 @@
       <h2>9. Further Reading &amp; Resources</h2>
       <ul>
         <li><strong>Steven Boyd's Convex Optimization</strong>: Highly recommended by the instructors for mastering
-          vector/matrix calculus and the properties of semidefinite matrices [214].</li>
+          vector/matrix calculus and the properties of semidefinite matrices.</li>
         <li><strong>Friday TA Sections</strong>: The essential venue for mastering matrix gradients, rank, null spaces,
-          and vector derivatives [75, 76, 227].</li>
+          and vector derivatives.</li>
         <li><strong>Data Mixing &amp; Cosine Scheduling Literature</strong>: Academic papers on how foundation models
-          schedule learning rates (e.g., Leslie's cosine scaling) and mix training corpora [191, 195, 196].</li>
+          schedule learning rates (e.g., Leslie's cosine scaling) and mix training corpora.</li>
       </ul>
     </div>
 

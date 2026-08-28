@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', function () {
             typeset();
           }
         }
+        /* Notify page-specific chart scripts that the markdown is in the DOM. */
+        document.dispatchEvent(new CustomEvent('markdown:rendered'));
       })
       .catch(function (error) {
         console.warn(error.message);
