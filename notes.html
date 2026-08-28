@@ -6,6 +6,13 @@
   <title>Lecture Notes — Stanford CS229 ML Notes</title>
   <meta name="description" content="Browse all lecture notes for Stanford CS229 Machine Learning (Spring 2026).">
   <link rel="stylesheet" href="css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -14,12 +21,18 @@
     <div class="sidebar-avatar" aria-hidden="true">&#x1F4DA;</div>
     <div class="sidebar-name">CS229 Notes</div>
     <div class="sidebar-role">Stanford ML — Spring 2026</div>
+    <div class="sidebar-bio">Lecture notes and study materials for Stanford CS229: Foundations and Paradigms of Machine Learning.</div>
   </div>
   <ul class="sidebar-nav">
+    <li class="nav-label">Site</li>
     <li><a href="index.html">Home</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="notes.html" class="active">Lecture Notes</a></li>
+    <li><a href="courses/index.html">All Courses</a></li>
   </ul>
+  <div class="sidebar-social">
+    <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank" rel="noopener">&#x1F9EC;</a>
+  </div>
   <div class="sidebar-footer">
     Built with static HTML/CSS/JS<br>
     &copy; 2026
@@ -34,12 +47,12 @@
 
   <ul class="note-list">
     <li class="note-card">
-      <h3><a href="posts/lecture-1.html">Lecture 1: Introduction</a></h3>
+      <h3><a href="courses/cs229/lecture-1.html">Lecture 1: Introduction</a></h3>
       <p class="note-meta"><span class="tag">Supervised</span><span class="tag">Unsupervised</span><span class="tag">Reinforcement</span></p>
       <p class="note-excerpt">Course overview, ML paradigms, Mitchell's definition of machine learning, and the three pillars of ML: supervised, unsupervised, and reinforcement learning.</p>
     </li>
     <li class="note-card">
-      <h3><a href="posts/lecture-2.html">Lecture 2: Supervised Learning Setup</a></h3>
+      <h3><a href="courses/cs229/lecture-2.html">Lecture 2: Supervised Learning Setup</a></h3>
       <p class="note-meta"><span class="tag">Linear Regression</span><span class="tag">Gradient Descent</span><span class="tag">ERM</span></p>
       <p class="note-excerpt">Formal setup of supervised learning with linear regression, least squares cost function, empirical risk minimization, and optimization via batch gradient descent and normal equations.</p>
     </li>
