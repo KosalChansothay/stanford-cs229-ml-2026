@@ -89,7 +89,12 @@ displayMath: [['\\[', '\\]'], ['$$', '$$']]
 3. Copy `courses/cs229/lecture-2.html` to a new lecture HTML file.
 4. Update the HTML title, description, visible `h1`, subtitle, breadcrumb, and `data-markdown` path.
 5. Remove or update the video block if the new lecture has a different video.
-6. Add the lecture link to `notes.html` and `courses/cs229/index.html`.
+6. Add the lecture link to **all four** index pages that maintain their own hand-written lecture lists:
+   - `notes.html` (lecture index with search)
+   - `courses/cs229/index.html` (course home)
+   - root `index.html` (site homepage "Quick Links")
+   - `about.html` (only if it lists lectures)
+   These lists are NOT auto-generated. Missing one leaves the site inconsistent — this actually happened with Lecture 3, when the homepage was missed and the gap was only noticed on the live site.
 7. Keep the existing shared stylesheet and script unless the new content needs a genuinely reusable style.
 8. If the lecture needs interactive charts: add `<div id="plotly-..." class="plotly-chart"></div>` containers in the Markdown, create a `js/lectureN-charts.js` that listens for the `markdown:rendered` event, load Plotly.js (`https://cdn.plot.ly/plotly-2.35.2.min.js`) and the chart script in the lecture HTML after `js/script.js`. See `courses/cs229/lecture-3.html` and `js/lecture3-charts.js` as the reference implementation.
 
@@ -100,8 +105,10 @@ Do not open Markdown-backed lecture pages directly with `file://` when testing. 
 From the repository root, run:
 
 ```powershell
-python -m http.server 8000
+py -m http.server 8000
 ```
+
+Note: use `py`, not `python` — the `python` alias is not on PATH in the current shell.
 
 Open:
 
@@ -119,6 +126,20 @@ Check that:
 - The video, if present, remains responsive.
 - The course navigation stays active on nested lecture pages.
 - Mobile content does not overflow horizontally.
+- Plotly charts (if the lecture has them) render inside their `.plotly-chart` containers after the markdown loads.
+
+## Deployment (GitHub Pages)
+
+- Repo: `github.com/KosalChansothay/stanford-cs229-ml-2026`
+- Live site: `https://kosalchansothay.github.io/stanford-cs229-ml-2026/`
+- Deploy source: `main` branch. Pushing to `main` triggers a Pages rebuild.
+
+Expect these delays after `git push`:
+
+1. **Pages build: 1–3 minutes** (occasionally up to 10). The live site serves the OLD version during this window.
+2. **CDN/browser cache**: even after the build, the browser may show stale content. Hard refresh (Ctrl+F5) or use an incognito window to verify.
+
+Do not assume a push failed just because the live site did not change immediately — check the repo's Actions tab for the deploy run status first. Also remember that viewing `.md` files on github.com is NOT the same as the rendered site: GitHub strips HTML (Plotly containers vanish) and does not run MathJax, so raw markdown views always look broken. Only judge rendering on the Pages site or the local server.
 
 ## Styling Rules
 
