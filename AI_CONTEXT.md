@@ -16,11 +16,19 @@ Lecture content is maintained in Markdown files in the `notes/` folder:
 - `notes/cs229-lecture-4-study-notes.md` -> `courses/cs229/lecture-4.html`
 - `notes/cs229-lecture-5-study-notes.md` -> `courses/cs229/lecture-5.html`
 - `notes/cs229-lecture-6-study-notes.md` -> `courses/cs229/lecture-6.html`
+- `notes/cs229-lecture-7-study-notes.md` -> `courses/cs229/lecture-7.html`
+- `notes/cs229-lecture-8-study-notes.md` -> `courses/cs229/lecture-8.html`
+- `notes/cs229-lecture-9-study-notes.md` -> `courses/cs229/lecture-9.html`
+- `notes/cs229-lecture-10-study-notes.md` -> `courses/cs229/lecture-10.html`
 
 Lecture Markdown files must NOT contain bracketed numeric citation references such as `[358, 429]` or `[364]`.
 They are leftover transcript timestamps and are stripped before publishing. When adding new lecture notes,
 remove them with a regex like `\s*\[\d+(,\s*\d+)*\]` (this safely preserves math like one-hot vectors `[1, 0, 0, 0]`
 because those contain zeros and live inside `$...$`).
+
+**WARNING — the regex has a known failure mode**: it EATS one-hot vectors like `[1, 0, 0, 0]` when they appear
+as bare text (0 is a digit). This corrupted Lecture 4's one-hot examples. After stripping, always grep for
+artifacts like `=\^T` and restore any eaten vectors manually.
 
 Edit the Markdown files for lecture content. Do not copy new lecture content into the HTML pages unless a fallback is intentionally being updated.
 
@@ -61,7 +69,14 @@ Shared assets:
 - `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, MathJax re-typesetting, and the `markdown:rendered` event
 - `js/lecture1-charts.js`: Plotly charts for Lecture 1 (house price regression fit, classification decision boundary)
 - `js/lecture2-charts.js`: Plotly charts for Lecture 2 (BGD vs SGD trajectories on elliptical cost contours)
-- `js/lecture3-charts.js`: page-specific Plotly charts for Lecture 3, drawn after `markdown:rendered` fires
+- `js/lecture3-charts.js`: Plotly charts for Lecture 3 (logistic boundary, GD vs Newton paths)
+- `js/lecture4-charts.js`: Plotly charts for Lecture 4 (GLM crank pipeline, softmax decision regions)
+- `js/lecture5-charts.js`: Plotly charts for Lecture 5 (GDA vs QDA boundaries, marching-squares zero contours)
+- `js/lecture6-charts.js`: Plotly charts for Lecture 6 (bias-variance curves, double descent with n-slider)
+- `js/lecture7-charts.js`: Plotly charts for Lecture 7 (SGD unbiasedness arrows, residual block diagram)
+- `js/lecture8-charts.js`: Plotly charts for Lecture 8 (backprop computational graph, 3 color-coded rows)
+- `js/lecture9-charts.js`: Plotly charts for Lecture 9 (K-Means step slider, EM lower bound slider)
+- `js/lecture10-charts.js`: Plotly charts for Lecture 10 (EM geometry slider, PCA rotation slider with variance readout)
 - `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
 
 ## Interactive Charts Policy (Plotly Placeholders)
@@ -95,7 +110,28 @@ static descriptions waste the opportunity to build intuition. The established wo
 
 Existing reference implementations: `js/lecture1-charts.js` (regression fits + decision boundary),
 `js/lecture2-charts.js` (optimization trajectories with direction arrows), `js/lecture3-charts.js`
-(probability contour + boundary, GD vs Newton paths).
+(probability contour + boundary, GD vs Newton paths), `js/lecture9-charts.js` and `js/lecture10-charts.js`
+(slider-driven step animations).
+
+## Plotly Slider Pitfalls (Learned in Lectures 9-10)
+
+Slider-driven charts have two failure modes that cost debugging time — avoid them:
+
+1. **Trace-count stability**: every slider step MUST produce the same number of traces. If a trace
+   (e.g., an EM trajectory) only exists at later steps, emit it as an EMPTY trace (`x: [], y: []`) at
+   step 0. Mismatched counts corrupt `gd.data` and silently break all subsequent updates.
+2. **Slider `update`/`restyle` methods may not apply** in some environments even with correct args.
+   Robust pattern: store the correct restyle args in the steps AND add a backup listener:
+   ```js
+   gd.on('plotly_sliderupdate', function (ev) {
+       var step = gd.layout.sliders[0].steps[ev.slider.active];
+       if (step && step.args) Plotly.restyle(gd, step.args[0], step.args[1]);
+   });
+   ```
+   To verify programmatically: `Plotly.restyle(gd, step.args[0], step.args[1])` manually — if the data
+   moves, the args are correct and real user clicks will work.
+3. **marked.js + math escaping**: strip citations AND escape `_{` → `\_{` in the same pass. Two unescaped
+   `_{...}` in one paragraph pair as `<em>` and break adjacent `$$` blocks.
 
 ## Navigation Layout (Top Bar, Not Sidebar)
 
