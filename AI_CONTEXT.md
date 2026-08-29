@@ -13,6 +13,14 @@ Lecture content is maintained in Markdown files in the `notes/` folder:
 - `notes/cs229-lecture-1-study-notes.md` -> `courses/cs229/lecture-1.html`
 - `notes/cs229-lecture-2-study-notes.md` -> `courses/cs229/lecture-2.html`
 - `notes/cs229-lecture-3-study-notes.md` -> `courses/cs229/lecture-3.html`
+- `notes/cs229-lecture-4-study-notes.md` -> `courses/cs229/lecture-4.html`
+- `notes/cs229-lecture-5-study-notes.md` -> `courses/cs229/lecture-5.html`
+- `notes/cs229-lecture-6-study-notes.md` -> `courses/cs229/lecture-6.html`
+
+Lecture Markdown files must NOT contain bracketed numeric citation references such as `[358, 429]` or `[364]`.
+They are leftover transcript timestamps and are stripped before publishing. When adding new lecture notes,
+remove them with a regex like `\s*\[\d+(,\s*\d+)*\]` (this safely preserves math like one-hot vectors `[1, 0, 0, 0]`
+because those contain zeros and live inside `$...$`).
 
 Edit the Markdown files for lecture content. Do not copy new lecture content into the HTML pages unless a fallback is intentionally being updated.
 
@@ -43,12 +51,46 @@ Course pages:
 - `courses/cs229/lecture-1.html`: Lecture 1 shell and Markdown renderer
 - `courses/cs229/lecture-2.html`: Lecture 2 shell and Markdown renderer
 - `courses/cs229/lecture-3.html`: Lecture 3 shell, Markdown renderer, and Plotly.js charts
+- `courses/cs229/lecture-4.html`: Lecture 4 shell and Markdown renderer
+- `courses/cs229/lecture-5.html`: Lecture 5 shell and Markdown renderer
+- `courses/cs229/lecture-6.html`: Lecture 6 shell and Markdown renderer
 
 Shared assets:
 
 - `css/style.css`: all layout, typography, responsive, academic document, and component styles (including `.plotly-chart` containers)
 - `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, MathJax re-typesetting, and the `markdown:rendered` event
 - `js/lecture3-charts.js`: page-specific Plotly charts for Lecture 3, drawn after `markdown:rendered` fires
+- `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
+
+## Navigation Layout (Top Bar, Not Sidebar)
+
+The navigation is a **sticky top navbar** (`.sidebar` class kept for historical reasons), not a left sidebar:
+
+- `position: sticky; top: 0` horizontal flex bar: logo image + site name on the left, nav links right-aligned, GitHub icon at the end.
+- The avatar is `<img class="sidebar-avatar" src=".../img/profile.jpg">` (44px circle, `object-fit: cover`), NOT an emoji div.
+- `.sidebar-bio` and `.sidebar-footer` are hidden via CSS.
+- `body` must NOT have `display: flex` — that stretches the navbar to full page height.
+- `.main` is centered with `max-width: var(--max-width)` and no left margin.
+- On `<= 768px` the nav collapses into a "Menu" dropdown toggle (created by `js/script.js`).
+
+## SEO / Meta Tags Contract
+
+Every HTML page must include, after the description tag:
+
+```html
+<meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+<meta name="author" content="Kosal Chansothay">
+```
+
+Keywords contain ONLY the site owner's name variants — do not add course/topic keywords (owner's explicit request).
+The root `index.html` additionally has JSON-LD structured data (`WebSite` + `Person` with `alternateName` array)
+mapping all name variants to `https://github.com/KosalChansothay`.
+
+## Encoding Rule (Mojibake Prevention)
+
+Files have been corrupted before by encoding round-trips producing `â€"` (double-encoded em dash U+2014)
+and `RÃ©` (double-encoded é U+00E9). Always read/write files as UTF-8 without BOM. If mojibake appears,
+fix with replacements: `â€"` -> `—`, `RÃ©` -> `Ré` (as U+00E2 U+20AC U+201D and U+00C3 U+00A9 sequences).
 
 ## Lecture HTML Contract
 
@@ -82,21 +124,28 @@ inlineMath: [['\\(', '\\)'], ['$', '$']]
 displayMath: [['\\[', '\\]'], ['$$', '$$']]
 ```
 
-## How To Add A New Lecture
+## How To Add A New Lecture (Checklist Used For Lectures 4-6)
 
-1. Create a Markdown file in the `notes/` folder, for example `notes/cs229-lecture-4-study-notes.md`.
-2. Start with a clear Markdown structure and include the lecture title as the first heading.
-3. Copy `courses/cs229/lecture-2.html` to a new lecture HTML file.
-4. Update the HTML title, description, visible `h1`, subtitle, breadcrumb, and `data-markdown` path.
-5. Remove or update the video block if the new lecture has a different video.
-6. Add the lecture link to **all four** index pages that maintain their own hand-written lecture lists:
-   - `notes.html` (lecture index with search)
+1. Create a Markdown file in the `notes/` folder, for example `notes/cs229-lecture-7-study-notes.md`.
+2. **Strip citation references**: remove all `[123, 456]`-style transcript timestamps with the regex
+   `\s*\[\d+(,\s*\d+)*\]` (verify zero remain; math vectors are unaffected).
+3. Start with a clear Markdown structure and include the lecture title as the first heading.
+4. Copy `courses/cs229/lecture-5.html` (the cleanest recent shell) to a new lecture HTML file.
+5. Update the HTML title, description, visible `h1`, subtitle, breadcrumb, and `data-markdown` path.
+6. Keep the SEO meta block (keywords = name variants only, author) in the new page.
+7. Add the lecture link to **all three** index pages that maintain their own hand-written lecture lists:
+   - `notes.html` (lecture index with search — use `data-note` card with `.tag` spans)
    - `courses/cs229/index.html` (course home)
    - root `index.html` (site homepage "Quick Links")
-   - `about.html` (only if it lists lectures)
-   These lists are NOT auto-generated. Missing one leaves the site inconsistent — this actually happened with Lecture 3, when the homepage was missed and the gap was only noticed on the live site.
-7. Keep the existing shared stylesheet and script unless the new content needs a genuinely reusable style.
-8. If the lecture needs interactive charts: add `<div id="plotly-..." class="plotly-chart"></div>` containers in the Markdown, create a `js/lectureN-charts.js` that listens for the `markdown:rendered` event, load Plotly.js (`https://cdn.plot.ly/plotly-2.35.2.min.js`) and the chart script in the lecture HTML after `js/script.js`. See `courses/cs229/lecture-3.html` and `js/lecture3-charts.js` as the reference implementation.
+   These lists are NOT auto-generated. Missing one leaves the site inconsistent — this actually happened with
+   Lecture 3 (homepage missed) and Lectures 4-5 (homepage + notes.html missed initially).
+8. Keep the existing shared stylesheet and script unless the new content needs a genuinely reusable style.
+9. If the lecture needs interactive charts: add `<div id="plotly-..." class="plotly-chart"></div>` containers in the
+   Markdown, create a `js/lectureN-charts.js` that listens for the `markdown:rendered` event, load Plotly.js
+   (`https://cdn.plot.ly/plotly-2.35.2.min.js`) and the chart script in the lecture HTML after `js/script.js`.
+   See `courses/cs229/lecture-3.html` and `js/lecture3-charts.js` as the reference implementation.
+10. Validate in the browser: MathJax renders (check `mjx-container` count > 0 and no raw `$$` in the DOM),
+    no horizontal scroll, active nav highlighting works.
 
 ## Rendering And Local Testing
 
@@ -151,7 +200,21 @@ The lecture reading surface is intentionally document-like rather than a dashboa
 - Equations and blockquotes use quiet neutral backgrounds and borders.
 - Keep the palette restrained: navy, paper, gray, and subtle shadows.
 - Avoid decorative colored edges, excessive gradients, oversized cards, and unrelated redesigns.
-- Preserve mobile behavior at `768px` and below.
+
+## Responsive Breakpoints (Standard System)
+
+`css/style.css` implements a full responsive system — keep it intact:
+
+- `<= 480px`: small phones — 15px base font, compact navbar (role hidden, name truncated), smaller headings, full-width buttons.
+- `<= 768px`: phones/tablets portrait — nav collapses into Menu dropdown, tables scroll horizontally (`display: block; overflow-x: auto`).
+- `769px – 1024px`: tablets/small laptops — condensed navbar spacing.
+- `>= 1440px`: large desktops — `--max-width: 1160px`, 17px base font.
+- `>= 1920px`: ultra-wide — `--max-width: 1240px`, 18px base font.
+- `<= 480px height`: landscape phones — compact navbar.
+- `prefers-reduced-motion: reduce`: disables animations/transitions.
+
+Global guards: `body { overflow-x: hidden }`, `img/video/iframe { max-width: 100% }`, `-webkit-text-size-adjust: 100%`.
+Verified at 375/768/1024/1440/1920px widths with no horizontal scroll.
 
 ## JavaScript Behavior
 

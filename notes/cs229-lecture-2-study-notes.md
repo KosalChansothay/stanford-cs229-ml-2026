@@ -95,9 +95,7 @@ Minibatch gradient descent is the modern workhorse of deep learning (e.g., PyTor
    $$\theta := \theta - \alpha_{\mathcal{B}} \frac{1}{B} \sum_{i \in \mathcal{B}} \left( h_\theta(x^{(i)}) - y^{(i)} \right) x^{(i)}$$
    where $\alpha_{\mathcal{B}}$ is the normalized learning rate adjusted for the batch size.
 
-```
-[Insert diagram: Comparison of Optimization Trajectories: Batch Gradient Descent (direct path to center of elliptical contours) vs. Stochastic Gradient Descent (noisy, jagged "drunken walk" path bouncing around the optimum)]
-```
+<div id="plotly-bgd-vs-sgd" class="plotly-chart" aria-label="Interactive Plotly chart: Batch Gradient Descent versus Stochastic Gradient Descent optimization trajectories on elliptical cost contours"></div>
 
 ---
 
@@ -184,6 +182,6 @@ The lecture features a rich discussion on how optimization choices in practice d
 
 ### 9. Further Reading & Resources
 
-- **Steven Boyd's Convex Optimization**: Highly recommended by the instructors for mastering vector/matrix calculus and the properties of semidefinite matrices.
+- **Stephen Boyd's Convex Optimization**: Highly recommended by the instructors for mastering vector/matrix calculus and the properties of semidefinite matrices.
 - **Friday TA Sections**: The essential venue for mastering matrix gradients, rank, null spaces, and vector derivatives.
 - **Data Mixing & Cosine Scheduling Literature**: Academic papers on how foundation models schedule learning rates (e.g., Leslie's cosine scaling) and mix training corpora.
