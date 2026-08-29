@@ -81,75 +81,51 @@
 
     <div class="card">
       <h2>Quick Links</h2>
-      <ul class="note-list">
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-1.html">Lecture 1: Introduction</a></h3>
-          <p class="note-meta">Course overview, ML paradigms, Mitchell's definition</p>
-          <p class="note-excerpt">High-level introduction to CS229 structure, grading policies, and the three pillars of
-            machine learning: supervised, unsupervised, and reinforcement learning.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-2.html">Lecture 2: Supervised Learning Setup</a></h3>
-          <p class="note-meta">Linear regression, ERM, gradient descent, normal equations</p>
-          <p class="note-excerpt">Formal setup of supervised learning with linear regression, least squares cost
-            function, and optimization via batch gradient descent and normal equations.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-3.html">Lecture 3: Logistic Regression</a></h3>
-          <p class="note-meta">MLE, sigmoid link function, gradient ascent, Newton's method</p>
-          <p class="note-excerpt">Probabilistic justification of least squares via maximum likelihood, logistic
-            regression for binary classification, and the SGD vs. Newton's method trade-off.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-4.html">Lecture 4: Exponential Family, GLMs &amp; Classification</a></h3>
-          <p class="note-meta">Exponential family, generalized linear models, softmax regression, label smoothing</p>
-          <p class="note-excerpt">A unifying framework for distributions (Bernoulli, Gaussian) via the exponential
-            family, the three assumptions of GLMs, softmax regression for multi-class classification, and label
-            smoothing as regularization.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-5.html">Lecture 5: Gaussian Discriminant Analysis</a></h3>
-          <p class="note-meta">Generative learning, GDA, Naive Bayes, Laplace smoothing</p>
-          <p class="note-excerpt">The shift from discriminative to generative modeling: Gaussian Discriminant Analysis
-            with closed-form parameter estimation, its connection to logistic regression, Naive Bayes for text
-            classification, and Laplace smoothing.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-6.html">Lecture 6: Dataset Split, ML Advice</a></h3>
-          <p class="note-meta">Bias-variance, ridge regression, double descent, cross-validation, Hyperband</p>
-          <p class="note-excerpt">The bias-variance-noise decomposition, ridge regression and its eigenvalue
-            stabilization, the modern double descent phenomenon, k-fold cross-validation, and compute-efficient
-            hyperparameter tuning with Hyperband.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-7.html">Lecture 7: Neural Networks 1 (Architecture)</a></h3>
-          <p class="note-meta">Neural networks, activations, MLPs, residual connections, layer normalization</p>
-          <p class="note-excerpt">From linear models to parameterized nonlinear networks: softmax and cross-entropy,
-            why Newton's method fails under non-convexity, activation functions, MLP vectorization, residual
-            connections, LayerNorm/RMSNorm, and convolutions.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-8.html">Lecture 8: Neural Networks 2 (Backpropagation)</a></h3>
-          <p class="note-meta">Backpropagation, computational graphs, Jacobians, Hessian-vector products</p>
-          <p class="note-excerpt">Reverse-mode automatic differentiation: the O(N) gradient theorem, the vector chain
-            rule and Jacobians, backward passes for matrix multiplication (Hebbian learning) and activation layers,
-            Hessian-vector products, and activation caching on GPUs.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-9.html">Lecture 9: K-Means and GMM (non-EM)</a></h3>
-          <p class="note-meta">Unsupervised learning, K-Means, Gaussian mixture models, Jensen's inequality</p>
-          <p class="note-excerpt">The shift to unlabeled data: K-Means coordinate descent and the distortion function,
-            Gaussian Mixture Models with soft posterior memberships, K-Means++ initialization, and Jensen's inequality
-            as the foundation of the EM lower bound.</p>
-        </li>
-        <li class="note-card">
-          <h3><a href="courses/cs229/lecture-10.html">Lecture 10: GMM (EM) and PCA</a></h3>
-          <p class="note-meta">Expectation-Maximization, ELBO, eigen decomposition, dimensionality reduction</p>
-          <p class="note-excerpt">The formal EM algorithm via the ELBO and the Q-distribution trick, monotonic
-            convergence guarantees, and PCA: maximizing projected variance solved by eigenvalue decomposition of the
-            covariance matrix, with mean-centering and rescaling practices.</p>
-        </li>
-      </ul>
+      <p class="quick-links-intro">
+        Ten lectures spanning the full arc of CS229 — from least squares to PCA.
+        Browse the complete list with search on the
+        <a href="notes.html">Lecture Notes</a> page, or jump straight to a topic below.
+      </p>
+
+      <div class="quick-links-grid">
+        <div class="quick-links-group">
+          <h3>Foundations</h3>
+          <ul>
+            <li><a href="courses/cs229/lecture-1.html">Lecture 1 — Introduction</a></li>
+            <li><a href="courses/cs229/lecture-2.html">Lecture 2 — Supervised Learning Setup</a></li>
+            <li><a href="courses/cs229/lecture-3.html">Lecture 3 — Logistic Regression</a></li>
+            <li><a href="courses/cs229/lecture-4.html">Lecture 4 — Exponential Family &amp; GLMs</a></li>
+          </ul>
+        </div>
+
+        <div class="quick-links-group">
+          <h3>Generative Models &amp; Advice</h3>
+          <ul>
+            <li><a href="courses/cs229/lecture-5.html">Lecture 5 — GDA &amp; Naive Bayes</a></li>
+            <li><a href="courses/cs229/lecture-6.html">Lecture 6 — Bias-Variance &amp; ML Advice</a></li>
+          </ul>
+        </div>
+
+        <div class="quick-links-group">
+          <h3>Neural Networks</h3>
+          <ul>
+            <li><a href="courses/cs229/lecture-7.html">Lecture 7 — Architecture</a></li>
+            <li><a href="courses/cs229/lecture-8.html">Lecture 8 — Backpropagation</a></li>
+          </ul>
+        </div>
+
+        <div class="quick-links-group">
+          <h3>Unsupervised Learning</h3>
+          <ul>
+            <li><a href="courses/cs229/lecture-9.html">Lecture 9 — K-Means &amp; GMM</a></li>
+            <li><a href="courses/cs229/lecture-10.html">Lecture 10 — EM &amp; PCA</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="quick-links-more">
+        <a class="btn" href="notes.html">Browse all lecture notes &rarr;</a>
+      </p>
     </div>
 
     <div class="card">
