@@ -78,13 +78,13 @@ $$\theta\_{\text{ridge}} = (X^T X + \rho I)^{-1} X^T y$$
    Since $\rho > 0$, the minimum eigenvalue of $(X^T X + \rho I)$ is strictly bounded away from zero ($\lambda\_{\text{min}} \ge \rho$).
 3. **Variance Control**: The variance of the parameter estimator is directly scaled by the inverse of the eigenvalues. If $\lambda_i \approx 0$, small perturbations in the training data cause massive, unstable swings in the parameter updates. By replacing $\frac{1}{\lambda_i}$ with $\frac{1}{\lambda_i + \rho}$, Ridge Regression suppresses these extreme fluctuations, bringing stability back to the optimization path at the cost of a controlled, small amount of bias.
 
-```
-[Insert diagram: The Bias-Variance Trade-Off Curve. A plot showing Model Complexity (x-axis) vs. Error (y-axis). The training error decreases monotonically to 0. The test error is a U-shaped curve that reaches a local minimum at the sweet spot before rising in the classical overfitting regime. Red curve: Bias^2 (falling). Blue curve: Variance (rising). Black dotted curve: Expected Test Error (U-shape).]
-```
+<div id="plotly-bias-variance" class="plotly-chart" aria-label="Interactive Plotly chart: bias-variance trade-off curves with training error, test error, bias squared, and variance"></div>
 
-```
-[Insert diagram: The Double Descent Curve. An extension of the classical trade-off. To the left of the 'Interpolation Threshold' (where number of parameters d equals sample size n), we see the classical U-curve. Exactly at the threshold, variance explodes. To the right of the threshold (the overparameterized regime), the curve slopes downward again, showing that extremely large models generalize exceptionally well.]
-```
+<p><em>Figure: The Bias-Variance Trade-Off — training error falls monotonically with model complexity, while test error is U-shaped: bias² falls, variance rises, and their sum bottoms out at the sweet spot. Hover to read exact values.</em></p>
+
+<div id="plotly-double-descent" class="plotly-chart" aria-label="Interactive Plotly chart: the double descent test-error curve around the interpolation threshold"></div>
+
+<p><em>Figure: Double Descent — extending the classical U-curve past the interpolation threshold (d = n), test error spikes, then descends again: overparameterized models can generalize exceptionally well.</em></p>
 
 ---
 

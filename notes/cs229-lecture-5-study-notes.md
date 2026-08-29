@@ -76,9 +76,9 @@ where:
 $$\theta = \Sigma^{-1} (\mu_1 - \mu_0)$$
 $$\theta_0 = -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_0^T \Sigma^{-1} \mu_0 + \ln \frac{\phi}{1-\phi}$$
 
-```
-[Insert diagram: GDA Decision Boundary under Shared Covariance (left) showing parallel contour ellipses for Class 0 and Class 1, resulting in a strictly linear dividing hyperplane. QDA Decision Boundary (right) showing ellipses of different shapes and orientations for each class, resulting in a curved, quadratic decision boundary.]
-```
+<div id="plotly-gda-vs-qda" class="plotly-chart" aria-label="Interactive Plotly chart: GDA versus QDA decision boundaries with Gaussian class contours"></div>
+
+<p><em>Figure: GDA vs. QDA Decision Boundaries — with a shared covariance matrix (GDA), the quadratic terms cancel and the boundary is a straight line. Relaxing to per-class covariances (QDA) produces curved, quadratic boundaries that can wrap around elliptical class distributions.</em></p>
 
 #### B. Naive Bayes Classification with Laplace Smoothing
 For a text document represented as a binary feature vector $x \in \{0, 1\}^d$ over a vocabulary of size $d$:
