@@ -82,10 +82,7 @@ Under maximum likelihood estimation (MLE), taking the log-likelihood of a GLM an
 $$\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}$$
 This is not an algebraic coincidence; the structure is a direct consequence of the exponential family's canonical properties.
 
-```
-[Insert diagram: The GLM Parameter Crank:
- Features (x) -> dot product with Weights (theta) -> Natural Parameter (eta) -> Canonical Response Function g(eta) -> Predicted Expectation h_theta(x)]
-```
+<div id="plotly-glm-crank" class="plotly-chart" aria-label="Interactive Plotly diagram: the GLM parameter crank mapping features through weights, the natural parameter, and the canonical response function to the prediction"></div>
 
 ---
 
@@ -94,10 +91,10 @@ When predicting discrete outcomes among $k > 2$ classes (e.g., classifying a pix
 
 #### One-Hot Vector Representation
 Rather than labeling classes as scalars $\{1, 2, 3, 4\}$, we represent them as orthogonal one-hot support vectors $y \in \mathbb{R}^k$:
-- $\text{Cat} =^T$
-- $\text{Dog} =^T$
-- $\text{Car} =^T$
-- $\text{Bus} =^T$
+- $\text{Cat} = [1, 0, 0, 0]^T$
+- $\text{Dog} = [0, 1, 0, 0]^T$
+- $\text{Car} = [0, 0, 1, 0]^T$
+- $\text{Bus} = [0, 0, 0, 1]^T$
 
 Our parameters consist of $k$ distinct parameter vectors, one for each class: $\theta_1, \theta_2, \dots, \theta_k \in \mathbb{R}^{d+1}$. The score (or logit) for class $j$ given input $x$ is $\theta_j^T x$.
 
@@ -109,20 +106,15 @@ $$p(y = j \mid x; \theta) = \frac{\exp(\theta_j^T x)}{\sum_{l=1}^k \exp(\theta_l
 Under maximum likelihood estimation, maximizing the multinomial log-likelihood is equivalent to minimizing the cross-entropy loss over $n$ training examples:
 $$\mathcal{L}(\theta) = -\sum_{i=1}^n \sum_{j=1}^k y_j^{(i)} \log p(y^{(i)} = j \mid x^{(i)}; \theta)$$
 
-```
-[Insert diagram: Softmax Geometry in 2D Feature Space:
- Hyperplanes partition the 2D plane into decision regions for Cat, Dog, Car, and Bus. The scores (theta_j^T x) act as normal vectors to these decision boundaries, where points deep within a region have high, confident probabilities, and boundary regions have blended, highly contentious probabilities.]
-```
-
----
+<div id="plotly-softmax-geometry" class="plotly-chart" aria-label="Interactive Plotly chart: softmax decision regions for four classes in a 2D feature plane with probability heatmap"></div>
 
 ### 6. Label Smoothing
-A standard "hard" one-hot label $y^{(i)} =^T$ forces cross-entropy to drive the model's logits $\theta_1^T x \to \infty$ relative to all other classes to achieve a probability of exactly $1.0$. This leads to severe overfitting and overconfident predictions.
+A standard "hard" one-hot label $y^{(i)} = [1, 0, 0, 0]^T$ forces cross-entropy to drive the model's logits $\theta_1^T x \to \infty$ relative to all other classes to achieve a probability of exactly $1.0$. This leads to severe overfitting and overconfident predictions.
 
 **Label Smoothing** modifies the target vector by distributing a small probability mass $\epsilon$ uniformly across all classes:
 $$y_{\text{smooth}, j} = y_j (1 - \epsilon) + \frac{\epsilon}{k}$$
 For example, in a 4-class classification problem with $\epsilon = 0.1$, the targets change from:
-$$y =^T \implies y_{\text{smooth}} = [0.925, 0.025, 0.025, 0.025]^T$$
+$$y = [1, 0, 0, 0]^T \implies y_{\text{smooth}} = [0.925, 0.025, 0.025, 0.025]^T$$
 
 #### Benefits:
 - **Overfitting Mitigation**: Prevents the weights $\theta$ from exploding to infinity.

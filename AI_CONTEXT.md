@@ -59,8 +59,43 @@ Shared assets:
 
 - `css/style.css`: all layout, typography, responsive, academic document, and component styles (including `.plotly-chart` containers)
 - `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, MathJax re-typesetting, and the `markdown:rendered` event
+- `js/lecture1-charts.js`: Plotly charts for Lecture 1 (house price regression fit, classification decision boundary)
+- `js/lecture2-charts.js`: Plotly charts for Lecture 2 (BGD vs SGD trajectories on elliptical cost contours)
 - `js/lecture3-charts.js`: page-specific Plotly charts for Lecture 3, drawn after `markdown:rendered` fires
 - `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
+
+## Interactive Charts Policy (Plotly Placeholders)
+
+Lecture Markdown may contain diagram placeholders of the form:
+
+```text
+[Insert diagram: <description of the desired visualization>]
+```
+
+**When you encounter one, do NOT leave it as plain text.** Replace it with an interactive Plotly chart —
+static descriptions waste the opportunity to build intuition. The established workflow:
+
+1. Replace the placeholder block in the Markdown with a container:
+   ```html
+   <div id="plotly-<lecture>-<name>" class="plotly-chart" aria-label="Interactive Plotly chart: <description>"></div>
+   ```
+   Optionally follow it with a one-line `<p><em>Figure: ...</em></p>` caption.
+2. Create (or extend) `js/lectureN-charts.js` following the pattern in `js/lecture3-charts.js`:
+   - Wrap everything in an IIFE; use a seeded PRNG (`mulberry32`) so synthetic data is stable across reloads.
+   - Compute fits/trajectories mathematically (closed-form least squares, gradient steps) rather than hard-coding decorative curves.
+   - Export `window.renderLectureNCharts` that draws each chart by container id.
+   - Listen for the `markdown:rendered` event (charts live inside the fetched markdown), with a `readyState` guard fallback.
+3. Load Plotly and the chart script in the lecture HTML after `js/script.js`:
+   ```html
+   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+   <script src="../../js/lectureN-charts.js"></script>
+   ```
+4. Validate in the browser: container exists, `.main-svg` is present (chart actually rendered), hover works,
+   and the layout stays responsive.
+
+Existing reference implementations: `js/lecture1-charts.js` (regression fits + decision boundary),
+`js/lecture2-charts.js` (optimization trajectories with direction arrows), `js/lecture3-charts.js`
+(probability contour + boundary, GD vs Newton paths).
 
 ## Navigation Layout (Top Bar, Not Sidebar)
 

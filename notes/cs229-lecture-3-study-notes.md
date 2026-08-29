@@ -112,6 +112,16 @@ Because we are *maximizing* the log-likelihood $l(\theta)$ (rather than minimizi
      $$\theta := \theta + \alpha \left( y^{(i)} - h_{\theta^{(t)}}(x^{(i)}) \right) x^{(i)}$$
      where $\alpha$ is the learning rate.
 
+#### Worked Micro-Example: One Gradient Ascent Step
+
+Take a single training point $(x, y) = (2, 1)$ with the intercept convention $x_0 = 1$, so $x = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$, and start from $\theta = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$ with learning rate $\alpha = 0.1$:
+
+1. **Predict**: $\theta^T x = 0$, so $h_\theta(x) = g(0) = \frac{1}{1 + e^{0}} = 0.5$.
+2. **Error**: $y - h_\theta(x) = 1 - 0.5 = 0.5$ (the model is unsure; the true label is positive).
+3. **Update**:
+   $$\theta := \begin{bmatrix} 0 \\ 0 \end{bmatrix} + 0.1 \times 0.5 \times \begin{bmatrix} 1 \\ 2 \end{bmatrix} = \begin{bmatrix} 0.05 \\ 0.1 \end{bmatrix}$$
+4. **Effect**: the new prediction is $\theta^T x = 0.05 + 0.2 = 0.25$, so $h_\theta(x) = g(0.25) \approx 0.562$ — the probability moved *toward* the true label. Repeating this update drives $h_\theta(x) \to 1$ for this point, exactly the "error-correcting" behavior shared with linear regression.
+
 <div id="plotly-logistic-boundary" class="plotly-chart" aria-label="Interactive Plotly chart: Logistic Regression decision boundary with sigmoid probability gradient"></div>
 
 <p><em>Figure: Logistic Regression Decision Boundary — a 2D feature plane with positive examples (red circles) and negative examples (blue triangles). The dashed line is the linear decision boundary $\theta^T x = 0$, and the arrows show the direction of steepest probability ascent, along which the sigmoid output $h_\theta(x)$ grades smoothly from 0 to 1.</em></p>
@@ -193,6 +203,7 @@ $$w^{(i)} = h_\theta(x^{(i)}) \left( 1 - h_\theta(x^{(i)}) \right)$$
 ### 8. Reflection Questions
 
 1. **Outlier Sensitivity in Least Squares**: Geometrically, why does fitting a linear regression model to binary labels ($y \in \{0,1\}$) via least squares result in poor classification boundaries when there are extreme, easily classifiable outlier data points?
+   **Answer sketch**: Least squares pays a *quadratic* price for large residuals. A far-away, easily classified point (e.g., a huge $\|x\|$ with $y = 1$) still contributes residual $h_\theta(x) - 1$ to the cost, and its gradient contribution $(h_\theta(x) - y)x$ is scaled by the large $\|x\|$ — so the fit rotates steeply toward it to shrink that one large term. The regression line tilts, the implicit threshold $h_\theta(x) = 0.5$ shifts, and borderline points get misclassified. Logistic regression avoids this because the sigmoid saturates: once $h_\theta(x) \approx 1$ for the outlier, its gradient $(y - h_\theta(x))x \approx 0$ — correctly classified points stop influencing the fit.
 2. **Noise Model Implications**: We proved that assuming normally distributed, IID errors ($\epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)$) mathematically leads to the least squares cost function. If we instead assumed that our errors followed a Laplace (double-exponential) distribution, how would this change the resulting MLE objective function? *(Hint: Think about how absolute error vs. squared error behaves).*
 3. **The Hessian Bottleneck**: Why does Newton's method fail to scale when training modern Large Language Models? Identify the specific mathematical term in its step complexity that acts as the hardware bottleneck, and explain how modern optimizers (like AdaGrad or Adam) approximate this curvature information cheaply.
 
