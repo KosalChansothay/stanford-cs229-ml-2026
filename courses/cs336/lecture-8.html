@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 8: Parallelism (Advanced) — CS336 Notes</title>
+    <meta name="description"
+        content="CS336 Lecture 8 notes: ZeRO-1/2/3 and FSDP memory sharding, Pipeline Parallelism (1F1B schedule, bubble overhead), Sequence Parallelism, and 3D/4D parallel topology design.">
+    <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+    <meta name="author" content="Kosal Chansothay">
+    <link rel="stylesheet" href="../../css/style.css">
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+
+<body>
+
+    <nav class="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-profile">
+            <img class="sidebar-avatar" src="../../img/profile.jpg" alt="Site logo">
+            <div class="sidebar-name">CS229 Notes</div>
+            <div class="sidebar-role">Stanford ML — Spring 2026</div>
+            <div class="sidebar-bio">Lecture notes and study materials for Stanford CS229: Foundations and Paradigms of
+                Machine Learning.</div>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-label">Site</li>
+            <li><a href="../../index.html">Home</a></li>
+            <li><a href="../../about.html">About</a></li>
+            <li><a href="../../notes.html">Lecture Notes</a></li>
+            <li><a href="../index.html">Courses</a></li>
+        </ul>
+        <div class="sidebar-social">
+            <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+                rel="noopener">&#x1F9EC;</a>
+        </div>
+        <div class="sidebar-footer">
+            Built with static HTML/CSS/JS<br>
+            &copy; 2026
+        </div>
+    </nav>
+
+    <main class="main lecture-document" role="main" data-markdown="../../notes/cs336-lecture-8-notes.md">
+        <header class="page-header">
+            <h1>Lecture 8: Parallelism (Advanced)</h1>
+            <p class="subtitle">Stanford CS336 — Language Modeling from Scratch</p>
+        </header>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> <span>/</span> <a href="../index.html">Courses</a> <span>/</span> <a
+                href="index.html">CS336</a> <span>/</span> Lecture 8
+        </div>
+
+        <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+                <nav class="lecture-pagination" aria-label="Lecture navigation">
+            <a href="lecture-7.html" class="pagination-btn prev" aria-label="Previous Lecture: Lecture 7: Parallelism (Foundations)">
+                <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+                <span class="pagination-label">
+                    <span class="pagination-sub">Previous Lecture</span>
+                    <span class="pagination-title">Lecture 7: Parallelism (Foundations)</span>
+                </span>
+            </a>
+            <a href="lecture-9.html" class="pagination-btn next" aria-label="Next Lecture: Lecture 9: Scaling Laws (Foundations)">
+                <span class="pagination-label">
+                    <span class="pagination-sub">Next Lecture</span>
+                    <span class="pagination-title">Lecture 9: Scaling Laws (Foundations)</span>
+                </span>
+                <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+        </nav>
+
+        <footer class="site-footer">
+            <p>CS336 Language Modeling from Scratch &mdash; Spring 2026</p>
+        </footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+    <script src="../../js/script.js"></script>
+    <script src="../../js/cs336-lecture8-charts.js"></script>
+</body>
+
+</html>

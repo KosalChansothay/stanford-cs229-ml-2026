@@ -48,7 +48,7 @@
   <main class="main" role="main">
     <header class="page-header">
       <h1>Lecture Notes</h1>
-      <p class="subtitle">All available lectures for CS229 — Spring 2026</p>
+      <p class="subtitle">All available lectures — CS229 &amp; CS336, Spring 2026</p>
     </header>
 
     <div class="filter-bar">
@@ -175,6 +175,96 @@
         <p class="note-excerpt">Autoregressive language modeling from BPE tokenization to next-token cross-entropy,
           single- and multi-head causal self-attention with the -infinity mask trick, and the O(T²) bottleneck that
           FlashAttention solves with SRAM tiling.</p>
+      </li>
+            <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-1.html">CS336 Lecture 1: Overview, Tokenization</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">BPE</span><span class="tag">Tokenization</span><span class="tag">Efficiency</span><span class="tag">Scaling Laws</span></p>
+        <p class="note-excerpt">The from-scratch philosophy: Accuracy = Efficiency × Resources, Byte-Pair Encoding from raw bytes up, tokenizer compression trade-offs against quadratic attention cost, the naive O(V·L) encoder bottleneck, and Chinchilla-style scaling heuristics.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-2.html">CS336 Lecture 2: PyTorch & Resource Accounting</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">PyTorch</span><span class="tag">FLOPs Accounting</span><span class="tag">Mixed Precision</span><span class="tag">Arithmetic Intensity</span><span class="tag">Activation Checkpointing</span></p>
+        <p class="note-excerpt">Low-level resource accounting: 6NT training FLOPs derivation (2NT fwd, 4NT bwd), mixed precision (BF16 weights/activations, FP32 optimizer states), arithmetic intensity limits on H100, GEMM vs memory-bound ops, and activation checkpointing.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-3.html">CS336 Lecture 3: Architectures</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Transformers</span><span class="tag">RMSNorm</span><span class="tag">SwiGLU</span><span class="tag">RoPE</span><span class="tag">GQA</span></p>
+        <p class="note-excerpt">Modern LLM architectural design: Pre-norm residual highway, RMSNorm memory throughput speedups, SwiGLU gated activations with 2/3 hidden dimension scaling, Rotary Position Embeddings (RoPE), and Grouped-Query Attention (GQA).</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-4.html">CS336 Lecture 4: Attention Alternatives & Mixture of Experts</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Linear Attention</span><span class="tag">SSM</span><span class="tag">MoE</span><span class="tag">Gated Delta Net</span><span class="tag">Sparse Attention</span></p>
+        <p class="note-excerpt">Bypassing the quadratic attention wall: Linear attention duality, State-Space Models (Mamba/S4), Gated Delta Net state tracking, DeepSeek Sparse Attention (DSA), and Mixture of Experts (MoE) routing and load-balancing dynamics.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-5.html">CS336 Lecture 5: GPUs, TPUs, and FlashAttention</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">GPU Architecture</span><span class="tag">FlashAttention</span><span class="tag">SRAM Tiling</span><span class="tag">Quantization</span><span class="tag">Online Softmax</span></p>
+        <p class="note-excerpt">Hardware accelerator architecture: HBM vs SRAM bandwidth gaps, SIMT execution and warp divergence, FP8/FP4 block-scaled quantization, and the FlashAttention algorithm (SRAM tiling and online softmax).</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-6.html">CS336 Lecture 6: Kernels, Triton, XLA</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">CUDA</span><span class="tag">Triton</span><span class="tag">Kernel Fusion</span><span class="tag">Memory Coalescing</span><span class="tag">XLA</span></p>
+        <p class="note-excerpt">Low-level GPU kernel development: CUDA thread block indexing, DRAM memory coalescing, shared memory bank conflicts, writing block-level fused operators in Triton, and XLA/TorchInductor compiler graph optimizations.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-7.html">CS336 Lecture 7: Parallelism (Foundations)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Distributed Training</span><span class="tag">DDP</span><span class="tag">Tensor Parallelism</span><span class="tag">AllReduce</span><span class="tag">Megatron-LM</span></p>
+        <p class="note-excerpt">Foundations of distributed LLM training: Collective communication primitives (All-Reduce ring/tree), Distributed Data Parallel (DDP) gradient synchronization, and Megatron-LM column/row Tensor Parallelism (TP).</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-8.html">CS336 Lecture 8: Parallelism (Advanced)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">FSDP</span><span class="tag">ZeRO</span><span class="tag">Pipeline Parallelism</span><span class="tag">Sequence Parallelism</span><span class="tag">3D Parallelism</span></p>
+        <p class="note-excerpt">Scaling beyond single nodes: ZeRO memory sharding stages (ZeRO-1/2/3) and PyTorch FSDP, Pipeline Parallelism (PP) with 1F1B scheduling and bubble minimization, Sequence Parallelism (SP), and 3D parallelism topology mapping.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-9.html">CS336 Lecture 9: Scaling Laws (Foundations)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Scaling Laws</span><span class="tag">Chinchilla</span><span class="tag">Kaplan</span><span class="tag">IsoFLOP</span><span class="tag">Power Laws</span></p>
+        <p class="note-excerpt">Empirical scaling laws: Validation loss power laws (L(N, D) = E + A/N^α + B/D^β), Kaplan vs Chinchilla correction, the 20:1 token-to-parameter ratio, IsoFLOP profiling, and why inference economics drive overtraining.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-10.html">CS336 Lecture 10: Inference (Execution & Optimization)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">LLM Inference</span><span class="tag">KV Cache</span><span class="tag">PagedAttention</span><span class="tag">Speculative Decoding</span><span class="tag">vLLM</span><span class="tag">MLA</span></p>
+        <p class="note-excerpt">Production inference systems: The memory-bound decoding wall, KV cache sizing and bandwidth consumption, vLLM PagedAttention virtual memory management, Speculative Decoding acceptance math, and DeepSeek MLA latent compression.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-11.html">CS336 Lecture 11: Scaling Laws & Advanced Optimizers</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">muP</span><span class="tag">WSD Schedule</span><span class="tag">Muon Optimizer</span><span class="tag">Hyperparameter Transfer</span><span class="tag">AdamW</span></p>
+        <p class="note-excerpt">Hyperparameter scaling and next-gen optimization: Maximal Update Parameterization (μP) for zero-shot LR transfer across model sizes, Warmup-Stable-Decay (WSD) schedules, and the Muon optimizer (Newton-Schulz matrix updates).</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-12.html">CS336 Lecture 12: Evaluation (Methodology & Contamination)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Evaluation</span><span class="tag">MMLU</span><span class="tag">Elo Rating</span><span class="tag">Chatbot Arena</span><span class="tag">Contamination</span></p>
+        <p class="note-excerpt">Evaluating language models: Construct validity vs operational metrics, log-likelihood vs free-form generation scoring, MMLU/GSM8K/GPQA nuances, Chatbot Arena Elo rating modeling, and n-gram/embedding contamination detection.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-13.html">CS336 Lecture 13: Data (Sources & Datasets)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Pre-training Data</span><span class="tag">Common Crawl</span><span class="tag">FineWeb</span><span class="tag">C4</span><span class="tag">Synthetic Data</span></p>
+        <p class="note-excerpt">Pre-training data pipelines: Web scraping realities with Common Crawl, curating datasets from C4 to FineWeb-Edu, domain mixing ratios, legal boundaries of shadow libraries, and the role of synthetic data in pre-training.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-14.html">CS336 Lecture 14: Data (Preprocessing & Mixing)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Data Filtering</span><span class="tag">MinHash</span><span class="tag">LSH</span><span class="tag">Deduplication</span><span class="tag">FastText</span><span class="tag">Domain Mixing</span></p>
+        <p class="note-excerpt">Data processing algorithms: HTML parsing and noise removal, FastText language identification, MinHash and Locality Sensitive Hashing (LSH) near-deduplication, classifier-based quality heuristics, and dynamic domain mixing.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-15.html">CS336 Lecture 15: Post-Training (SFT & Preference Optimization)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Post-Training</span><span class="tag">SFT</span><span class="tag">RLHF</span><span class="tag">DPO</span><span class="tag">Preference Optimization</span></p>
+        <p class="note-excerpt">Post-training alignment: Supervised Fine-Tuning (SFT) mechanics and mode extraction, multi-turn prompt templates, Bradley-Terry reward modeling in classic RLHF (PPO), and Direct Preference Optimization (DPO) closed-form loss.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-16.html">CS336 Lecture 16: Post-Training — RLVR (Verifiable Rewards)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">RLVR</span><span class="tag">GRPO</span><span class="tag">Reasoning Models</span><span class="tag">Test-Time Compute</span><span class="tag">DeepSeek</span></p>
+        <p class="note-excerpt">The frontier of post-training: Transitioning from soft preferences to verifiable rewards (RLVR) in math/code, DeepSeek GRPO (group relative baseline without a critic), reward hacking mitigation, and test-time compute scaling.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-17.html">CS336 Lecture 17: Alignment — Multimodality</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Multimodal</span><span class="tag">VLM</span><span class="tag">SigLIP</span><span class="tag">LLaVA</span><span class="tag">Vision Transformer</span></p>
+        <p class="note-excerpt">Extending LLMs to multimodality: Vision tokenization via ViT patches, CLIP vs SigLIP pairwise binary contrastive loss, LLaVA linear projection and connector networks, cross-attention fusion (Flamingo), and visual hallucination alignment.</p>
+      </li>
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs336/lecture-guest.html">CS336 Guest Lecture: Systems and Alternative Architectures (Dan Fu)</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">Guest Lecture</span><span class="tag">Mega-Kernels</span><span class="tag">ThunderKittens</span><span class="tag">Disaggregated Serving</span><span class="tag">Loop Transformers</span></p>
+        <p class="note-excerpt">Dan Fu's guest lecture on cutting-edge inference systems: Disaggregating prefill and decode clusters, full-layer Mega-Kernels, ThunderKittens hardware-aware CUDA optimization, and Parse stabilized loop transformers.</p>
       </li>
     </ul>
 

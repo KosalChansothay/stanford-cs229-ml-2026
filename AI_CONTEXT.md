@@ -8,7 +8,7 @@ Read this file before changing the project. Prefer the existing patterns and mak
 
 ## Current Source Of Truth
 
-Lecture content is maintained in Markdown files in the `notes/` folder:
+### CS229: Foundations and Paradigms of Machine Learning
 
 - `notes/cs229-lecture-1-study-notes.md` -> `courses/cs229/lecture-1.html`
 - `notes/cs229-lecture-2-study-notes.md` -> `courses/cs229/lecture-2.html`
@@ -20,6 +20,31 @@ Lecture content is maintained in Markdown files in the `notes/` folder:
 - `notes/cs229-lecture-8-study-notes.md` -> `courses/cs229/lecture-8.html`
 - `notes/cs229-lecture-9-study-notes.md` -> `courses/cs229/lecture-9.html`
 - `notes/cs229-lecture-10-study-notes.md` -> `courses/cs229/lecture-10.html`
+- `notes/cs229-lecture-11-study-notes.md` -> `courses/cs229/lecture-11.html`
+- `notes/cs229-lecture-12-study-notes.md` -> `courses/cs229/lecture-12.html`
+- `notes/cs229-lecture-13-study-notes.md` -> `courses/cs229/lecture-13.html`
+- `notes/cs229-lecture-14-study-notes.md` -> `courses/cs229/lecture-14.html`
+
+### CS336: Language Modeling from Scratch
+
+- `notes/cs336-lecture-1-study-notes.md` -> `courses/cs336/lecture-1.html`
+- `notes/cs336-lecture-2-notes.md` -> `courses/cs336/lecture-2.html`
+- `notes/cs336-lecture-3-notes.md` -> `courses/cs336/lecture-3.html`
+- `notes/cs336-lecture-4-notes.md` -> `courses/cs336/lecture-4.html`
+- `notes/cs336-lecture-5-notes.md` -> `courses/cs336/lecture-5.html`
+- `notes/cs336-lecture-6-notes.md` -> `courses/cs336/lecture-6.html`
+- `notes/cs336-lecture-7-notes.md` -> `courses/cs336/lecture-7.html`
+- `notes/cs336-lecture-8-notes.md` -> `courses/cs336/lecture-8.html`
+- `notes/cs336-lecture-9-notes.md` -> `courses/cs336/lecture-9.html`
+- `notes/cs336-lecture-10-notes.md` -> `courses/cs336/lecture-10.html`
+- `notes/cs336-lecture-11-notes.md` -> `courses/cs336/lecture-11.html`
+- `notes/cs336-lecture-12-notes.md` -> `courses/cs336/lecture-12.html`
+- `notes/cs336-lecture-13-notes.md` -> `courses/cs336/lecture-13.html`
+- `notes/cs336-lecture-14-notes.md` -> `courses/cs336/lecture-14.html`
+- `notes/cs336-lecture-15-notes.md` -> `courses/cs336/lecture-15.html`
+- `notes/cs336-lecture-16-notes.md` -> `courses/cs336/lecture-16.html`
+- `notes/cs336-lecture-17-notes.md` -> `courses/cs336/lecture-17.html`
+- `notes/cs336-lecture-guest-notes.md` -> `courses/cs336/lecture-guest.html`
 
 Lecture Markdown files must NOT contain bracketed numeric citation references such as `[358, 429]` or `[364]`.
 They are leftover transcript timestamps and are stripped before publishing. When adding new lecture notes,
@@ -55,28 +80,17 @@ Root pages:
 Course pages:
 
 - `courses/index.html`: all courses
-- `courses/cs229/index.html`: CS229 course home
-- `courses/cs229/lecture-1.html`: Lecture 1 shell and Markdown renderer
-- `courses/cs229/lecture-2.html`: Lecture 2 shell and Markdown renderer
-- `courses/cs229/lecture-3.html`: Lecture 3 shell, Markdown renderer, and Plotly.js charts
-- `courses/cs229/lecture-4.html`: Lecture 4 shell and Markdown renderer
-- `courses/cs229/lecture-5.html`: Lecture 5 shell and Markdown renderer
-- `courses/cs229/lecture-6.html`: Lecture 6 shell and Markdown renderer
+- `courses/cs229/index.html`: CS229 course home (Lectures 1–14)
+- `courses/cs229/lecture-1.html` through `lecture-14.html`: CS229 lecture shells and Markdown renderers
+- `courses/cs336/index.html`: CS336 course home (Lectures 1–17 + Guest)
+- `courses/cs336/lecture-1.html` through `lecture-17.html` & `lecture-guest.html`: CS336 lecture shells and Markdown renderers
 
 Shared assets:
 
 - `css/style.css`: all layout, typography, responsive, academic document, and component styles (including `.plotly-chart` containers)
 - `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, MathJax re-typesetting, and the `markdown:rendered` event
-- `js/lecture1-charts.js`: Plotly charts for Lecture 1 (house price regression fit, classification decision boundary)
-- `js/lecture2-charts.js`: Plotly charts for Lecture 2 (BGD vs SGD trajectories on elliptical cost contours)
-- `js/lecture3-charts.js`: Plotly charts for Lecture 3 (logistic boundary, GD vs Newton paths)
-- `js/lecture4-charts.js`: Plotly charts for Lecture 4 (GLM crank pipeline, softmax decision regions)
-- `js/lecture5-charts.js`: Plotly charts for Lecture 5 (GDA vs QDA boundaries, marching-squares zero contours)
-- `js/lecture6-charts.js`: Plotly charts for Lecture 6 (bias-variance curves, double descent with n-slider)
-- `js/lecture7-charts.js`: Plotly charts for Lecture 7 (SGD unbiasedness arrows, residual block diagram)
-- `js/lecture8-charts.js`: Plotly charts for Lecture 8 (backprop computational graph, 3 color-coded rows)
-- `js/lecture9-charts.js`: Plotly charts for Lecture 9 (K-Means step slider, EM lower bound slider)
-- `js/lecture10-charts.js`: Plotly charts for Lecture 10 (EM geometry slider, PCA rotation slider with variance readout)
+- `js/lecture1-charts.js` through `js/lecture14-charts.js`: Plotly charts for CS229 lectures
+- `js/cs336-lecture1-charts.js` through `js/cs336-lecture17-charts.js` & `js/cs336-lectureguest-charts.js`: Plotly charts for CS336 lectures (Roofline, GQA, MoE routing, FlashAttention IO, Triton kernels, Ring AllReduce, ZeRO memory, Scaling laws, Speculative decoding, muP transfer, Elo curves, Data waterfalls, LSH S-curves, DPO margins, GRPO rollouts, SigLIP losses, Disaggregated serving, and Mega-kernels)
 - `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
 
 ## Interactive Charts Policy (Plotly Placeholders)
