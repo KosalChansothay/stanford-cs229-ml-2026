@@ -65,7 +65,7 @@ Markdown supports:
 - Inline math: `$x$`
 - Display math: `$$ ... $$`
 - Horizontal rules: `---`
-- Plotly chart containers: `<div id="plotly-..." class="plotly-chart"></div>` rendered by page-specific scripts in `js/` (see `js/lecture3-charts.js` for the pattern)
+- Plotly chart containers: `<div id="plotly-..." class="plotly-chart"></div>` rendered by page-specific scripts in `js/` (see `js/cs229-lecture3-charts.js` for the pattern)
 
 Keep the Markdown readable and structured like academic notes: summary, definitions, derivations, algorithms or workflows, examples, reflection questions, and references.
 
@@ -89,7 +89,7 @@ Shared assets:
 
 - `css/style.css`: all layout, typography, responsive, academic document, and component styles (including `.plotly-chart` containers)
 - `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, MathJax re-typesetting, and the `markdown:rendered` event
-- `js/lecture1-charts.js` through `js/lecture14-charts.js`: Plotly charts for CS229 lectures
+- `js/cs229-lecture1-charts.js` through `js/cs229-lecture14-charts.js`: Plotly charts for CS229 lectures
 - `js/cs336-lecture1-charts.js` through `js/cs336-lecture17-charts.js` & `js/cs336-lectureguest-charts.js`: Plotly charts for CS336 lectures (Roofline, GQA, MoE routing, FlashAttention IO, Triton kernels, Ring AllReduce, ZeRO memory, Scaling laws, Speculative decoding, muP transfer, Elo curves, Data waterfalls, LSH S-curves, DPO margins, GRPO rollouts, SigLIP losses, Disaggregated serving, and Mega-kernels)
 - `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
 
@@ -109,7 +109,7 @@ static descriptions waste the opportunity to build intuition. The established wo
    <div id="plotly-<lecture>-<name>" class="plotly-chart" aria-label="Interactive Plotly chart: <description>"></div>
    ```
    Optionally follow it with a one-line `<p><em>Figure: ...</em></p>` caption.
-2. Create (or extend) `js/lectureN-charts.js` following the pattern in `js/lecture3-charts.js`:
+2. Create (or extend) `js/lectureN-charts.js` following the pattern in `js/cs229-lecture3-charts.js`:
    - Wrap everything in an IIFE; use a seeded PRNG (`mulberry32`) so synthetic data is stable across reloads.
    - Compute fits/trajectories mathematically (closed-form least squares, gradient steps) rather than hard-coding decorative curves.
    - Export `window.renderLectureNCharts` that draws each chart by container id.
@@ -122,9 +122,9 @@ static descriptions waste the opportunity to build intuition. The established wo
 4. Validate in the browser: container exists, `.main-svg` is present (chart actually rendered), hover works,
    and the layout stays responsive.
 
-Existing reference implementations: `js/lecture1-charts.js` (regression fits + decision boundary),
-`js/lecture2-charts.js` (optimization trajectories with direction arrows), `js/lecture3-charts.js`
-(probability contour + boundary, GD vs Newton paths), `js/lecture9-charts.js` and `js/lecture10-charts.js`
+Existing reference implementations: `js/cs229-lecture1-charts.js` (regression fits + decision boundary),
+`js/cs229-lecture2-charts.js` (optimization trajectories with direction arrows), `js/cs229-lecture3-charts.js`
+(probability contour + boundary, GD vs Newton paths), `js/cs229-lecture9-charts.js` and `js/cs229-lecture10-charts.js`
 (slider-driven step animations).
 
 ## Plotly Slider Pitfalls (Learned in Lectures 9-10)
@@ -228,7 +228,7 @@ displayMath: [['\\[', '\\]'], ['$$', '$$']]
 9. If the lecture needs interactive charts: add `<div id="plotly-..." class="plotly-chart"></div>` containers in the
    Markdown, create a `js/lectureN-charts.js` that listens for the `markdown:rendered` event, load Plotly.js
    (`https://cdn.plot.ly/plotly-2.35.2.min.js`) and the chart script in the lecture HTML after `js/script.js`.
-   See `courses/cs229/lecture-3.html` and `js/lecture3-charts.js` as the reference implementation.
+   See `courses/cs229/lecture-3.html` and `js/cs229-lecture3-charts.js` as the reference implementation.
 10. Validate in the browser: MathJax renders (check `mjx-container` count > 0 and no raw `$$` in the DOM),
     no horizontal scroll, active nav highlighting works.
 
