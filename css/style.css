@@ -421,7 +421,13 @@ a {
 }
 
 .markdown-body pre {
+  position: relative;
   margin: 1.25rem 0;
+}
+
+.markdown-body pre code.hljs {
+  background: transparent;
+  padding: 0;
 }
 
 .lecture-document .card:last-of-type {
@@ -581,14 +587,25 @@ code {
   font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
+/* ---------- Code ---------- */
+code {
+  background: var(--code-bg);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.88rem;
+  font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
 pre {
-  background: #1e293b;
-  color: #e2e8f0;
+  position: relative;
+  background: #f6f8fa;
+  color: #24292f;
   padding: 1rem 1.25rem;
-  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   overflow-x: auto;
   font-size: 0.85rem;
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 1rem 0;
 }
 
@@ -596,6 +613,40 @@ pre code {
   background: transparent;
   padding: 0;
   color: inherit;
+  font-size: inherit;
+}
+
+/* Copy button on fenced code blocks */
+.code-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
+  font-family: inherit;
+  color: var(--text-light);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+pre:hover .code-copy-btn,
+.code-copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.code-copy-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+}
+
+@media (hover: none) {
+  .code-copy-btn {
+    opacity: 1;
+  }
 }
 
 /* ---------- MathJax ---------- */
@@ -660,6 +711,74 @@ pre code {
 
 .quick-links-more {
   margin-top: 1.75rem;
+}
+
+/* ---------- Playlist Link Card (course home) ---------- */
+.playlist-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.25rem 0 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, transform 0.15s, border-color 0.2s;
+}
+
+.playlist-card:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.playlist-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 44px;
+  flex-shrink: 0;
+  background: #ff0000;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.playlist-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.playlist-title {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.playlist-url {
+  color: var(--text-light);
+  font-size: 0.78rem;
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist-arrow {
+  margin-left: auto;
+  font-size: 1.3rem;
+  color: var(--primary-light);
+  flex-shrink: 0;
+}
+
+.playlist-note {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  margin-top: 0.75rem;
 }
 
 /* ---------- Buttons ---------- */

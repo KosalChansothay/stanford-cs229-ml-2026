@@ -56,6 +56,47 @@ document.addEventListener('DOMContentLoaded', function () {
         markdownPage.querySelectorAll('.card').forEach(function (card) {
           card.remove();
         });
+
+        /* Syntax highlighting + copy buttons for fenced code blocks. */
+        if (window.hljs) {
+          markdownContent.querySelectorAll('pre code').forEach(function (block) {
+            if (window.hljs) hljs.highlightElement(block);
+          });
+        }
+        markdownContent.querySelectorAll('pre').forEach(function (pre) {
+          if (pre.querySelector('.code-copy-btn')) return;
+          var btn = document.createElement('button');
+          btn.className = 'code-copy-btn';
+          btn.type = 'button';
+          btn.setAttribute('aria-label', 'Copy code to clipboard');
+          btn.textContent = 'Copy';
+          btn.addEventListener('click', function () {
+            var code = pre.querySelector('code');
+            var text = code ? code.innerText : pre.textContent;
+            var done = function () {
+              btn.textContent = 'Copied!';
+              setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
+            } else {
+              fallbackCopy(text);
+              done();
+            }
+          });
+          function fallbackCopy(text) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) { /* noop */ }
+            document.body.removeChild(ta);
+          }
+          pre.appendChild(btn);
+        });
+
         if (window.MathJax) {
           var typeset = function () {
             return MathJax.typesetPromise ? MathJax.typesetPromise([markdownContent]) : null;

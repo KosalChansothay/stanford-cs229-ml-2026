@@ -62,6 +62,31 @@
     </div>
 
     <div class="card">
+      <h2>Watch the Lectures</h2>
+      <p>
+        Stanford has disabled embedding for the official lecture recordings, so the
+        videos can't be played inline here. Instead, follow the full playlist on
+        YouTube — all lectures in order, free of charge:
+      </p>
+      <a class="playlist-card" href="https://youtube.com/playlist?list=PLaqpC4kq8Gpw&si=BmXT3fedqzhC63ga"
+        target="_blank" rel="noopener" aria-label="Open the CS229 lecture playlist on YouTube">
+        <span class="playlist-thumb" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+        <span class="playlist-info">
+          <span class="playlist-title">Stanford CS229: Machine Learning — Full Lecture Playlist</span>
+          <span class="playlist-url">youtube.com/playlist?list=PLaqpC4kq8Gpw</span>
+        </span>
+        <span class="playlist-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <p class="playlist-note">
+        Tip: each lecture page's notes reference the corresponding video in this playlist.
+      </p>
+    </div>
+
+    <div class="card">
       <h2>Lecture Notes</h2>
       <ul class="note-list">
         <li class="note-card">
@@ -130,6 +155,35 @@
           <p class="note-excerpt">The formal EM algorithm via the ELBO and the Q-distribution trick, monotonic
             convergence guarantees, and PCA: maximizing projected variance solved by eigenvalue decomposition of the
             covariance matrix, with mean-centering and rescaling practices.</p>
+        </li>
+        <li class="note-card">
+          <h3><a href="lecture-11.html">Lecture 11: Diffusion Models</a></h3>
+          <p class="note-meta">Forward noising process, reverse denoising, ELBO, mean-matching loss, score-based SDEs
+          </p>
+          <p class="note-excerpt">Diffusion generative models: the closed-form forward marginals, the learned reverse
+            Markov chain trained via per-step Gaussian mean-matching, and the continuous-time SDE perspective where the
+            score function guides denoising.</p>
+        </li>
+        <li class="note-card">
+          <h3><a href="lecture-12.html">Lecture 12: Representation Learning &amp; Foundation Models</a></h3>
+          <p class="note-meta">Foundation models, linear probing, fine-tuning, LP-FT, LoRA</p>
+          <p class="note-excerpt">The pre-train-then-adapt paradigm: linear probing vs fine-tuning and the destructive
+            gradient problem solved by LP-FT, plus Low-Rank Adaptation for parameter-efficient, multi-tenant model
+            serving.</p>
+        </li>
+        <li class="note-card">
+          <h3><a href="lecture-13.html">Lecture 13: Contrastive Learning, Semantic Search &amp; RAG</a></h3>
+          <p class="note-meta">Embeddings, SimCLR, contrastive loss, vector search, RAG</p>
+          <p class="note-excerpt">Self-supervised embeddings via SimCLR's NT-Xent loss with a force-balance proof,
+            semantic vector search with approximate nearest neighbors, and Retrieval-Augmented Generation as a secure,
+            modular alternative to fine-tuning.</p>
+        </li>
+        <li class="note-card">
+          <h3><a href="lecture-14.html">Lecture 14: Transformers &amp; In-Context Learning</a></h3>
+          <p class="note-meta">Tokenization, BPE, self-attention, causal masking, FlashAttention</p>
+          <p class="note-excerpt">Autoregressive language modeling from BPE tokenization to next-token cross-entropy,
+            single- and multi-head causal self-attention, and the O(T²) bottleneck that FlashAttention solves with
+            hardware-aware SRAM tiling.</p>
         </li>
       </ul>
     </div>
