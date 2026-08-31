@@ -193,6 +193,7 @@
             hovermode: 'closest',
             responsive: true,
             legend: { x: 0.5, y: -0.14, xanchor: 'center', orientation: 'h', bgcolor: 'rgba(255,255,255,0.8)' },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
             margin: { t: 90, b: 90 }
         }, { displayModeBar: false });

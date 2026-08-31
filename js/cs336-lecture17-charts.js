@@ -48,14 +48,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>SigLIP Pairwise Binary Sigmoid Loss vs Dot Product Similarity (u^T v)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>SigLIP Pairwise Binary Sigmoid Loss vs Dot Product Similarity (u^T v)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Normalized Image-Text Dot Product (u^T v)', gridcolor: '#e5e5e5', range: [-1, 1] },
             yaxis: { title: 'Pairwise Loss Value', gridcolor: '#e5e5e5', range: [0, 15] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -92,15 +93,16 @@
         ];
 
         var layout = {
-            title: { text: '<b>AnyRes Vision Scaling: Ingested Visual Tokens vs Inference Throughput</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>AnyRes Vision Scaling: Ingested Visual Tokens vs Inference Throughput</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { gridcolor: '#e5e5e5' },
             yaxis: { title: 'Total Visual Tokens (576 per 336×336 Tile)', titlefont: { color: '#286b82' }, tickfont: { color: '#286b82' }, gridcolor: '#e5e5e5' },
             yaxis2: { title: 'Serving Throughput (%)', titlefont: { color: '#e69f00' }, tickfont: { color: '#e69f00' }, overlaying: 'y', side: 'right', range: [0, 110] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 60, l: 65, r: 65 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 75, r: 105 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

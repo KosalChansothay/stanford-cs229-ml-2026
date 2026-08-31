@@ -38,8 +38,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>Ring AllReduce: Data Sent per GPU vs Cluster Size P</b>', x: 0.5, font: { size: 15 } },
-            xaxis: { title: 'Number of GPUs (P)', gridcolor: '#e5e5e5', type: 'log' },
+            title: { text: '<b>Ring AllReduce: Data Sent per GPU vs Cluster Size P</b>', x: 0.5, y: 0.98, font: { size: 15 } },
+            xaxis: {
+                title: 'Number of GPUs (P)',
+                gridcolor: '#e5e5e5',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
+                ticktext: ['2', '4', '8', '16', '32', '64', '128', '256', '512', '1,024']
+            },
             yaxis: { title: 'Bytes Sent per GPU (Multiples of Message Size M)', gridcolor: '#e5e5e5' },
             annotations: [
                 {
@@ -55,9 +62,10 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -101,14 +109,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>Megatron Tensor Parallelism Speedup: NVLink vs PCIe Bottleneck</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Megatron Tensor Parallelism Speedup: NVLink vs PCIe Bottleneck</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Tensor Parallel Degree', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Throughput Speedup Factor', gridcolor: '#e5e5e5', range: [0, 8.5] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

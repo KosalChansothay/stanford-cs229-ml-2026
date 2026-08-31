@@ -36,15 +36,16 @@
         ];
 
         var layout = {
-            title: { text: '<b>MoE Expert Token Allocation: Collapse vs Balanced Routing</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>MoE Expert Token Allocation: Collapse vs Balanced Routing</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             barmode: 'group',
             xaxis: { title: 'Mixture-of-Experts (8 Experts)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Tokens Routed per Batch (Total = 1500)', gridcolor: '#e5e5e5' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -89,14 +90,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>Inference Memory Footprint: Standard Attention vs SSM / Linear Recurrence</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Inference Memory Footprint: Standard Attention vs SSM / Linear Recurrence</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Sequence Length (Tokens)', gridcolor: '#e5e5e5' },
-            yaxis: { title: 'State Memory Required (GB)', gridcolor: '#e5e5e5', type: 'log' },
+            yaxis: {
+                title: 'State Memory Required (GB)',
+                gridcolor: '#e5e5e5',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+                ticktext: ['1 MB', '10 MB', '100 MB', '1 GB', '10 GB', '100 GB', '1 TB']
+            },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

@@ -56,14 +56,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>KV Cache Footprint vs Context Length (70B Model, 1 Sequence)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>KV Cache Footprint vs Context Length (70B Model, 1 Sequence)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Context Window (Tokens)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'KV Cache Size (GB)', gridcolor: '#e5e5e5' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -102,13 +103,14 @@
         }];
 
         var layout = {
-            title: { text: '<b>RoPE Relative Attention Score vs Token Distance (m - n)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>RoPE Relative Attention Score vs Token Distance (m - n)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Relative Token Distance |m - n|', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Relative Inner Product Score', gridcolor: '#e5e5e5', range: [-0.3, 1.05] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

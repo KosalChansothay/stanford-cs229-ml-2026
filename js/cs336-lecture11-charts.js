@@ -39,14 +39,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>Hyperparameter Transfer: Optimal Learning Rate vs Model Width</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Hyperparameter Transfer: Optimal Learning Rate vs Model Width</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Hidden Dimension (Model Width d_model)', gridcolor: '#e5e5e5' },
-            yaxis: { title: 'Optimal Learning Rate (η*)', gridcolor: '#e5e5e5', type: 'log' },
+            yaxis: {
+                title: 'Optimal Learning Rate (η*)',
+                gridcolor: '#e5e5e5',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [0.0005, 0.001, 0.002, 0.004, 0.008],
+                ticktext: ['5e-4', '1e-3', '2e-3 (μP)', '4e-3', '8e-3']
+            },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -90,7 +98,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>Learning Rate Schedule: Warmup-Stable-Decay (WSD) vs Cosine Annealing</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Learning Rate Schedule: Warmup-Stable-Decay (WSD) vs Cosine Annealing</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Training Progress (% of Total Steps)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Relative Learning Rate Factor', gridcolor: '#e5e5e5', range: [0, 1.1] },
             annotations: [
@@ -107,9 +115,10 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

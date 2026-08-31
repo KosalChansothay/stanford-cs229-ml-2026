@@ -115,10 +115,11 @@
             height: 560,
             hovermode: 'closest',
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
             paper_bgcolor: 'white',
             annotations: rowLabels.annotations,
-            margin: { t: 80, b: 30 }
+            margin: { t: 90, b: 30 }
         }, { displayModeBar: false });
     }
 

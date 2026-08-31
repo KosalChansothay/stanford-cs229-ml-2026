@@ -36,14 +36,15 @@
         });
 
         var layout = {
-            title: { text: '<b>Locality-Sensitive Hashing (LSH): S-Curve Collision Probability P(s)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Locality-Sensitive Hashing (LSH): S-Curve Collision Probability P(s)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Jaccard Similarity s (Document Overlap)', gridcolor: '#e5e5e5', range: [0, 1] },
             yaxis: { title: 'Probability of Candidate Match P(s)', gridcolor: '#e5e5e5', range: [0, 1.05] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, traces, layout, { displayModeBar: false });
@@ -79,7 +80,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>Validation Loss Degradation under High-Epoch Repetition (Epoch Caps)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Validation Loss Degradation under High-Epoch Repetition (Epoch Caps)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Training Epoch Count over Fixed Corpus', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Downstream Validation Loss', gridcolor: '#e5e5e5' },
             annotations: [
@@ -96,9 +97,10 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

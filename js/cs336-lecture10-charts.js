@@ -43,15 +43,16 @@
         ];
 
         var layout = {
-            title: { text: '<b>LLM Serving: Memory-Bound Decoding Latency & Throughput vs Batch Size</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>LLM Serving: Memory-Bound Decoding Latency & Throughput vs Batch Size</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { gridcolor: '#e5e5e5' },
             yaxis: { title: 'Latency per Token Step (ms)', titlefont: { color: '#b84a39' }, tickfont: { color: '#b84a39' }, gridcolor: '#e5e5e5' },
             yaxis2: { title: 'Aggregate Throughput (Tokens / sec)', titlefont: { color: '#286b82' }, tickfont: { color: '#286b82' }, overlaying: 'y', side: 'right' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 65 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 75, r: 105 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -96,14 +97,15 @@
         });
 
         var layout = {
-            title: { text: '<b>Speculative Decoding Speedup vs Draft Token Acceptance Rate (α)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Speculative Decoding Speedup vs Draft Token Acceptance Rate (α)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Draft Model Acceptance Probability (α)', gridcolor: '#e5e5e5', range: [0, 1] },
             yaxis: { title: 'Inference Speedup Factor', gridcolor: '#e5e5e5', range: [0.8, 3.5] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, traces, layout, { displayModeBar: false });

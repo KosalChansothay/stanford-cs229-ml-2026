@@ -79,7 +79,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>LoRA Forward Pass: h_out = W₀h_in + AB·h_in</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>LoRA Forward Pass: h_out = W₀h_in + AB·h_in</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { visible: false, range: [0, 10] },
             yaxis: { visible: false, range: [0, 6.2] },
             height: 420,
@@ -87,7 +87,7 @@
             shapes: shapes.concat(arrows),
             annotations: annotations,
             plot_bgcolor: 'rgba(242,240,235,0.4)',
-            margin: { t: 55, l: 10, r: 10, b: 10 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false, staticPlot: false });
@@ -123,14 +123,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>Trainable Parameters: LoRA vs Full Fine-Tuning (d = 4096)</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>Trainable Parameters: LoRA vs Full Fine-Tuning (d = 4096)</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'LoRA rank r', gridcolor: 'lightgray' },
-            yaxis: { title: 'Trainable parameters (log scale)', type: 'log', gridcolor: 'lightgray' },
+            yaxis: {
+                title: 'Trainable Parameters',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [10000, 100000, 1000000, 16777216],
+                ticktext: ['10k', '100k', '1M', '16.8M (Full FT)'],
+                gridcolor: 'lightgray'
+            },
             height: 460,
             responsive: true,
             legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.75)', bordercolor: 'lightgray', borderwidth: 1, font: { size: 11 } },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 55 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

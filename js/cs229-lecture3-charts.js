@@ -138,10 +138,11 @@
             yaxis: { title: 'Feature x₂', range: [-3.5, 3.5], gridcolor: 'lightgray', scaleanchor: 'x', scaleratio: 1 },
             width: 750,
             height: 700,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
             responsive: true,
             legend: { y: 0.99, x: 0.01, yanchor: 'top', xanchor: 'left', bgcolor: 'rgba(255,255,255,0.8)' },
-            margin: { t: 80 }
+            margin: { t: 90 }
         }, { displayModeBar: false });
     }
 
@@ -240,7 +241,7 @@
         }];
 
         var layout = {
-            title: { text: "<b>Gradient Descent vs. Newton's Method</b>", x: 0.5, font: { size: 18 } },
+            title: { text: "<b>Gradient Descent vs. Newton's Method</b>", x: 0.5, y: 0.98, font: { size: 18 } },
             xaxis: { title: 'Parameter x₁', range: [-3, 3], gridcolor: 'lightgray' },
             yaxis: { title: 'Parameter x₂', range: [-2, 2], gridcolor: 'lightgray', scaleanchor: 'x', scaleratio: 1 },
             height: 700,
@@ -248,9 +249,10 @@
             hovermode: 'closest',
             responsive: true,
             legend: { x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.7)', bordercolor: 'lightgray', borderwidth: 1 },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
             annotations: pathArrows(gd, 'blue').concat(pathArrows(nm, 'green')),
-            margin: { t: 60 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

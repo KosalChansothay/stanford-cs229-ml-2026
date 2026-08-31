@@ -98,7 +98,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>SimCLR Force Balance in Embedding Space</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>SimCLR Force Balance in Embedding Space</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Embedding dim 1', range: [-4.5, 4.5], gridcolor: 'lightgray', zeroline: true, zerolinecolor: '#d9ddd8' },
             yaxis: { title: 'Embedding dim 2', range: [-4, 4], gridcolor: 'lightgray', scaleanchor: 'x', scaleratio: 1 },
             height: 560,
@@ -106,8 +106,9 @@
             responsive: true,
             legend: { x: 0.01, y: 0.01, xanchor: 'left', yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.8)', bordercolor: 'lightgray', borderwidth: 1, font: { size: 10 } },
             annotations: annotations,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 55 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, traces, layout, { displayModeBar: false });
@@ -143,14 +144,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>NT-Xent Loss vs Positive Similarity S₊ (τ = 0.5)</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>NT-Xent Loss vs Positive Similarity S₊ (τ = 0.5)</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Positive-pair cosine similarity S₊', gridcolor: 'lightgray' },
             yaxis: { title: 'Contrastive loss ℒ', gridcolor: 'lightgray' },
             height: 460,
             responsive: true,
             legend: { x: 0.65, y: 0.98, bgcolor: 'rgba(255,255,255,0.75)', bordercolor: 'lightgray', borderwidth: 1, font: { size: 11 } },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 55 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -220,7 +222,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>Retrieval-Augmented Generation (RAG) Pipeline</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>Retrieval-Augmented Generation (RAG) Pipeline</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { visible: false, range: [0, 12] },
             yaxis: { visible: false, range: [0, 6.4] },
             height: 440,
@@ -228,7 +230,7 @@
             shapes: shapes.concat(arrows),
             annotations: annotations,
             plot_bgcolor: 'rgba(242,240,235,0.4)',
-            margin: { t: 55, l: 10, r: 10, b: 10 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

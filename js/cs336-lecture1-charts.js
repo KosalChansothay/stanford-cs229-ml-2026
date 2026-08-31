@@ -69,13 +69,14 @@
         }];
 
         var layout = {
-            title: { text: '<b>BPE Training: Token Count Shrinks with Each Merge</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>BPE Training: Token Count Shrinks with Each Merge</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Merge operations M', gridcolor: 'lightgray' },
             yaxis: { title: 'Sequence length (tokens)', gridcolor: 'lightgray' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -106,13 +107,14 @@
         }];
 
         var layout = {
-            title: { text: '<b>Why Tokenize? Quadratic Attention Savings</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>Why Tokenize? Quadratic Attention Savings</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Compression ratio (bytes per token)', gridcolor: 'lightgray' },
             yaxis: { title: 'Relative attention compute', gridcolor: 'lightgray' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

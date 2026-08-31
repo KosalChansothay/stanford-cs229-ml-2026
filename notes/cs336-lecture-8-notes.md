@@ -118,7 +118,7 @@ Hiding communication latency is essential. FSDP utilizes dedicated CUDA streams 
 - **Stream 2 (Communication)**: Asynchronously runs the `All-Gather` collective to fetch the sharded weights for layer $L+1$ from remote nodes.
 If computation time $T\_{\text{compute}}(L) \ge T\_{\text{comm}}(L+1)$, communication overhead is completely hidden ("free" distributed training).
 
-## 5. Hyperparameter Heuristics fore Parallelism
+## 5. Hyperparameter Heuristics for Parallelism
 
 <div id="plotly-cs336-8-zero-memory" class="plotly-chart" aria-label="Interactive Plotly chart: ZeRO Stages Memory Footprint"></div>
 

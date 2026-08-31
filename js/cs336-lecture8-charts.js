@@ -48,15 +48,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>Memory per GPU (70B Model on 64 × H100 GPUs) across ZeRO Stages</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Memory per GPU (70B Model on 64 × H100 GPUs) across ZeRO Stages</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             barmode: 'stack',
             xaxis: { gridcolor: '#e5e5e5' },
-            yaxis: { title: 'Static Training Memory per GPU (GB)', gridcolor: '#e5e5e5', type: 'log' },
+            yaxis: {
+                title: 'Static Training Memory per GPU (GB)',
+                gridcolor: '#e5e5e5',
+                tickmode: 'array',
+                tickvals: [0, 80, 200, 400, 600, 800, 1000, 1120],
+                ticktext: ['0', '80 (H100)', '200', '400', '600', '800', '1,000', '1,120 GB']
+            },
             height: 460,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 60, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -89,14 +96,15 @@
         });
 
         var layout = {
-            title: { text: '<b>Pipeline Parallelism (1F1B) Bubble Overhead: F_bubble = (p - 1) / m</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Pipeline Parallelism (1F1B) Bubble Overhead: F_bubble = (p - 1) / m</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Number of Micro-batches (m)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Idle Bubble Overhead (%)', gridcolor: '#e5e5e5', range: [0, 80] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

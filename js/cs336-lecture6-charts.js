@@ -34,9 +34,23 @@
         ];
 
         var layout = {
-            title: { text: '<b>MatMul Arithmetic Intensity (N/3) & H100 Compute Boundary</b>', x: 0.5, font: { size: 15 } },
-            xaxis: { title: 'Matrix Dimension N (Square GEMM N × N)', gridcolor: '#e5e5e5', type: 'log' },
-            yaxis: { title: 'Arithmetic Intensity (FLOPs / Byte)', gridcolor: '#e5e5e5', type: 'log' },
+            title: { text: '<b>MatMul Arithmetic Intensity (N/3) & H100 Compute Boundary</b>', x: 0.5, y: 0.98, font: { size: 15 } },
+            xaxis: {
+                title: 'Matrix Dimension N (Square GEMM N × N)',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [64, 128, 256, 512, 1024, 2048, 4096, 8192],
+                ticktext: ['64', '128', '256', '512', '1,024', '2,048', '4,096', '8,192'],
+                gridcolor: '#e5e5e5'
+            },
+            yaxis: {
+                title: 'Arithmetic Intensity (FLOPs / Byte)',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [20, 50, 100, 200, 295.4, 500, 1000, 2000, 3000],
+                ticktext: ['20', '50', '100', '200', '295.4', '500', '1,000', '2,000', '3,000'],
+                gridcolor: '#e5e5e5'
+            },
             annotations: [
                 {
                     x: Math.log10(895),
@@ -51,9 +65,10 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -86,15 +101,16 @@
         ];
 
         var layout = {
-            title: { text: '<b>Triton Operator Fusion Execution Latency vs Sequence Length</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Triton Operator Fusion Execution Latency vs Sequence Length</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             barmode: 'group',
             xaxis: { title: 'Batch Sequence Length', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Kernel Execution Latency (μs)', gridcolor: '#e5e5e5' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

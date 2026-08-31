@@ -65,16 +65,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>NVIDIA H100 Roofline Analysis (Dense BF16)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>NVIDIA H100 Roofline Analysis (Dense BF16)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: {
                 title: 'Arithmetic Intensity (FLOPs / Byte transferred)',
                 type: 'log',
+                tickmode: 'array',
+                tickvals: [0.5, 1, 5, 10, 50, 100, 295.4, 500, 1000, 3000],
+                ticktext: ['0.5', '1', '5', '10', '50', '100', '295.4', '500', '1,000', '3,000'],
                 gridcolor: '#e5e5e5',
-                range: [-0.5, 3.8]
+                range: [-0.4, 3.7]
             },
             yaxis: {
                 title: 'Attainable Performance (TFLOPs / sec)',
                 type: 'log',
+                tickmode: 'array',
+                tickvals: [1, 5, 10, 50, 100, 500, 989.5],
+                ticktext: ['1', '5', '10', '50', '100', '500', '989.5 (Peak)'],
                 gridcolor: '#e5e5e5',
                 range: [0, 3.2]
             },
@@ -102,8 +108,9 @@
             ],
             height: 460,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 60, l: 65, r: 35 },
+            margin: { t: 90, b: 55, l: 70, r: 50 },
             showlegend: false
         };
 
@@ -134,14 +141,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>Training Memory Footprint: 7B Model (Standard vs Activation Checkpointing)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Training Memory Footprint: 7B Model (Standard vs Activation Checkpointing)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             barmode: 'stack',
             xaxis: { title: 'Execution Configuration', gridcolor: '#e5e5e5' },
             yaxis: { title: 'GPU Memory Required (GB)', gridcolor: '#e5e5e5' },
             height: 460,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 70, l: 65, r: 35 },
+            margin: { t: 90, b: 55, l: 70, r: 50 },
             legend: { orientation: 'h', y: -0.25, x: 0.5, xanchor: 'center' }
         };
 

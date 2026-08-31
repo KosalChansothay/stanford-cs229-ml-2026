@@ -91,9 +91,10 @@
             yaxis: { range: [0, 1], visible: false },
             width: 820,
             height: 340,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
             paper_bgcolor: 'white',
-            margin: { t: 80, b: 70 },
+            margin: { t: 90, b: 70 },
             sliders: [{
                 active: 6,
                 currentvalue: { prefix: 'input x = ', font: { size: 13 } },
@@ -188,8 +189,9 @@
             hovermode: 'closest',
             responsive: true,
             legend: { x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.85)', bordercolor: 'lightgray', borderwidth: 1 },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 80 }
+            margin: { t: 90 }
         }, { displayModeBar: false });
     }
 

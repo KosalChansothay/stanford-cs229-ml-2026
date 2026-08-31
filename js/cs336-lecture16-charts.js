@@ -38,7 +38,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>GRPO Advantage Normalization (A_i = (r_i - μ) / σ) across G=8 Rollouts</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>GRPO Advantage Normalization (A_i = (r_i - μ) / σ) across G=8 Rollouts</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Sampled Completion Rollouts (Group Size G = 8)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Normalized Advantage (A_i)', gridcolor: '#e5e5e5', range: [-1.5, 1.5] },
             annotations: [
@@ -65,8 +65,9 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -107,14 +108,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>Test-Time Compute Scaling: Math Benchmark Accuracy vs Sampled Rollouts N</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Test-Time Compute Scaling: Math Benchmark Accuracy vs Sampled Rollouts N</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Test-Time Search Budget (Number of Candidate Rollouts N)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Benchmark Accuracy (%)', gridcolor: '#e5e5e5', range: [20, 100] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

@@ -28,13 +28,21 @@
         }];
 
         var layout = {
-            title: { text: '<b>Pre-training Data Filtering Funnel: Volume Retention Waterfall</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Pre-training Data Filtering Funnel: Volume Retention Waterfall</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { gridcolor: '#e5e5e5' },
-            yaxis: { title: 'Corpus Volume (Terabytes, Log Scale)', gridcolor: '#e5e5e5', type: 'log' },
+            yaxis: {
+                title: 'Corpus Volume (Terabytes, Log Scale)',
+                gridcolor: '#e5e5e5',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [10, 30, 100, 300, 1000, 4500],
+                ticktext: ['10 TB', '30 TB', '100 TB', '300 TB', '1 PB', '4.5 PB']
+            },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 70, l: 65, r: 35 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -61,11 +69,11 @@
         }];
 
         var layout = {
-            title: { text: '<b>Representative Pre-training Domain Token Mixture (15T Tokens)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Representative Pre-training Domain Token Mixture (15T Tokens)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             height: 460,
             responsive: true,
             showlegend: false,
-            margin: { t: 70, b: 40, l: 40, r: 40 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

@@ -39,7 +39,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>Disaggregated Serving: Cluster Generation Throughput vs Concurrency</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Disaggregated Serving: Cluster Generation Throughput vs Concurrency</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Concurrent User Request Streams', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Total Tokens Generated / sec', gridcolor: '#e5e5e5' },
             annotations: [
@@ -56,9 +56,10 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -93,15 +94,16 @@
         ];
 
         var layout = {
-            title: { text: '<b>Mega-Kernel Layer Fusion vs Standard Multi-Kernel Execution Time Breakdown</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Mega-Kernel Layer Fusion vs Standard Multi-Kernel Execution Time Breakdown</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             barmode: 'group',
             xaxis: { gridcolor: '#e5e5e5' },
             yaxis: { title: 'Execution Latency (μs)', gridcolor: '#e5e5e5' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 70, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

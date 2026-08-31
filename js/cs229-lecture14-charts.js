@@ -92,13 +92,14 @@
         }];
 
         var layout = {
-            title: { text: '<b>Causal Attention Matrix P = softmax(QKᵀ/√d_h + M)</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>Causal Attention Matrix P = softmax(QKᵀ/√d_h + M)</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Keys (past & present only)', tickfont: { size: 8 } },
             yaxis: { title: 'Queries', tickfont: { size: 8 }, autorange: 'reversed' },
             height: 560,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 55 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -133,14 +134,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>Attention Memory Bottleneck: O(T²) vs O(T) HBM Traffic</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>Attention Memory Bottleneck: O(T²) vs O(T) HBM Traffic</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Sequence length T', gridcolor: 'lightgray' },
-            yaxis: { title: 'HBM memory traffic (log scale)', type: 'log', gridcolor: 'lightgray' },
+            yaxis: {
+                title: 'HBM Memory Traffic (Data Units, Log Scale)',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [100000, 1000000, 10000000, 100000000, 1000000000, 10000000000],
+                ticktext: ['100k', '1M', '10M', '100M', '1B', '10B'],
+                gridcolor: 'lightgray'
+            },
             height: 460,
             responsive: true,
             legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.75)', bordercolor: 'lightgray', borderwidth: 1, font: { size: 11 } },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 55 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

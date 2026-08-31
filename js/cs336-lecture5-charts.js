@@ -49,14 +49,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>HBM Memory Traffic: FlashAttention (SRAM Tiling) vs Standard Attention</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>HBM Memory Traffic: FlashAttention (SRAM Tiling) vs Standard Attention</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Sequence Length N (Tokens)', gridcolor: '#e5e5e5' },
-            yaxis: { title: 'Total HBM Data Transferred (GB)', gridcolor: '#e5e5e5', type: 'log' },
+            yaxis: {
+                title: 'Total HBM Data Transferred (GB)',
+                gridcolor: '#e5e5e5',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [0.01, 0.1, 1, 10, 100, 1000, 10000],
+                ticktext: ['10 MB', '100 MB', '1 GB', '10 GB', '100 GB', '1 TB', '10 TB']
+            },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -91,16 +99,17 @@
         ];
 
         var layout = {
-            title: { text: '<b>Quantization Scaling: Peak Tensor Core Compute vs Model Memory Footprint</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Quantization Scaling: Peak Tensor Core Compute vs Model Memory Footprint</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { gridcolor: '#e5e5e5' },
             yaxis: { title: 'Peak Compute (TFLOPs/s)', titlefont: { color: '#286b82' }, tickfont: { color: '#286b82' }, gridcolor: '#e5e5e5' },
             yaxis2: { title: '70B Model Weights (GB)', titlefont: { color: '#e69f00' }, tickfont: { color: '#e69f00' }, overlaying: 'y', side: 'right' },
             barmode: 'group',
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 65 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 75, r: 105 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

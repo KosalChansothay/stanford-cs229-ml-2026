@@ -93,8 +93,9 @@
             hovermode: 'closest',
             responsive: true,
             legend: { x: 0.99, y: 0.99, xanchor: 'right', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.85)', bordercolor: 'lightgray', borderwidth: 1 },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 80 }
+            margin: { t: 90 }
         }, { displayModeBar: false });
     }
 
@@ -175,8 +176,9 @@
             hovermode: 'closest',
             responsive: true,
             legend: { x: 0.99, y: 0.99, xanchor: 'right', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.85)', bordercolor: 'lightgray', borderwidth: 1 },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 80 },
+            margin: { t: 90 },
             sliders: [{
                 active: 2,
                 currentvalue: { prefix: 'dataset size: ', font: { size: 13 } },

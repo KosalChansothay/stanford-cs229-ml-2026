@@ -28,7 +28,7 @@
         }];
 
         var layout = {
-            title: { text: '<b>Chatbot Arena: Bradley-Terry Expected Win Rate vs Elo Difference (R_A - R_B)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Chatbot Arena: Bradley-Terry Expected Win Rate vs Elo Difference (R_A - R_B)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Elo Rating Advantage (R_A - R_B)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Probability of Model A Winning', gridcolor: '#e5e5e5', range: [0, 1] },
             annotations: [
@@ -55,8 +55,9 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -90,15 +91,16 @@
         ];
 
         var layout = {
-            title: { text: '<b>LLM-as-a-Judge Length Bias: Win Rate Distortion on Equivalent Answers</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>LLM-as-a-Judge Length Bias: Win Rate Distortion on Equivalent Answers</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             barmode: 'group',
             xaxis: { title: 'Response Length Relative to Baseline', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Evaluated Win Rate (%)', gridcolor: '#e5e5e5', range: [0, 100] },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

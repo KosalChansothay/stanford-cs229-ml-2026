@@ -113,15 +113,16 @@
         var data = pathTraces.concat([meanTrace, noisyTrace, postTrace]);
 
         var layout = {
-            title: { text: '<b>Forward Noising vs. Reverse Posterior Mean</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>Forward Noising vs. Reverse Posterior Mean</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Signal coordinate (flattened image axis)', gridcolor: 'lightgray' },
             yaxis: { title: 'Value', gridcolor: 'lightgray' },
             height: 520,
             hovermode: 'closest',
             responsive: true,
             legend: { x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.75)', bordercolor: 'lightgray', borderwidth: 1, font: { size: 10 } },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 55 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -169,14 +170,15 @@
         ];
 
         var layout = {
-            title: { text: '<b>Why Scale by √(1−β)? Variance Stability</b>', x: 0.5, font: { size: 16 } },
+            title: { text: '<b>Why Scale by √(1−β)? Variance Stability</b>', x: 0.5, y: 0.98, font: { size: 16 } },
             xaxis: { title: 'Timestep t', gridcolor: 'lightgray' },
             yaxis: { title: 'Variance of x_t', gridcolor: 'lightgray' },
             height: 460,
             responsive: true,
             legend: { x: 0.35, y: 0.98, bgcolor: 'rgba(255,255,255,0.75)', bordercolor: 'lightgray', borderwidth: 1, font: { size: 11 } },
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 55 }
+            margin: { t: 90, b: 55, l: 70, r: 50 }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

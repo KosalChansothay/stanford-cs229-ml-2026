@@ -46,7 +46,7 @@
         ];
 
         var layout = {
-            title: { text: '<b>Direct Preference Optimization (DPO): Loss & Gradient Weighting</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Direct Preference Optimization (DPO): Loss & Gradient Weighting</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Implicit Reward Margin: r_θ(y_w) - r_θ(y_l)', gridcolor: '#e5e5e5' },
             yaxis: { title: 'Loss / Gradient Magnitude', gridcolor: '#e5e5e5' },
             annotations: [
@@ -73,9 +73,10 @@
             ],
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
@@ -108,15 +109,16 @@
         ];
 
         var layout = {
-            title: { text: '<b>SFT as Mode Extraction: Probability Distribution Shift on User Prompts</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>SFT as Mode Extraction: Probability Distribution Shift on User Prompts</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             barmode: 'group',
             xaxis: { gridcolor: '#e5e5e5' },
             yaxis: { title: 'Probability of Output Style (%)', gridcolor: '#e5e5e5' },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 60, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });

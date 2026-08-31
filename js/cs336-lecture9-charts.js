@@ -64,14 +64,22 @@
         });
 
         var layout = {
-            title: { text: '<b>Chinchilla IsoFLOP Curves & Optimal Model Size Frontier</b>', x: 0.5, font: { size: 15 } },
-            xaxis: { title: 'Non-Embedding Parameters (N)', gridcolor: '#e5e5e5', type: 'log' },
+            title: { text: '<b>Chinchilla IsoFLOP Curves & Optimal Model Size Frontier</b>', x: 0.5, y: 0.98, font: { size: 15 } },
+            xaxis: {
+                title: 'Non-Embedding Parameters (N)',
+                gridcolor: '#e5e5e5',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [1e7, 1e8, 1e9, 1e10],
+                ticktext: ['10M', '100M', '1B', '10B']
+            },
             yaxis: { title: 'Validation Loss L(N, D)', gridcolor: '#e5e5e5' },
             height: 460,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.14, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, traces, layout, { displayModeBar: false });
@@ -109,14 +117,22 @@
         ];
 
         var layout = {
-            title: { text: '<b>Parameter Allocation: Chinchilla (Balanced) vs Kaplan (Parameter-Heavy)</b>', x: 0.5, font: { size: 15 } },
+            title: { text: '<b>Parameter Allocation: Chinchilla (Balanced) vs Kaplan (Parameter-Heavy)</b>', x: 0.5, y: 0.98, font: { size: 15 } },
             xaxis: { title: 'Training Compute Budget (FLOPs)', gridcolor: '#e5e5e5' },
-            yaxis: { title: 'Optimal Parameter Count (Billions)', gridcolor: '#e5e5e5', type: 'log' },
+            yaxis: {
+                title: 'Optimal Parameter Count (Billions)',
+                gridcolor: '#e5e5e5',
+                type: 'log',
+                tickmode: 'array',
+                tickvals: [0.1, 1, 10, 100, 1000],
+                ticktext: ['0.1B', '1B', '10B', '100B', '1,000B']
+            },
             height: 450,
             responsive: true,
+            paper_bgcolor: 'white',
             plot_bgcolor: 'white',
-            margin: { t: 70, b: 55, l: 65, r: 35 },
-            legend: { orientation: 'h', y: 1.12, x: 0.5, xanchor: 'center' }
+            margin: { t: 90, b: 55, l: 70, r: 50 },
+            legend: { orientation: 'h', y: 1.16, x: 0.5, xanchor: 'center' }
         };
 
         Plotly.newPlot(el, data, layout, { displayModeBar: false });
