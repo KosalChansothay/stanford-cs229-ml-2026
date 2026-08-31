@@ -10,41 +10,41 @@ Read this file before changing the project. Prefer the existing patterns and mak
 
 ### CS229: Foundations and Paradigms of Machine Learning
 
-- `notes/cs229-lecture-1-study-notes.md` -> `courses/cs229/lecture-1.html`
-- `notes/cs229-lecture-2-study-notes.md` -> `courses/cs229/lecture-2.html`
-- `notes/cs229-lecture-3-study-notes.md` -> `courses/cs229/lecture-3.html`
-- `notes/cs229-lecture-4-study-notes.md` -> `courses/cs229/lecture-4.html`
-- `notes/cs229-lecture-5-study-notes.md` -> `courses/cs229/lecture-5.html`
-- `notes/cs229-lecture-6-study-notes.md` -> `courses/cs229/lecture-6.html`
-- `notes/cs229-lecture-7-study-notes.md` -> `courses/cs229/lecture-7.html`
-- `notes/cs229-lecture-8-study-notes.md` -> `courses/cs229/lecture-8.html`
-- `notes/cs229-lecture-9-study-notes.md` -> `courses/cs229/lecture-9.html`
-- `notes/cs229-lecture-10-study-notes.md` -> `courses/cs229/lecture-10.html`
-- `notes/cs229-lecture-11-study-notes.md` -> `courses/cs229/lecture-11.html`
-- `notes/cs229-lecture-12-study-notes.md` -> `courses/cs229/lecture-12.html`
-- `notes/cs229-lecture-13-study-notes.md` -> `courses/cs229/lecture-13.html`
-- `notes/cs229-lecture-14-study-notes.md` -> `courses/cs229/lecture-14.html`
+- `notes/cs229/cs229-lecture-1-study-notes.md` -> `courses/cs229/lecture-1.html`
+- `notes/cs229/cs229-lecture-2-study-notes.md` -> `courses/cs229/lecture-2.html`
+- `notes/cs229/cs229-lecture-3-study-notes.md` -> `courses/cs229/lecture-3.html`
+- `notes/cs229/cs229-lecture-4-study-notes.md` -> `courses/cs229/lecture-4.html`
+- `notes/cs229/cs229-lecture-5-study-notes.md` -> `courses/cs229/lecture-5.html`
+- `notes/cs229/cs229-lecture-6-study-notes.md` -> `courses/cs229/lecture-6.html`
+- `notes/cs229/cs229-lecture-7-study-notes.md` -> `courses/cs229/lecture-7.html`
+- `notes/cs229/cs229-lecture-8-study-notes.md` -> `courses/cs229/lecture-8.html`
+- `notes/cs229/cs229-lecture-9-study-notes.md` -> `courses/cs229/lecture-9.html`
+- `notes/cs229/cs229-lecture-10-study-notes.md` -> `courses/cs229/lecture-10.html`
+- `notes/cs229/cs229-lecture-11-study-notes.md` -> `courses/cs229/lecture-11.html`
+- `notes/cs229/cs229-lecture-12-study-notes.md` -> `courses/cs229/lecture-12.html`
+- `notes/cs229/cs229-lecture-13-study-notes.md` -> `courses/cs229/lecture-13.html`
+- `notes/cs229/cs229-lecture-14-study-notes.md` -> `courses/cs229/lecture-14.html`
 
 ### CS336: Language Modeling from Scratch
 
-- `notes/cs336-lecture-1-study-notes.md` -> `courses/cs336/lecture-1.html`
-- `notes/cs336-lecture-2-notes.md` -> `courses/cs336/lecture-2.html`
-- `notes/cs336-lecture-3-notes.md` -> `courses/cs336/lecture-3.html`
-- `notes/cs336-lecture-4-notes.md` -> `courses/cs336/lecture-4.html`
-- `notes/cs336-lecture-5-notes.md` -> `courses/cs336/lecture-5.html`
-- `notes/cs336-lecture-6-notes.md` -> `courses/cs336/lecture-6.html`
-- `notes/cs336-lecture-7-notes.md` -> `courses/cs336/lecture-7.html`
-- `notes/cs336-lecture-8-notes.md` -> `courses/cs336/lecture-8.html`
-- `notes/cs336-lecture-9-notes.md` -> `courses/cs336/lecture-9.html`
-- `notes/cs336-lecture-10-notes.md` -> `courses/cs336/lecture-10.html`
-- `notes/cs336-lecture-11-notes.md` -> `courses/cs336/lecture-11.html`
-- `notes/cs336-lecture-12-notes.md` -> `courses/cs336/lecture-12.html`
-- `notes/cs336-lecture-13-notes.md` -> `courses/cs336/lecture-13.html`
-- `notes/cs336-lecture-14-notes.md` -> `courses/cs336/lecture-14.html`
-- `notes/cs336-lecture-15-notes.md` -> `courses/cs336/lecture-15.html`
-- `notes/cs336-lecture-16-notes.md` -> `courses/cs336/lecture-16.html`
-- `notes/cs336-lecture-17-notes.md` -> `courses/cs336/lecture-17.html`
-- `notes/cs336-lecture-guest-notes.md` -> `courses/cs336/lecture-guest.html`
+- `notes/cs336/cs336-lecture-1-study-notes.md` -> `courses/cs336/lecture-1.html`
+- `notes/cs336/cs336-lecture-2-notes.md` -> `courses/cs336/lecture-2.html`
+- `notes/cs336/cs336-lecture-3-notes.md` -> `courses/cs336/lecture-3.html`
+- `notes/cs336/cs336-lecture-4-notes.md` -> `courses/cs336/lecture-4.html`
+- `notes/cs336/cs336-lecture-5-notes.md` -> `courses/cs336/lecture-5.html`
+- `notes/cs336/cs336-lecture-6-notes.md` -> `courses/cs336/lecture-6.html`
+- `notes/cs336/cs336-lecture-7-notes.md` -> `courses/cs336/lecture-7.html`
+- `notes/cs336/cs336-lecture-8-notes.md` -> `courses/cs336/lecture-8.html`
+- `notes/cs336/cs336-lecture-9-notes.md` -> `courses/cs336/lecture-9.html`
+- `notes/cs336/cs336-lecture-10-notes.md` -> `courses/cs336/lecture-10.html`
+- `notes/cs336/cs336-lecture-11-notes.md` -> `courses/cs336/lecture-11.html`
+- `notes/cs336/cs336-lecture-12-notes.md` -> `courses/cs336/lecture-12.html`
+- `notes/cs336/cs336-lecture-13-notes.md` -> `courses/cs336/lecture-13.html`
+- `notes/cs336/cs336-lecture-14-notes.md` -> `courses/cs336/lecture-14.html`
+- `notes/cs336/cs336-lecture-15-notes.md` -> `courses/cs336/lecture-15.html`
+- `notes/cs336/cs336-lecture-16-notes.md` -> `courses/cs336/lecture-16.html`
+- `notes/cs336/cs336-lecture-17-notes.md` -> `courses/cs336/lecture-17.html`
+- `notes/cs336/cs336-lecture-guest-notes.md` -> `courses/cs336/lecture-guest.html`
 
 Lecture Markdown files must NOT contain bracketed numeric citation references such as `[358, 429]` or `[364]`.
 They are leftover transcript timestamps and are stripped before publishing. When adding new lecture notes,
@@ -65,7 +65,7 @@ Markdown supports:
 - Inline math: `$x$`
 - Display math: `$$ ... $$`
 - Horizontal rules: `---`
-- Plotly chart containers: `<div id="plotly-..." class="plotly-chart"></div>` rendered by page-specific scripts in `js/` (see `js/cs229-lecture3-charts.js` for the pattern)
+- Plotly chart containers: `<div id="plotly-..." class="plotly-chart"></div>` rendered by page-specific scripts in `js/` (see `js/cs229/cs229-lecture3-charts.js` for the pattern)
 
 Keep the Markdown readable and structured like academic notes: summary, definitions, derivations, algorithms or workflows, examples, reflection questions, and references.
 
@@ -89,8 +89,10 @@ Shared assets:
 
 - `css/style.css`: all layout, typography, responsive, academic document, component styles, dark mode tokens (Warm Academic Charcoal), code syntax highlighting, and `.plotly-chart` containers
 - `js/script.js`: active navigation, dark mode match/toggle with localStorage, mobile menu, lecture filtering, Markdown loading, code copy buttons, MathJax re-typesetting, and the `markdown:rendered` event
-- `js/cs229-lecture1-charts.js` through `js/cs229-lecture14-charts.js`: Plotly charts for CS229 lectures
-- `js/cs336-lecture1-charts.js` through `js/cs336-lecture17-charts.js` & `js/cs336-lectureguest-charts.js`: Plotly charts for CS336 lectures (Roofline, GQA, MoE routing, FlashAttention IO, Triton kernels, Ring AllReduce, ZeRO memory, Scaling laws, Speculative decoding, muP transfer, Elo curves, Data waterfalls, LSH S-curves, DPO margins, GRPO rollouts, SigLIP losses, Disaggregated serving, and Mega-kernels)
+- `js/cs229/`: Plotly chart scripts for CS229 (`cs229-lecture1-charts.js` through `cs229-lecture14-charts.js`)
+- `js/cs336/`: Plotly chart scripts for CS336 (`cs336-lecture1-charts.js` through `cs336-lecture17-charts.js` & `cs336-lectureguest-charts.js`)
+- `notes/cs229/`: Source Markdown notes for CS229
+- `notes/cs336/`: Source Markdown notes for CS336
 - `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
 
 ## Dark Mode System (Warm Academic Charcoal)
