@@ -87,11 +87,24 @@ Course pages:
 
 Shared assets:
 
-- `css/style.css`: all layout, typography, responsive, academic document, and component styles (including `.plotly-chart` containers)
-- `js/script.js`: active navigation, mobile menu, lecture filtering, Markdown loading, MathJax re-typesetting, and the `markdown:rendered` event
+- `css/style.css`: all layout, typography, responsive, academic document, component styles, dark mode tokens (Warm Academic Charcoal), code syntax highlighting, and `.plotly-chart` containers
+- `js/script.js`: active navigation, dark mode match/toggle with localStorage, mobile menu, lecture filtering, Markdown loading, code copy buttons, MathJax re-typesetting, and the `markdown:rendered` event
 - `js/cs229-lecture1-charts.js` through `js/cs229-lecture14-charts.js`: Plotly charts for CS229 lectures
 - `js/cs336-lecture1-charts.js` through `js/cs336-lecture17-charts.js` & `js/cs336-lectureguest-charts.js`: Plotly charts for CS336 lectures (Roofline, GQA, MoE routing, FlashAttention IO, Triton kernels, Ring AllReduce, ZeRO memory, Scaling laws, Speculative decoding, muP transfer, Elo curves, Data waterfalls, LSH S-curves, DPO margins, GRPO rollouts, SigLIP losses, Disaggregated serving, and Mega-kernels)
 - `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
+
+## Dark Mode System (Warm Academic Charcoal)
+
+The site includes a comprehensive "Match System / Toggle" dark mode inspired by GitHub Academic Pages:
+
+- **Theme Palette**:
+  - Canvas / Background: `#121517` with subtle top gradient.
+  - Cards & Surfaces: `#1a1f23` elevated with subtle `#282e33` borders.
+  - Typography: `#f0f3f6` (headings), `#e6edf3` (subheadings), `#cbd5dc` (body text), `#8e9aa2` (muted text), `#6cb6ff` (primary accents).
+- **Match System & Zero-FOUC**: An immediate anti-FOUC script in `js/script.js` checks `localStorage` and system `prefers-color-scheme: dark` before render.
+- **Manual Toggle**: Sun/moon toggle button (`.theme-toggle-btn`) in the sticky top navigation.
+- **Instant Transitions**: Theme changes and page navigation occur instantly (`--theme-transition: none;`) to eliminate cross-page color morphing or lag.
+- **Syntax Highlighting**: High-contrast One Dark / Tokyo Night token coloring (`#e6edf3` variables/identifiers, `#ff7b72` keywords, `#79c0ff` functions, `#ffa657` classes, `#f0883e` self, `#7ee787` strings, `#8b949e` comments).
 
 ## Interactive Charts Policy (Plotly Placeholders)
 
@@ -109,23 +122,24 @@ static descriptions waste the opportunity to build intuition. The established wo
    <div id="plotly-<lecture>-<name>" class="plotly-chart" aria-label="Interactive Plotly chart: <description>"></div>
    ```
    Optionally follow it with a one-line `<p><em>Figure: ...</em></p>` caption.
-2. Create (or extend) `js/lectureN-charts.js` following the pattern in `js/cs229-lecture3-charts.js`:
+2. Create (or extend) `js/cs<course>-lectureN-charts.js` following the pattern in `js/cs229-lecture3-charts.js` and `js/cs336-lecture6-charts.js`:
    - Wrap everything in an IIFE; use a seeded PRNG (`mulberry32`) so synthetic data is stable across reloads.
    - Compute fits/trajectories mathematically (closed-form least squares, gradient steps) rather than hard-coding decorative curves.
-   - Export `window.renderLectureNCharts` that draws each chart by container id.
+   - **Chart Background**: Charts use a clean white card background (`#ffffff` canvas and SVG `.bg`) for consistent, high-contrast visualization in both light and dark modes.
+   - **Log-Scale Axes**: When `type: 'log'` is used, always provide explicit `tickmode: 'array'`, `tickvals`, and `ticktext` (e.g. `[64, 128, 256, 512, 1024, ...]` or `['10 MB', '100 MB', '1 GB', ...]`) to prevent Plotly's default sub-decade single-digit mantissa artifacts (`2, 3, 4, 5...`).
+   - **Breathing Room & Margins**:
+     - Dual-axis charts (`yaxis2`): `margin: { t: 90, b: 55, l: 75, r: 105 }` to ensure right-axis titles and tick labels have ample clearance.
+     - Single-axis charts: `margin: { t: 90, b: 55, l: 70, r: 50 }`.
+     - Title position: `y: 0.98`, horizontal legend subtitle: `y: 1.16`.
+   - Export `window.renderCs<course>LectureNCharts` that draws each chart by container id.
    - Listen for the `markdown:rendered` event (charts live inside the fetched markdown), with a `readyState` guard fallback.
 3. Load Plotly and the chart script in the lecture HTML after `js/script.js`:
    ```html
    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
-   <script src="../../js/lectureN-charts.js"></script>
+   <script src="../../js/cs336-lectureN-charts.js"></script>
    ```
 4. Validate in the browser: container exists, `.main-svg` is present (chart actually rendered), hover works,
    and the layout stays responsive.
-
-Existing reference implementations: `js/cs229-lecture1-charts.js` (regression fits + decision boundary),
-`js/cs229-lecture2-charts.js` (optimization trajectories with direction arrows), `js/cs229-lecture3-charts.js`
-(probability contour + boundary, GD vs Newton paths), `js/cs229-lecture9-charts.js` and `js/cs229-lecture10-charts.js`
-(slider-driven step animations).
 
 ## Plotly Slider Pitfalls (Learned in Lectures 9-10)
 
@@ -147,16 +161,24 @@ Slider-driven charts have two failure modes that cost debugging time — avoid t
 3. **marked.js + math escaping**: strip citations AND escape `_{` → `\_{` in the same pass. Two unescaped
    `_{...}` in one paragraph pair as `<em>` and break adjacent `$$` blocks.
 
-## Navigation Layout (Top Bar, Not Sidebar)
+## Navigation Layout & Academic Underline
 
 The navigation is a **sticky top navbar** (`.sidebar` class kept for historical reasons), not a left sidebar:
 
-- `position: sticky; top: 0` horizontal flex bar: logo image + site name on the left, nav links right-aligned, GitHub icon at the end.
+- `position: sticky; top: 0` horizontal flex bar: logo image + site name on the left, nav links right-aligned, theme toggle button, and GitHub icon at the end.
+- **Academic Underline**: Active navigation links use pure serif typography (`font-weight: 600`) with a crisp 2px bottom accent rule (`border-bottom: 2px solid var(--primary); background: transparent; box-shadow: none;`), avoiding artificial 3D button boxes.
 - The avatar is `<img class="sidebar-avatar" src=".../img/profile.jpg">` (44px circle, `object-fit: cover`), NOT an emoji div.
 - `.sidebar-bio` and `.sidebar-footer` are hidden via CSS.
 - `body` must NOT have `display: flex` — that stretches the navbar to full page height.
 - `.main` is centered with `max-width: var(--max-width)` and no left margin.
 - On `<= 768px` the nav collapses into a "Menu" dropdown toggle (created by `js/script.js`).
+
+## Lecture Pagination (Previous / Next Navigation)
+
+Every lecture HTML page contains standardized `.lecture-pagination` controls:
+- Provides dual directional navigation buttons with topic subtitles and arrows (`&larr;` / `&rarr;`).
+- First lectures route back to course overviews (`courses/cs336/index.html` or `courses/cs229/index.html`), intermediate lectures navigate sequentially, and final lectures link back to syllabus indices.
+- Fully responsive, collapsing into stacked cards on mobile devices.
 
 ## SEO / Meta Tags Contract
 
