@@ -125,7 +125,6 @@ static descriptions waste the opportunity to build intuition. The established wo
 2. Create (or extend) `js/cs<course>-lectureN-charts.js` following the pattern in `js/cs229-lecture3-charts.js` and `js/cs336-lecture6-charts.js`:
    - Wrap everything in an IIFE; use a seeded PRNG (`mulberry32`) so synthetic data is stable across reloads.
    - Compute fits/trajectories mathematically (closed-form least squares, gradient steps) rather than hard-coding decorative curves.
-   - **Chart Background**: Charts use a clean white card background (`#ffffff` canvas and SVG `.bg`) for consistent, high-contrast visualization in both light and dark modes.
    - **Log-Scale Axes**: When `type: 'log'` is used, always provide explicit `tickmode: 'array'`, `tickvals`, and `ticktext` (e.g. `[64, 128, 256, 512, 1024, ...]` or `['10 MB', '100 MB', '1 GB', ...]`) to prevent Plotly's default sub-decade single-digit mantissa artifacts (`2, 3, 4, 5...`).
    - **Breathing Room & Margins**:
      - Dual-axis charts (`yaxis2`): `margin: { t: 90, b: 55, l: 75, r: 105 }` to ensure right-axis titles and tick labels have ample clearance.
