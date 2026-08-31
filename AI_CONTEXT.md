@@ -46,6 +46,27 @@ Read this file before changing the project. Prefer the existing patterns and mak
 - `notes/cs336/cs336-lecture-17-notes.md` -> `courses/cs336/lecture-17.html`
 - `notes/cs336/cs336-lecture-guest-notes.md` -> `courses/cs336/lecture-guest.html`
 
+### CS231N: Deep Learning for Computer Vision
+
+- `notes/cs231n/cs231n-lecture-1-notes.md` -> `courses/cs231n/lecture-1.html`
+- `notes/cs231n/cs231n-lecture-2-notes.md` -> `courses/cs231n/lecture-2.html`
+- `notes/cs231n/cs231n-lecture-3-notes.md` -> `courses/cs231n/lecture-3.html`
+- `notes/cs231n/cs231n-lecture-4-notes.md` -> `courses/cs231n/lecture-4.html`
+- `notes/cs231n/cs231n-lecture-5-notes.md` -> `courses/cs231n/lecture-5.html`
+- `notes/cs231n/cs231n-lecture-6-notes.md` -> `courses/cs231n/lecture-6.html`
+- `notes/cs231n/cs231n-lecture-7-notes.md` -> `courses/cs231n/lecture-7.html`
+- `notes/cs231n/cs231n-lecture-8-notes.md` -> `courses/cs231n/lecture-8.html`
+- `notes/cs231n/cs231n-lecture-9-notes.md` -> `courses/cs231n/lecture-9.html`
+- `notes/cs231n/cs231n-lecture-10-notes.md` -> `courses/cs231n/lecture-10.html`
+- `notes/cs231n/cs231n-lecture-11-notes.md` -> `courses/cs231n/lecture-11.html`
+- `notes/cs231n/cs231n-lecture-12-notes.md` -> `courses/cs231n/lecture-12.html`
+- `notes/cs231n/cs231n-lecture-13-notes.md` -> `courses/cs231n/lecture-13.html`
+- `notes/cs231n/cs231n-lecture-14-notes.md` -> `courses/cs231n/lecture-14.html`
+- `notes/cs231n/cs231n-lecture-15-notes.md` -> `courses/cs231n/lecture-15.html`
+- `notes/cs231n/cs231n-lecture-16-notes.md` -> `courses/cs231n/lecture-16.html`
+- `notes/cs231n/cs231n-lecture-17-notes.md` -> `courses/cs231n/lecture-17.html`
+- `notes/cs231n/cs231n-lecture-18-notes.md` -> `courses/cs231n/lecture-18.html`
+
 Lecture Markdown files must NOT contain bracketed numeric citation references such as `[358, 429]` or `[364]`.
 They are leftover transcript timestamps and are stripped before publishing. When adding new lecture notes,
 remove them with a regex like `\s*\[\d+(,\s*\d+)*\]` (this safely preserves math like one-hot vectors `[1, 0, 0, 0]`
@@ -84,6 +105,8 @@ Course pages:
 - `courses/cs229/lecture-1.html` through `lecture-14.html`: CS229 lecture shells and Markdown renderers
 - `courses/cs336/index.html`: CS336 course home (Lectures 1–17 + Guest)
 - `courses/cs336/lecture-1.html` through `lecture-17.html` & `lecture-guest.html`: CS336 lecture shells and Markdown renderers
+- `courses/cs231n/index.html`: CS231N course home (Lectures 1–18)
+- `courses/cs231n/lecture-1.html` through `lecture-18.html`: CS231N lecture shells and Markdown renderers
 
 Shared assets:
 
@@ -91,8 +114,10 @@ Shared assets:
 - `js/script.js`: active navigation, dark mode match/toggle with localStorage, mobile menu, lecture filtering, Markdown loading, code copy buttons, MathJax re-typesetting, and the `markdown:rendered` event
 - `js/cs229/`: Plotly chart scripts for CS229 (`cs229-lecture1-charts.js` through `cs229-lecture14-charts.js`)
 - `js/cs336/`: Plotly chart scripts for CS336 (`cs336-lecture1-charts.js` through `cs336-lecture17-charts.js` & `cs336-lectureguest-charts.js`)
+- `js/cs231n/`: Plotly chart scripts for CS231N (`cs231n-lecture1-charts.js` through `cs231n-lecture18-charts.js`)
 - `notes/cs229/`: Source Markdown notes for CS229
 - `notes/cs336/`: Source Markdown notes for CS336
+- `notes/cs231n/`: Source Markdown notes for CS231N
 - `img/profile.jpg`: site logo/avatar used in the top navigation bar on every page
 
 ## Dark Mode System (Warm Academic Charcoal)

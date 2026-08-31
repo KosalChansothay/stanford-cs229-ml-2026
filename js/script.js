@@ -131,9 +131,11 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .then(function (markdown) {
         markdownContent.innerHTML = marked.parse(markdown);
-        markdownContent.querySelector('h1')?.remove();
-        if (markdownContent.querySelector('h2')?.textContent.indexOf('Lecture 2:') !== -1) {
-          markdownContent.querySelector('h2').remove();
+        var h1 = markdownContent.querySelector('h1');
+        if (h1) h1.remove();
+        var h2 = markdownContent.querySelector('h2');
+        if (h2 && h2.textContent && h2.textContent.indexOf('Lecture 2:') !== -1) {
+          h2.remove();
         }
         markdownPage.querySelectorAll('.card').forEach(function (card) {
           card.remove();

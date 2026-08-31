@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS231N: Deep Learning for Computer Vision &mdash; Course Notes</title>
+    <meta name="description"
+        content="CS231N Deep Learning for Computer Vision (Spring 2026) lecture notes: CNNs, backpropagation, attention, detection, generative models, 3D vision, and robot learning.">
+    <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+    <meta name="author" content="Kosal Chansothay">
+    <link rel="stylesheet" href="../../css/style.css">
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <nav class="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-profile">
+            <img class="sidebar-avatar" src="../../img/profile.jpg" alt="Site logo">
+            <div class="sidebar-name">ML Notes</div>
+            <div class="sidebar-role">Stanford AI &amp; ML Series</div>
+            <div class="sidebar-bio">Lecture notes and study materials for Stanford machine learning and artificial intelligence courses.</div>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-label">Site</li>
+            <li><a href="../../index.html">Home</a></li>
+            <li><a href="../../about.html">About</a></li>
+            <li><a href="../../notes.html">Lecture Notes</a></li>
+            <li><a href="../index.html" class="active">Courses</a></li>
+        </ul>
+        <div class="sidebar-social">
+            <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+                rel="noopener">&#x1F9EC;</a>
+        </div>
+        <div class="sidebar-footer">
+            Built with static HTML/CSS/JS<br>
+            &copy; 2026
+        </div>
+    </nav>
+    <main class="main" role="main">
+        <header class="page-header">
+            <h1>CS231N: Deep Learning for Computer Vision</h1>
+            <p class="subtitle">Spring 2026 &mdash; Stanford University</p>
+        </header>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> <span>/</span> <a href="../index.html">Courses</a> <span>/</span> CS231N
+        </div>
+
+        <div class="card">
+            <h2>Course Overview</h2>
+            <p>
+                CS231N is the deep learning for computer vision course: from image classification with
+                linear classifiers through convolutional networks, backpropagation, attention and
+                transformers, detection and segmentation, self-supervised and generative models,
+                3D vision, and robot learning. The emphasis is on <strong>end-to-end visual
+                representation learning</strong> &mdash; replacing hand-engineered features with networks
+                trained on large-scale annotated data.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>Lecture Notes</h2>
+            <ul class="note-list">
+                <li class="note-card">
+                    <h3><a href="lecture-1.html">Lecture 1: Introduction</a></h3>
+                    <p class="note-meta">Visual intelligence, hierarchical processing, Top-5 error metric</p>
+                    <p class="note-excerpt">From the Cambrian Explosion to AlexNet: the convergence of algorithms, GPU compute, and large-scale annotated data, plus the Top-5 error benchmark and backpropagation calculus.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-2.html">Lecture 2: Image Classification with Linear Classifiers</a></h3>
+                    <p class="note-meta">Linear mapping, distance metrics, loss surfaces</p>
+                    <p class="note-excerpt">Linear classifiers as template matching, the L1 vs L2 distance metric geometry, k-nearest neighbors decision boundaries, and the multiclass SVM/cross-entropy loss formalism.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-3.html">Lecture 3: Regularization and Optimization</a></h3>
+                    <p class="note-meta">Optimization trajectories, regularization, conditioning</p>
+                    <p class="note-excerpt">Gradient descent variants on the loss landscape: SGD, Momentum, RMSprop and Adam trajectories, regularization as landscape smoothing, and the role of condition numbers.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-4.html">Lecture 4: Neural Networks and Backpropagation</a></h3>
+                    <p class="note-meta">Backpropagation, vanishing gradients, gate dynamics</p>
+                    <p class="note-excerpt">Computational graphs and the chain rule, forward/backward passes, vanishing gradients through saturated sigmoid gates, and why ReLU preserves gradient flow.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-5.html">Lecture 5: Image Classification with CNNs</a></h3>
+                    <p class="note-meta">Conv output shapes, parameter counts, FLOPs</p>
+                    <p class="note-excerpt">Convolutional layers as sliding receptive fields: output shape arithmetic (K, P, S, C_out), parameter and FLOPs accounting, and max-pooling downsampling.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-6.html">Lecture 6: CNN Architectures</a></h3>
+                    <p class="note-meta">Activation statistics, normalization, skip connections</p>
+                    <p class="note-excerpt">AlexNet to ResNet: VGG-style plain blocks, BatchNorm unit-variance stabilization across depth, and residual connections that enable very deep networks.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-7.html">Lecture 7: Recurrent Neural Networks</a></h3>
+                    <p class="note-meta">Sequence modeling, gate dynamics, memory cells</p>
+                    <p class="note-excerpt">Sequence modeling with RNNs: vanilla RNN gradient decay, the LSTM forget/input/output gates, and the additive cell-state gradient highway.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-8.html">Lecture 8: Attention and Transformers</a></h3>
+                    <p class="note-meta">Attention heatmaps, head specialization, O(N^2) cost</p>
+                    <p class="note-excerpt">Self-attention as token-to-token alignment: scaled dot-product attention, multi-head specialization patterns, positional encodings, and the quadratic sequence-length cost.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-9.html">Lecture 9: Object Detection, Segmentation, Visualization</a></h3>
+                    <p class="note-meta">Encoder-decoder grids, upsampling, feature maps</p>
+                    <p class="note-excerpt">Dense prediction tasks: object detection pipelines, fully convolutional segmentation with max-unpooling vs nearest-neighbor upsampling, and feature visualization.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-10.html">Lecture 10: Video Understanding</a></h3>
+                    <p class="note-meta">Voxel grids, temporal convolutions, activation tracing</p>
+                    <p class="note-excerpt">Video models: 3D convolutions over spatiotemporal voxels, receptive-field growth across layers, and tracing which frames contribute to an activation.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-11.html">Lecture 11: Large Scale Distributed Training</a></h3>
+                    <p class="note-meta">GPU clusters, memory trade-offs, all-reduce</p>
+                    <p class="note-excerpt">Training at scale: parallelism strategy matrices (DP/TP/PP/CP), GPU memory trade-offs, activation checkpointing, and communication-bandwidth constraints.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-12.html">Lecture 12: Self-Supervised Learning</a></h3>
+                    <p class="note-meta">PCA embedding space, positive/negative pairs, temperature</p>
+                    <p class="note-excerpt">Learning without labels: contrastive objectives pulling positive pairs together, embedding-space cluster formation, temperature tuning, and representation collapse.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-13.html">Lecture 13: Generative Models 1</a></h3>
+                    <p class="note-meta">Latent slices, reconstruction quality, beta trade-off</p>
+                    <p class="note-excerpt">Variational autoencoders: the ELBO objective, latent-space structure under the KL-weight beta, and the disentanglement vs reconstruction-quality trade-off.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-14.html">Lecture 14: Generative Models 2</a></h3>
+                    <p class="note-meta">Particle flows, probability density, CFG</p>
+                    <p class="note-excerpt">Iterative denoising generation: probability-flow ODEs from noise to data, noise schedule variants, and classifier-free guidance trading diversity for fidelity.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-15.html">Lecture 15: 3D Vision</a></h3>
+                    <p class="note-meta">Ray marching, memory scaling, volume density</p>
+                    <p class="note-excerpt">Representing 3D scenes: cubic memory scaling of voxel grids, point clouds and meshes, and NeRF ray-marching volume integration.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-16.html">Lecture 16: Vision and Language</a></h3>
+                    <p class="note-meta">Hypersphere embeddings, cosine proximity, batch size</p>
+                    <p class="note-excerpt">Joint vision-language embeddings: CLIP contrastive training, batch-scale effects, and compositional failure modes under subject-object reversal.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-17.html">Lecture 17: Robot Learning</a></h3>
+                    <p class="note-meta">Trajectory drift, covariate shift, expert demos</p>
+                    <p class="note-excerpt">Learning robotic control: behavior-cloning trajectory drift under covariate shift, DAgger interactive correction, and diffusion policy rollouts.</p>
+                </li>
+                <li class="note-card">
+                    <h3><a href="lecture-18.html">Lecture 18: Human-Centered AI</a></h3>
+                    <p class="note-meta">Task hierarchies, sim-to-real gaps, preferences</p>
+                    <p class="note-excerpt">Human-centered considerations: dataset bias audit, sim-to-real generalization gaps, and aligning robot success with human task preferences.</p>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Course Info</h2>
+            <table>
+                <tr>
+                    <th>Course</th>
+                    <td>CS231N: Deep Learning for Computer Vision</td>
+                </tr>
+                <tr>
+                    <th>Term</th>
+                    <td>Spring 2026</td>
+                </tr>
+                <tr>
+                    <th>Institution</th>
+                    <td>Stanford University</td>
+                </tr>
+                <tr>
+                    <th>Focus</th>
+                    <td>Deep neural networks for visual recognition &mdash; CNNs, backpropagation, attention,
+                        detection, segmentation, generative models, 3D vision, and robot learning</td>
+                </tr>
+            </table>
+        </div>
+
+        <footer class="site-footer">
+            <p>CS231N Deep Learning for Computer Vision &mdash; Spring 2026</p>
+        </footer>
+    </main>
+
+    <script src="../../js/script.js"></script>
+
+</body>
+
+</html>
