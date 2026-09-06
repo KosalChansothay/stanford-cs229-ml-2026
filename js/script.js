@@ -80,10 +80,53 @@ document.addEventListener('DOMContentLoaded', function () {
       document.dispatchEvent(new CustomEvent('theme:changed', { detail: { theme: next } }));
     });
 
+    /* Language Switcher Button (English <-> ភាសាខ្មែរ) */
+    var rawPath = window.location.pathname.replace(/\\/g, '/');
+    var isKhmer = document.documentElement.lang === 'km' || rawPath.indexOf('/km/') !== -1 || rawPath.endsWith('/km') || rawPath.endsWith('/km/');
+
+    function resolveLangSwitchUrl() {
+      if (isKhmer) {
+        var target = rawPath.replace(/\/km(\/|$)/, '/');
+        if (target === '' || target.endsWith('/')) {
+          target += 'index.html';
+        }
+        return target + window.location.search + window.location.hash;
+      } else {
+        var segments = rawPath.split('/').filter(Boolean);
+        var repoPrefix = '';
+        var knownRoots = ['courses', 'notes', 'img', 'css', 'js', 'km'];
+        if (segments.length > 0 && knownRoots.indexOf(segments[0]) === -1 && !segments[0].endsWith('.html')) {
+          repoPrefix = '/' + segments[0];
+          segments.shift();
+        }
+        var innerPath = segments.join('/');
+        if (!innerPath || innerPath === 'index.html') {
+          innerPath = 'index.html';
+        }
+        return repoPrefix + '/km/' + innerPath + window.location.search + window.location.hash;
+      }
+    }
+
+    var langBtn = document.createElement('a');
+    langBtn.className = 'lang-toggle-btn';
+    langBtn.href = resolveLangSwitchUrl();
+    langBtn.setAttribute('aria-label', isKhmer ? 'Switch to English' : 'ប្តូរទៅជាភាសាខ្មែរ (Switch to Khmer)');
+    langBtn.setAttribute('title', isKhmer ? 'Switch to English' : 'ប្តូរទៅជាភាសាខ្មែរ (Switch to Khmer)');
+    langBtn.innerHTML = '<svg class="lang-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>' +
+                        '<span>' + (isKhmer ? 'English' : 'ខ្មែរ') + '</span>';
+
+    langBtn.addEventListener('click', function () {
+      try {
+        localStorage.setItem('preferred-lang', isKhmer ? 'en' : 'km');
+      } catch (err) {}
+    });
+
     var social = sidebar.querySelector('.sidebar-social');
     if (social) {
+      sidebar.insertBefore(langBtn, social);
       sidebar.insertBefore(themeBtn, social);
     } else {
+      sidebar.appendChild(langBtn);
       sidebar.appendChild(themeBtn);
     }
 

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>កំណត់ចំណាំមេរៀន — Stanford CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description" content="ស្វែងរកកំណត់ចំណាំមេរៀន Stanford CS229, CS336, និង CS231N (និទាឃរដូវ ឆ្នាំ២០២៦) ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="index.html">ទំព័រដើម</a></li>
+      <li><a href="about.html">អំពី</a></li>
+      <li><a href="notes.html" class="active">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="courses/index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ HTML/CSS/JS ឋិតិវន្ត<br>
+      &copy; 2026
+    </div>
+  </nav>
+
+  <main class="main" role="main">
+    <header class="page-header">
+      <h1>កំណត់ចំណាំមេរៀនទាំងអស់</h1>
+      <p class="subtitle">មេរៀនទាំងអស់ — CS229, CS336 &amp; CS231N, និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </header>
+
+    <div class="filter-bar">
+      <label for="note-filter">ស្វែងរកប្រធានបទ</label>
+      <input id="note-filter" type="search" placeholder="ស្វែងរកមេរៀន វិធីសាស្ត្រ ឬគោលគំនិត..." data-note-filter>
+    </div>
+
+    <ul class="note-list">
+      <li class="note-card" data-note>
+        <h3><a href="courses/cs229/lecture-1.html">CS229 មេរៀនទី ១: សេចក្តីផ្តើម (Introduction)</a></h3>
+        <p class="note-meta">
+          <span class="tag">Supervised</span>
+          <span class="tag">Unsupervised</span>
+          <span class="tag">Reinforcement</span>
+          <span class="tag">ភាសាខ្មែរ</span>
+        </p>
+        <p class="note-excerpt">ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា ទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន (ML paradigms) និយមន័យរបស់ Mitchell និងសសរស្តម្ភទាំងបីនៃ ML៖ ការរៀនដោយមានការណែនាំ ការរៀនដោយគ្មានការណែនាំ និងការរៀនបែបពង្រឹង។</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-2.html">CS229 Lecture 2: Supervised Learning Setup</a></h3>
+        <p class="note-meta"><span class="tag">Linear Regression</span><span class="tag">Gradient Descent</span><span class="tag">ERM</span></p>
+        <p class="note-excerpt">Formal setup of supervised learning with linear regression, least squares cost function, empirical risk minimization, and optimization via batch gradient descent and normal equations.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-3.html">CS229 Lecture 3: Logistic Regression</a></h3>
+        <p class="note-meta"><span class="tag">MLE</span><span class="tag">Classification</span><span class="tag">Newton's Method</span></p>
+        <p class="note-excerpt">Probabilistic justification of least squares via maximum likelihood estimation, logistic regression with the sigmoid link function, gradient ascent, and the SGD vs. Newton's method trade-off.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-4.html">CS229 Lecture 4: Exponential Family, GLMs &amp; Classification</a></h3>
+        <p class="note-meta"><span class="tag">Exponential Family</span><span class="tag">GLM</span><span class="tag">Softmax</span><span class="tag">Label Smoothing</span></p>
+        <p class="note-excerpt">A unifying framework for distributions (Bernoulli, Gaussian) via the exponential family, the three assumptions of GLMs, softmax regression for multi-class classification, and label smoothing as regularization.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-5.html">CS229 Lecture 5: Gaussian Discriminant Analysis</a></h3>
+        <p class="note-meta"><span class="tag">Generative Learning</span><span class="tag">GDA</span><span class="tag">Naive Bayes</span><span class="tag">Laplace Smoothing</span></p>
+        <p class="note-excerpt">The shift from discriminative to generative modeling: Gaussian Discriminant Analysis with closed-form parameter estimation, its connection to logistic regression, Naive Bayes for text classification, and Laplace smoothing.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-6.html">CS229 Lecture 6: Dataset Split, ML Advice</a></h3>
+        <p class="note-meta"><span class="tag">Bias-Variance</span><span class="tag">Ridge Regression</span><span class="tag">Double Descent</span><span class="tag">Cross-Validation</span><span class="tag">Hyperband</span></p>
+        <p class="note-excerpt">Diagnostic workflows for machine learning projects: bias-variance trade-off, L2 regularization, the double descent phenomenon, hold-out vs. cross-validation, and multi-fidelity hyperparameter tuning via Hyperband.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-7.html">CS229 Lecture 7: Neural Networks Architecture</a></h3>
+        <p class="note-meta"><span class="tag">Neural Networks</span><span class="tag">Nonlinearities</span><span class="tag">Vectorization</span></p>
+        <p class="note-excerpt">From generalized linear models to multi-layer perceptrons: activations, expressivity, and GPU-efficient forward-pass vectorization.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-8.html">CS229 Lecture 8: Backpropagation &amp; Training</a></h3>
+        <p class="note-meta"><span class="tag">Backpropagation</span><span class="tag">Autodiff</span><span class="tag">Adam</span></p>
+        <p class="note-excerpt">Matrix calculus and computational graphs: reverse-mode autodiff, chain rule derivations, numerical stability, and adaptive gradient optimizers.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-9.html">CS229 Lecture 9: K-Means &amp; Gaussian Mixture Models</a></h3>
+        <p class="note-meta"><span class="tag">Clustering</span><span class="tag">GMM</span><span class="tag">Latent Variables</span></p>
+        <p class="note-excerpt">Unsupervised grouping and density estimation: coordinate descent in K-Means, soft assignments, and the Gaussian Mixture Model formulation.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-10.html">CS229 Lecture 10: Expectation-Maximization &amp; PCA</a></h3>
+        <p class="note-meta"><span class="tag">EM Algorithm</span><span class="tag">Jensen's Inequality</span><span class="tag">PCA</span><span class="tag">SVD</span></p>
+        <p class="note-excerpt">The general EM algorithm via Jensen's inequality and evidence lower bound (ELBO), followed by Principal Component Analysis via eigen-decomposition and SVD.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-11.html">CS229 Lecture 11: Generative Diffusion Models</a></h3>
+        <p class="note-meta"><span class="tag">Diffusion</span><span class="tag">Score Matching</span><span class="tag">SDE</span></p>
+        <p class="note-excerpt">Modern generative models: forward noising process, score-based reverse sampling, denoising score matching, and classifier-free guidance.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-12.html">CS229 Lecture 12: Foundation Models &amp; Fine-Tuning</a></h3>
+        <p class="note-meta"><span class="tag">Foundation Models</span><span class="tag">LoRA</span><span class="tag">PEFT</span></p>
+        <p class="note-excerpt">Pre-training paradigms, in-context learning, parameter-efficient fine-tuning via Low-Rank Adaptation (LoRA), and model compression.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-13.html">CS229 Lecture 13: Contrastive Learning &amp; RAG</a></h3>
+        <p class="note-meta"><span class="tag">Contrastive Learning</span><span class="tag">InfoNCE</span><span class="tag">RAG</span></p>
+        <p class="note-excerpt">Self-supervised representation learning via InfoNCE loss, multi-modal alignment, vector databases, and retrieval-augmented generation pipelines.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs229/lecture-14.html">CS229 Lecture 14: Transformers &amp; Self-Attention</a></h3>
+        <p class="note-meta"><span class="tag">Transformers</span><span class="tag">Self-Attention</span><span class="tag">FlashAttention</span></p>
+        <p class="note-excerpt">The Transformer architecture from first principles: scaled dot-product attention, multi-head projections, positional encodings, and IO complexity.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs336/index.html">CS336: Language Modeling from Scratch</a></h3>
+        <p class="note-meta"><span class="tag">CS336</span><span class="tag">LLM</span><span class="tag">Tokenization</span><span class="tag">Distributed Systems</span></p>
+        <p class="note-excerpt">All 17 lectures + guest lecture covering the entire LLM lifecycle from Byte-Pair Encoding to GPU kernels, 3D parallelism, scaling laws, and post-training alignment.</p>
+      </li>
+
+      <li class="note-card" data-note>
+        <h3><a href="../courses/cs231n/index.html">CS231N: Deep Learning for Computer Vision</a></h3>
+        <p class="note-meta"><span class="tag">CS231N</span><span class="tag">Computer Vision</span><span class="tag">CNNs</span><span class="tag">Transformers</span><span class="tag">Robotics</span></p>
+        <p class="note-excerpt">All 18 lectures on visual recognition: convolutional networks, Vision Transformers, object detection, generative diffusion, 3D NeRF, and robot learning.</p>
+      </li>
+    </ul>
+
+    <p class="filter-empty" data-filter-empty hidden>មិនមានមេរៀនដែលត្រូវនឹងការស្វែងរកនោះទេ។</p>
+
+    <div class="card text-center mt-3">
+      <p><em>មេរៀនជាភាសាខ្មែរបន្ថែមទៀតកំពុងត្រូវបានរៀបចំបញ្ចូលជាបន្តបន្ទាប់។</em></p>
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" class="btn" target="_blank" rel="noopener">ចូលរួមចំណែកលើ GitHub</a>
+    </div>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="../js/script.js"></script>
+</body>
+
+</html>

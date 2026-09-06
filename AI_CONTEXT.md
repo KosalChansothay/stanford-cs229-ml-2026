@@ -98,6 +98,15 @@ Root pages:
 - `about.html`: project description and technology information
 - `notes.html`: lecture index with client-side search
 
+Khmer (ភាសាខ្មែរ) pages (`/km/`):
+
+- `km/index.html`: Khmer site home and quick links
+- `km/about.html`: Khmer project and technology description
+- `km/notes.html`: Khmer lecture index with client-side search
+- `km/courses/index.html`: Khmer all courses directory
+- `km/courses/cs229/index.html`: Khmer CS229 course overview
+- `km/courses/cs229/lecture-1.html`: Khmer CS229 Lecture 1 shell and Markdown renderer
+
 Course pages:
 
 - `courses/index.html`: all courses
@@ -107,6 +116,13 @@ Course pages:
 - `courses/cs336/lecture-1.html` through `lecture-17.html` & `lecture-guest.html`: CS336 lecture shells and Markdown renderers
 - `courses/cs231n/index.html`: CS231N course home (Lectures 1–18)
 - `courses/cs231n/lecture-1.html` through `lecture-18.html`: CS231N lecture shells and Markdown renderers
+
+Multi-language System (English & Khmer):
+
+- **Sticky Navbar Switcher**: `.lang-toggle-btn` toggles between English and Khmer counterparts (persisted in `localStorage.getItem('preferred-lang')`).
+- **Khmer Fonts**: Google Fonts `Google Sans` with fallbacks `Kantumruy Pro` and `Battambang` loaded via CDN in `css/style.css` with generous line-height (`1.88` - `1.9`) for subscripts/diacritics.
+- **Markdown Source of Truth**: Khmer lecture notes live in `notes/<course>/<lecture>.km.md` and are rendered by the corresponding `km/courses/<course>/<lecture>.html` shell.
+
 
 Shared assets:
 

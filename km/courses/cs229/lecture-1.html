@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ១: សេចក្តីផ្តើម — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ១ សម្រាប់ Stanford CS229 ML៖ ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា ទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន និងនិយមន័យជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ HTML/CSS/JS ឋិតិវន្ត<br>
+      &copy; 2026
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-1-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ១: សេចក្តីផ្តើម (Introduction)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ១
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះដើរតួជាសេចក្តីផ្តើមទូទៅអំពីទម្រង់នៃវគ្គសិក្សា CS229 ទស្សនវិជ្ជា គោលការណ៍ដាក់ពិន្ទុ និងចំណាត់ថ្នាក់នៃវិស័យការរៀនរបស់ម៉ាស៊ីន (Machine Learning Taxonomy)។ សាស្ត្រាចារ្យបានគូសបញ្ជាក់ថា ទោះបីជា <em>ការប្រើប្រាស់</em> ការរៀនរបស់ម៉ាស៊ីនមានការផ្លាស់ប្តូរយ៉ាងខ្លាំងក្នុងទសវត្សរ៍ចុងក្រោយនេះ — ចាប់ពីការបង្កើតប្រព័ន្ធស្មុគស្មាញជាក់លាក់ រហូតដល់ការបញ្ជា Prompt ទៅកាន់ភ្នាក់ងារទូទៅ — ក៏ប៉ុន្តែ <em>បច្ចេកវិទ្យាមូលដ្ឋានគ្រឹះ</em> សម្រាប់ការបណ្តុះបណ្តាលម៉ូដែលទាំងនេះនៅតែរក្សាភាពស៊ីសង្វាក់គ្នាយ៉ាងខ្ពស់ជាមួយមូលដ្ឋានគ្រឹះគណិតវិទ្យាបុរាណ។
+      </p>
+      <p>
+        CS229 គឺជាវគ្គសិក្សាដែលផ្តោតខ្លាំងលើគណិតវិទ្យា។ វគ្គសិក្សានេះសង្កត់ធ្ងន់ជាពិសេសលើ៖
+      </p>
+      <ul>
+        <li><strong>ការបង្កើតគំរូគណិតវិទ្យា ការទាញរូបមន្ត និងទម្រង់សមីការ</strong> ជាជាងការសរសេរកូដកម្មវិធីសុទ្ធសាធ ឬការគ្រាន់តែប្រើប្រាស់កម្មវិធីស្រាប់។</li>
+        <li>ការយល់ដឹងអំពីក្បួនដោះស្រាយជាមូលដ្ឋាននៅពីក្រោយកូដ រួមទាំងប្រូបាប៊ីលីតេ និងពីជគណិតលីនេអ៊ែរ។</li>
+        <li>គោលការណ៍ AI ដែលអនុញ្ញាតឱ្យប្រើប្រាស់ឧបករណ៍ AI ជាដៃគូសហការ ប៉ុន្តែហាមដាច់ខាតមិនឱ្យចម្លងកូដ ឬដំណោះស្រាយដែលបង្កើតដោយ AI ដោយផ្ទាល់ទៅក្នុងកិច្ចការដាក់ពិន្ទុឡើយ ដើម្បីធានាថាអ្នកសិក្សាពិតជាយល់ច្បាស់ពីខ្លឹមសារមេរៀន។</li>
+      </ul>
+      <p>
+        មេរៀននេះបានបែងចែកវិស័យការរៀនរបស់ម៉ាស៊ីនជាបីទម្រង់សំខាន់ៗ៖ <strong>ការរៀនដោយមានការណែនាំ (Supervised Learning)</strong>, <strong>ការរៀនដោយគ្មានការណែនាំ (Unsupervised Learning)</strong>, និង <strong>ការរៀនបែបពង្រឹង (Reinforcement Learning)</strong> ដោយបង្ហាញពីរបៀបដែលទម្រង់បុរាណនីមួយៗនៅតែមានសារៈសំខាន់យ៉ាងខ្លាំងនៅក្នុងយុគសម័យទំនើបនៃការរៀនស៊ីជម្រៅ និង Large Language Models (LLMs)។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+
+      <h3>និយមន័យទូទៅនៃការរៀនរបស់ម៉ាស៊ីន</h3>
+      <ul>
+        <li><strong>និយមន័យរបស់ Arthur Samuel (1959)</strong>: វិស័យនៃការសិក្សាដែលផ្តល់ឱ្យកុំព្យូទ័រនូវសមត្ថភាពក្នុងការរៀន ដោយមិនចាំបាច់ត្រូវបានសរសេរកម្មវិធីបង្គាប់បញ្ជាយ៉ាងច្បាស់លាស់ឡើយ។</li>
+        <li><strong>និយមន័យរបស់ Tom Mitchell (1997)</strong>: កម្មវិធីកុំព្យូទ័រមួយត្រូវបានគេនិយាយថារៀនពីបទពិសោធន៍ \(E\) ឆ្លើយតបទៅនឹងថ្នាក់នៃកិច្ចការ \(T\) និងរង្វាស់នៃប្រសិទ្ធភាព \(P\) ប្រសិនបើប្រសិទ្ធភាពរបស់វាក្នុងកិច្ចការ \(T\) (ដែលវាស់វែងដោយ \(P\)) កើនឡើងជាមួយនឹងបទពិសោធន៍ \(E\)។
+          <ul>
+            <li><strong>បទពិសោធន៍ (\(E\))</strong>: ទិន្នន័យដែលប្រើសម្រាប់ការរៀន រួមមានអត្ថបទលើគេហទំព័រ ការវាស់វែងក្នុងពិភពពិត គូទិន្នន័យដែលមនុស្សបានដាក់ស្លាកសម្គាល់ ឬទិន្នន័យសំយោគ (ដូចជា "thinking tokens" ដែលបង្កើតដោយម៉ូដែល)។</li>
+            <li><strong>កិច្ចការ (\(T\))</strong>: គោលដៅ ឬដែនបញ្ហា។ កាលពីមុនវាមានភាពជាក់លាក់ខ្ពស់ (ឧ. ការកំណត់ចំណាត់ថ្នាក់រូបភាពមួយ) ប៉ុន្តែបច្ចុប្បន្នវាមានលក្ខណៈទូទៅ (ឧ. LLM តែមួយអាចដោះស្រាយកិច្ចការខុសៗគ្នារាប់លាន)។</li>
+            <li><strong>រង្វាស់ប្រសិទ្ធភាព (\(P\))</strong>: រង្វាស់ដែលប្រើដើម្បីវាយតម្លៃ និងជំរុញការរៀនសូត្រ (ឧ. ភាពត្រឹមត្រូវ accuracy, perplexity ឬអត្រាឈ្នះក្នុងហ្គេម)។</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>ទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</h3>
+      <ul>
+        <li><strong>ការរៀនដោយមានការណែនាំ (Supervised Learning)</strong>: ការរៀនដែលគ្រប់គំរូនីមួយៗនៃទិន្នន័យហ្វឹកហាត់រួមមានធាតុចូល \(x\) និងធាតុចេញ/ស្លាកសម្គាល់ \(y\) ដែលត្រូវគ្នា។ គោលដៅរបស់ម៉ូដែលគឺរៀនអនុគមន៍ផ្គូផ្គង \(f(x) \approx y\)។
+          <ul>
+            <li><strong>ការវិភាគតម្រែតម្រង់ (Regression)</strong>: កិច្ចការរៀនដោយមានការណែនាំដែលធាតុចេញ \(y\) គឺជាអថេរលេខបន្តបន្ទាប់ (ឧ. ការទស្សន៍ទាយតម្លៃផ្ទះ)។</li>
+            <li><strong>ការធ្វើចំណាត់ថ្នាក់ (Classification)</strong>: កិច្ចការរៀនដោយមានការណែនាំដែលធាតុចេញ \(y\) គឺជាអថេរប្រភេទដាច់ដោយឡែក (ឧ. ការកំណត់ប្រភេទផ្ទះល្វែង ឬផ្ទះវីឡា ឬការទស្សន៍ទាយពាក្យបន្ទាប់ក្នុង LLM)។</li>
+          </ul>
+        </li>
+        <li><strong>ការរៀនដោយគ្មានការណែនាំ (Unsupervised Learning)</strong>: ការរៀនពីសំណុំទិន្នន័យដែលមានតែធាតុចូល \(x\) ដោយគ្មានស្លាកសម្គាល់ ឬធាតុចេញ \(y\) ពិតប្រាកដណាមួយឡើយ។ គោលដៅគឺស្វែងរក "រចនាសម្ព័ន្ធគួរឱ្យចាប់អារម្មណ៍" ដែលបង្កប់ក្នុងទិន្នន័យ។
+          <ul>
+            <li><strong>ការប្រមូលផ្តុំជាក្រុម (Clustering)</strong>: ដំណើរការនៃការដាក់ទិន្នន័យចូលជាក្រុមៗផ្អែកលើភាពស្រដៀងគ្នា។</li>
+            <li><strong>ការរៀនតំណាងទិន្នន័យ / Embeddings</strong>: ការបម្លែងធាតុចូលដើមដែលមានវិមាត្រខ្ពស់ (ឧ. ពាក្យ រូបភាព) ទៅជាវ៉ិចទ័របន្តបន្ទាប់ដែលមានវិមាត្រទាបជាង។</li>
+          </ul>
+        </li>
+        <li><strong>ការរៀនបែបពង្រឹង (Reinforcement Learning - RL)</strong>: ទម្រង់ដែលភ្នាក់ងារឆ្លាតវៃ (agent) រៀនធ្វើការសម្រេចចិត្តជាលំដាប់លំដោយ តាមរយៈការសាកល្បងនិងការកែតម្រូវកំហុស (trial-and-error) ដោយធ្វើអន្តរកម្មជាមួយបរិស្ថាន។
+          <ul>
+            <li><strong>ការសម្រេចចិត្តជាលំដាប់ (Sequential Decision-Making)</strong>: សកម្មភាពនៅជំហានបច្ចុប្បន្នជះឥទ្ធិពលដល់ស្ថានភាព និងមតិត្រឡប់នាពេលអនាគត។</li>
+            <li><strong>ការទាញសំណាកដោយចៃដន្យ (Stochastic Sampling)</strong>: ការបង្កើត tokens ដោយទាញសំណាកពីបំណែងចែកប្រូបាប៊ីលីតេ ដែលមិនអាចធ្វើដេរីវេបាន។</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="index.html" class="pagination-btn prev" aria-label="ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា & គ្រោងមេរៀន">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា</span>
+          <span class="pagination-title">គ្រោងមេរៀន CS229</span>
+        </span>
+      </a>
+      <a href="../../../courses/cs229/lecture-2.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ២: Supervised Learning Setup">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ២: Supervised Learning Setup</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture1-charts.js"></script>
+</body>
+
+</html>
