@@ -1233,7 +1233,91 @@ html[lang="km"] .markdown-body {
   line-height: 1.9;
 }
 
-/* ---------- MathJax ---------- */
+/* ---------- MathJax v3 Complete Typography & Metric Isolation ---------- */
+mjx-container {
+  display: inline-block !important;
+  line-height: 0 !important;
+  text-align: left;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  direction: ltr !important;
+  box-sizing: content-box !important;
+}
+
+.lecture-document mjx-container[display="true"],
+mjx-container[display="true"] {
+  display: block !important;
+  text-align: center !important;
+  margin: 1.35rem 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  line-height: 0 !important;
+}
+
+/* Strictly isolate ALL MathJax containers and descendants from Khmer font and line-height inheritance */
+:lang(km) mjx-container,
+[lang="km"] mjx-container,
+html[lang="km"] mjx-container,
+html[lang="km"] body mjx-container,
+html[lang="km"] .markdown-body mjx-container {
+  font-family: MJXZERO, MJXTEX, MathJax_Main, MathJax_Math, MathJax_Size1, MathJax_Size2, MathJax_Size3, MathJax_Size4, serif !important;
+  line-height: 0 !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+}
+
+:lang(km) mjx-container *,
+[lang="km"] mjx-container *,
+html[lang="km"] mjx-container *,
+html[lang="km"] body mjx-container *,
+html[lang="km"] .markdown-body mjx-container * {
+  font-family: inherit !important;
+  line-height: normal !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  box-sizing: content-box !important;
+}
+
+/* Fix square root radical surd & box vinculum attachment */
+mjx-sqrt {
+  line-height: normal !important;
+}
+
+mjx-sqrt > mjx-surd {
+  line-height: 0 !important;
+  vertical-align: 0 !important;
+}
+
+mjx-sqrt > mjx-box {
+  line-height: normal !important;
+  font-family: inherit !important;
+}
+
+/* Fix fraction division bar and numerator/denominator spacing */
+mjx-frac {
+  line-height: normal !important;
+}
+
+mjx-frac > mjx-num,
+mjx-frac > mjx-den {
+  line-height: normal !important;
+  font-family: inherit !important;
+}
+
+/* Fix subscripts and superscripts alignment */
+mjx-sub,
+mjx-sup {
+  line-height: normal !important;
+  font-family: inherit !important;
+}
+
+/* Ensure inline math doesn't drop off the Khmer text baseline */
+.markdown-body mjx-container:not([display="true"]) {
+  vertical-align: -0.2em !important;
+  padding: 0 0.1em !important;
+}
+
 .MathJax_Display {
   margin: 1.2em 0;
   text-align: center;

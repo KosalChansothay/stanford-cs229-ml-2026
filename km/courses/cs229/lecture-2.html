@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ២: Supervised Learning Setup — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ២ សម្រាប់ Stanford CS229 ML៖ ការកំណត់រចនាសម្ព័ន្ធ Supervised Learning, Linear Regression, Gradient Descent និង Normal Equations ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-2.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-2-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ២: Supervised Learning Setup</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ២
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះកំណត់ជាផ្លូវការនូវទម្រង់នៃ <strong>ការរៀនដោយមានការណែនាំ (Supervised Learning Paradigm)</strong> ដោយយកក្បួនដោះស្រាយ <strong>តម្រែតម្រង់លីនេអ៊ែរជាមួយផលបូកការេនៃគម្លាតលំអៀងតូចបំផុត (Linear Regression with Least Squares)</strong> ធ្វើជាក្បួនដោះស្រាយរៀនសូត្រគ្រឹះដំបូងគេបង្អស់។ សាស្ត្រាចារ្យ Chris Ré បានបំបែក និងពន្យល់យ៉ាងក្បោះក្បាយនូវសញ្ញាសម្គាល់គ្រឹះនានា រួមមាន៖ អនុគមន៍សម្មតិកម្ម (Hypothesis Function), សំណុំទិន្នន័យហ្វឹកហាត់ (Training Set), និងលក្ខណៈពិសេស ឬអថេរនាំចូល (Features)។
+      </p>
+      <p>
+        សាស្ត្រាចារ្យបានណែនាំនូវគោលគំនិតនៃការកាត់បន្ថយហានិភ័យជាក់ស្តែង (<strong>Empirical Risk Minimization - ERM</strong>) តាមរយៈ <strong>មុខងារថ្លៃដើមការេនៃគម្លាតលំអៀងតូចបំផុត (Least Squares Cost Function)</strong>។ បន្ទាប់មក មេរៀនបានស្វែងយល់យ៉ាងស៊ីជម្រៅលើមាគ៌ាគណិតវិទ្យាសំខាន់ៗចំនួនពីរ ដើម្បីបង្កើនប្រសិទ្ធភាព (Optimization) ស្វែងរកប៉ារ៉ាម៉ែត្រល្អបំផុត៖
+      </p>
+      <ol>
+        <li><strong>វិធីសាស្ត្ររង្វិលជុំដដែលៗ (Iterative Methods)</strong> តាមរយៈ Batch Gradient Descent (BGD), Stochastic Gradient Descent (SGD), និង Minibatch Gradient Descent។</li>
+        <li><strong>ដំណោះស្រាយតាមបែបវិភាគក្នុងទម្រង់បិទ (Analytical Closed-Form Solution)</strong> តាមរយៈ <strong>សមីការធម្មតា (The Normal Equations)</strong> ដោយប្រើពីជគណិតម៉ាទ្រីស។</li>
+      </ol>
+      <p>
+        លើសពីនេះ សាស្ត្រាចារ្យ Chris Ré ក៏បានគូសបញ្ជាក់អំពីទិដ្ឋភាពជាក់ស្តែងផ្នែកវិស្វកម្ម និងផ្នែករឹង (Hardware Realities) នៅក្នុងវិស័យ ML ទំនើបផងដែរ ដូចជា៖ កម្រិតព្រំដែនអង្គចងចាំ GPU (High Bandwidth Memory - HBM), កាលវិភាគកែសម្រួលទំហំជំហាន/អត្រារៀន (Learning Rate Scheduling ដូចជា Cosine Decay), តុល្យភាពនៃភាពច្រំដែលក្នុងទិន្នន័យ (Redundancy Trade-off) និងការប្រៀបធៀបរវាងគោលដៅចម្បងនៃ ML (ផ្តោតលើសមត្ថភាពឆ្លើយតបទៅនឹងទិន្នន័យថ្មី — Generalization) ទល់នឹងគោលដៅស្ថិតិបុរាណ (ផ្តោតលើការទាញរកប៉ារ៉ាម៉ែត្រពិត — Parameter Recovery)។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ការរៀនដោយមានការណែនាំ (Supervised Machine Learning)</strong>: ទម្រង់នៃការរៀនដែលក្បួនដោះស្រាយត្រូវបានហ្វឹកហាត់លើគូទិន្នន័យច្បាស់លាស់រវាងធាតុចូល (Inputs) និងស្លាកសម្គាល់លទ្ធផលគោលដៅ (Target Labels)។</li>
+        <li><strong>អនុគមន៍សម្មតិកម្ម (\(h\) - Hypothesis)</strong>: អនុគមន៍ផ្គូផ្គង \(h: \mathcal{X} \to \mathcal{Y}\) ដែលបំប្លែងពីលំហធាតុចូល \(\mathcal{X}\) ទៅកាន់លំហធាតុចេញ \(\mathcal{Y}\)។</li>
+        <li><strong>សំណុំទិន្នន័យហ្វឹកហាត់ (Training Set)</strong>: សំណុំនៃឧទាហរណ៍ហ្វឹកហាត់ចំនួន \(n\) ដែលត្រូវបានកំណត់ដោយ \(\{(x^{(i)}, y^{(i)})\}_{i=1}^n\)។</li>
+        <li><strong>សញ្ញាសម្គាល់ និងអនុសញ្ញា (Notation Conventions)</strong>:
+          <ul>
+            <li>\(x^{(i)}\): វ៉ិចទ័រធាតុចូល (Features/លក្ខណៈពិសេស) សម្រាប់ឧទាហរណ៍ហ្វឹកហាត់ទី \(i\)។</li>
+            <li>\(y^{(i)}\): ស្លាកសម្គាល់ ឬធាតុចេញគោលដៅសម្រាប់ឧទាហរណ៍ហ្វឹកហាត់ទី \(i\)។</li>
+            <li>\(n\): ចំនួនសរុបនៃឧទាហរណ៍ហ្វឹកហាត់ (Total number of training examples)។</li>
+            <li>\(d\): ចំនួននៃលក្ខណៈពិសេសធាតុចូល ឬវិមាត្រ (Number of input features or dimensions)។</li>
+            <li>\(x_0 = 1\): អនុសញ្ញា Intercept/Bias term ដែលធ្វើឱ្យ \(x \in \mathbb{R}^{d+1}\) និងប៉ារ៉ាម៉ែត្រ \(\theta \in \mathbb{R}^{d+1}\)។</li>
+          </ul>
+        </li>
+        <li><strong>ការវិភាគតម្រែតម្រង់ (Regression)</strong>: កិច្ចការរៀនដោយមានការណែនាំដែលលំហធាតុចេញ \(\mathcal{Y}\) គឺជាតម្លៃលេខបន្តបន្ទាប់ (ឧ. ការទស្សន៍ទាយតម្លៃលក់ផ្ទះ)។</li>
+        <li><strong>ការធ្វើចំណាត់ថ្នាក់ (Classification)</strong>: កិច្ចការរៀនដោយមានការណែនាំដែលលំហធាតុចេញ \(\mathcal{Y}\) គឺជាតម្លៃដាច់ដោយឡែក (ឧ. ការកំណត់ប្រភេទឆ្មា ឬឆ្កែ ឬការទស្សន៍ទាយ Token បន្ទាប់ក្នុងប្រយោគ)។</li>
+        <li><strong>ការកាត់បន្ថយហានិភ័យជាក់ស្តែង (Empirical Risk Minimization - ERM)</strong>: ដំណើរការនៃការជ្រើសរើសប៉ារ៉ាម៉ែត្រ \(\theta\) ដែលកាត់បន្ថយការបាត់បង់ ឬកំហុសជាមធ្យមលើសំណុំទិន្នន័យហ្វឹកហាត់។</li>
+        <li><strong>ម៉ាទ្រីសវិជ្ជមានពាក់កណ្តាលកំនត់ (Positive Semidefinite - PSD)</strong>: ម៉ាទ្រីសស៊ីមេទ្រី \(M\) មួយត្រូវបានហៅថា PSD លុះត្រាតែ \(z^T M z \ge 0\) ចំពោះគ្រប់វ៉ិចទ័រ \(z\) ទាំងអស់។ ម៉ាទ្រីស \(X^T X\) គឺជាម៉ាទ្រីសវិជ្ជមានពាក់កណ្តាលកំនត់ (PSD) ដែលធានាថាមុខងារថ្លៃដើមមានរាងប៉ោងដូចចានគោម (Convex bowl-shaped) ហើយ Gradient Descent នឹងធានាថារួមគ្នាមកកាន់ចំណុចអប្បបរមាសកល (Global Minimum)។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា និងការទាញសមីការ</h2>
+      <h3>អនុគមន៍សម្មតិកម្មលីនេអ៊ែរ (The Linear Hypothesis)</h3>
+      <p>អនុគមន៍សម្មតិកម្មលីនេអ៊ែរត្រូវបានកំណត់ដោយ៖</p>
+      \[h_\theta(x) = \theta_0 + \theta_1 x_1 + \dots + \theta_d x_d = \sum_{j=0}^d \theta_j x_j = \theta^T x\]
+      <p>ដែលក្នុងនោះ \(\theta\) តំណាងឱ្យវ៉ិចទ័រប៉ារ៉ាម៉ែត្រ (Weights/ទម្ងន់) ហើយ \(x_0 = 1\) គឺជាតួ Intercept (Bias)។</p>
+
+      <h3>មុខងារថ្លៃដើមការេនៃគម្លាតលំអៀងតូចបំផុត (Least Squares Cost Function)</h3>
+      <p>ដើម្បីវាស់វែងថាតើសម្មតិកម្ម \(h_\theta(x)\) សមស្របទៅនឹងទិន្នន័យហ្វឹកហាត់កម្រិតណា យើងកំណត់មុខងារថ្លៃដើមការេនៃគម្លាតលំអៀងតូចបំផុត \(J(\theta)\)៖</p>
+      \[J(\theta) = \frac{1}{2} \sum_{i=1}^n \left(h_\theta(x^{(i)}) - y^{(i)}\right)^2\]
+      <ul>
+        <li><strong>ហេតុអ្វីបានជាលើកជាការេ (Why Square?)</strong>៖ ការលើកជាការេធានាថាកំហុសលំអៀងទាំងអស់ក្លាយជាចំនួនវិជ្ជមាន ផ្តល់ទណ្ឌកម្មទម្ងន់ធ្ងន់លើចំណុចទិន្នន័យខុសប្លែកខ្លាំង (Outliers) និងបង្កើតបាននូវអនុគមន៍ដឺក្រេទីពីរដែលមានរាងប៉ោងរលូន និងអាចធ្វើដេរីវេបាន។</li>
+        <li><strong>ហេតុអ្វីមានមេគុណ \(\frac{1}{2}\) (Why \(\frac{1}{2}\)?)</strong>៖ មេគុណថេរ \(\frac{1}{2}\) ត្រូវបានបន្ថែមតាមអនុសញ្ញា ដើម្បីឱ្យពេលធ្វើដេរីវេលើស្វ័យគុណ ២ តួ ២ និង \(\frac{1}{2}\) សម្រួលគ្នាដាច់ បង្កើនភាពងាយស្រួលដល់រូបមន្តធ្វើបច្ចុប្បន្នភាពជម្រាល។</li>
+      </ul>
+
+      <h3>ការទាញដេរីវេជម្រាលតាមបែបវិភាគ (Analytical Derivation of the Gradient)</h3>
+      <p>សម្រាប់ឧទាហរណ៍ហ្វឹកហាត់តែមួយ \((x, y)\) ដេរីវេដោយផ្នែកនៃ \(J(\theta)\) ធៀបនឹងប៉ារ៉ាម៉ែត្រ \(\theta_j\) ណាមួយ អាចទាញបានដោយប្រើវិធានច្រវាក់ (Chain Rule)៖</p>
+      \[\frac{\partial}{\partial \theta_j} \left( \frac{1}{2} (h_\theta(x) - y)^2 \right) = (h_\theta(x) - y) \cdot \frac{\partial}{\partial \theta_j} (h_\theta(x) - y)\]
+      <p>ដោយសារ \(h_\theta(x) = \sum_{k=0}^d \theta_k x_k\) នោះយើងទទួលបាន \(\frac{\partial}{\partial \theta_j} h_\theta(x) = x_j\)។ ដូច្នេះ៖</p>
+      \[\frac{\partial}{\partial \theta_j} J(\theta) = (h_\theta(x) - y)x_j\]
+    </div>
+
+    <div class="card">
+      <h2>៤. ក្បួនដោះស្រាយបង្កើនប្រសិទ្ធភាពជាជំហានៗ</h2>
+      <h3>ក. Batch Gradient Descent (BGD)</h3>
+      <p>Batch Gradient Descent គណនាជម្រាល (Gradient) លើសំណុំទិន្នន័យហ្វឹកហាត់ទាំងមូល មុននឹងធ្វើបច្ចុប្បន្នភាពប៉ារ៉ាម៉ែត្រម្តងៗ។</p>
+      <ol>
+        <li><strong>កំណត់តម្លៃដំបូង</strong>៖ កំណត់ប៉ារ៉ាម៉ែត្រ \(\theta\) ដោយចៃដន្យ ឬស្មើ ០ ទាំងអស់ (\(\theta = \vec{0}\))។</li>
+        <li><strong>រង្វិលជុំរហូតដល់រួមគ្នា</strong>៖
+          សម្រាប់គ្រប់ប៉ារ៉ាម៉ែត្រ \(j \in \{0, \dots, d\}\) ធ្វើបច្ចុប្បន្នភាព៖
+          \[\theta_j := \theta_j - \alpha \sum_{i=1}^n \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_j^{(i)}\]
+          ដែល \(\alpha\) គឺជាអត្រារៀន ឬទំហំជំហាន (Learning Rate / Step Size)។
+        </li>
+        <li><strong>លក្ខណៈសម្បត្តិ</strong>៖ ធានាតាមបែបគណិតវិទ្យាថានឹងរួមគ្នាមកកាន់ចំណុចអប្បបរមាសកលសម្រាប់អនុគមន៍ប៉ោងដូចជា Least Squares។ ប៉ុន្តែ វាទាមទារការគណនាធ្ងន់ធ្ងរខ្លាំងសម្រាប់សំណុំទិន្នន័យធំៗ ពីព្រោះគ្រប់ជំហានត្រូវធ្វើផលបូកកាត់តាមទិន្នន័យ \(n\) ទាំងអស់។</li>
+      </ol>
+
+      <h3>លក្ខខណ្ឌនៃការរួមគ្នាស្របតាមទំហំជំហាន / អត្រារៀន</h3>
+      <p>ការធ្វើបច្ចុប្បន្នភាព \(\theta_{t+1} = \theta_t - \alpha \nabla J(\theta_t)\) នឹងរួមគ្នា (Converge) លុះត្រាតែទំហំជំហាន \(\alpha\) មានទំហំតូចល្មមធៀបនឹងកម្រិតកោង (Curvature) នៃ \(J\)។ សម្រាប់ Least Squares កម្រិតកោងត្រូវបានគ្រប់គ្រងដោយតម្លៃ Eigenvalues នៃម៉ាទ្រីស \(X^T X\)៖</p>
+      \[0 < \alpha < \frac{2}{\lambda_{\max}(X^T X)}\]
+      <p>ដែល \(\lambda_{\max}\) គឺជាតម្លៃ Eigenvalue ធំបំផុតនៃ \(X^T X\)។ ប្រសិនបើ \(\alpha\) ធំជាងកម្រិតនេះ ការធ្វើបច្ចុប្បន្នភាពនីមួយៗនឹងលោតរំលងហួសចំណុចអប្បបរមា ហើយតម្លៃប៉ារ៉ាម៉ែត្រនឹងបែកចេញ (Diverge)។</p>
+
+      <h3>ខ. Stochastic Gradient Descent (SGD)</h3>
+      <p>ដើម្បីដោះស្រាយបញ្ហារាំងស្ទះនៃការគណនាក្នុង Batch Gradient Descent, SGD ធ្វើបច្ចុប្បន្នភាពប៉ារ៉ាម៉ែត្រជាបន្តបន្ទាប់ បន្ទាប់ពីពិនិត្យមើលឧទាហរណ៍ហ្វឹកហាត់ម្តងមួយៗ។</p>
+      <ol>
+        <li><strong>ច្របល់ទិន្នន័យ (Shuffle)</strong>៖ ច្របល់សំណុំទិន្នន័យហ្វឹកហាត់ដោយចៃដន្យ ដើម្បីធានាបាននូវគំរូតំណាងឯករាជ្យ។</li>
+        <li><strong>រង្វិលជុំកាត់តាមសំណុំទិន្នន័យ</strong>៖
+          សម្រាប់ឧទាហរណ៍ហ្វឹកហាត់នីមួយៗ \(i \in \{1, \dots, n\}\)៖
+          សម្រាប់គ្រប់ប៉ារ៉ាម៉ែត្រ \(j \in \{0, \dots, d\}\) ធ្វើបច្ចុប្បន្នភាព៖
+          \[\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}\]
+          ដែល \(\theta^{(t)}\) គឺជាវ៉ិចទ័រប៉ារ៉ាម៉ែត្រពីជំហានមុន។
+        </li>
+        <li><strong>លក្ខណៈសម្បត្តិ</strong>៖ ចាប់ផ្តើមបោះជំហានរីកចម្រើនបានលឿនជាងមុនឆ្ងាយណាស់។ ជំនួសឱ្យការដើរតាមគន្លងត្រង់ឆ្ពោះទៅចំណុចអប្បបរមា វាដើររេចុះរេឡើងដូច "មនុស្សស្រវឹង" (Drunkenly stumbles) ហើយលោតចុះឡើងៗជុំវិញចំណុចល្អបំផុតក្នុងរង្វង់វិមាត្រខ្ពស់ដែលសមាមាត្រទៅនឹងទំហំជំហាន \(\alpha\)។</li>
+      </ol>
+
+      <h3>គ. Minibatch Gradient Descent</h3>
+      <p>Minibatch Gradient Descent គឺជាកម្លាំងស្នូលដ៏សំខាន់បំផុតក្នុង Deep Learning ទំនើប (ឧ. ជាជម្រើសលំនាំដើមក្នុង PyTorch)។ វាបង្កើតតុល្យភាពដ៏ប្រសើរបំផុតរវាង BGD និង SGD ដោយគណនាជម្រាលលើសំណុំទិន្នន័យរងតូចមួយដែលមានទំហំ \(B\) (Batch Size)។</p>
+      <ol>
+        <li><strong>ជ្រើសរើស Batch ដោយចៃដន្យ</strong> \(\mathcal{B}\) ដែលមានទំហំ \(B\) ពីសំណុំទិន្នន័យហ្វឹកហាត់។</li>
+        <li><strong>វិធានធ្វើបច្ចុប្បន្នភាព</strong>៖
+          \[\theta := \theta - \alpha_{\mathcal{B}} \frac{1}{B} \sum_{i \in \mathcal{B}} \left( h_\theta(x^{(i)}) - y^{(i)} \right) x^{(i)}\]
+          ដែល \(\alpha_{\mathcal{B}}\) គឺជាអត្រារៀនដែលបានសម្រួលសមាមាត្រទៅតាមទំហំ Batch Size។
+        </li>
+      </ol>
+
+      <div id="plotly-bgd-vs-sgd" class="plotly-chart" aria-label="Interactive Plotly chart: Batch Gradient Descent versus Stochastic Gradient Descent optimization trajectories on elliptical cost contours"></div>
+    </div>
+
+    <div class="card">
+      <h2>៥. ដំណោះស្រាយតាមបែបវិភាគ៖ សមីការធម្មតា (The Normal Equations)</h2>
+      <p>សម្រាប់ Linear Regression ជាមួយ Least Squares យើងអាចរំលងវិធីសាស្ត្របង្កើនប្រសិទ្ធភាពតាមរង្វិលជុំ ហើយដោះស្រាយរកប៉ារ៉ាម៉ែត្រល្អបំផុត \(\theta\) ដោយផ្ទាល់តាមរូបមន្តវិភាគទម្រង់បិទ។</p>
+
+      <h3>ការរៀបចំទម្រង់ម៉ាទ្រីស</h3>
+      <p>តាង <strong>ម៉ាទ្រីសរចនា (Design Matrix)</strong> \(X \in \mathbb{R}^{n \times (d+1)}\) ដែលផ្ទុកនូវទិន្នន័យនាំចូលហ្វឹកហាត់ទាំងអស់តម្រៀបតាមជួរដេក និង \(y \in \mathbb{R}^n\) ជាវ៉ិចទ័រលទ្ធផលគោលដៅ៖</p>
+      \[X = \begin{bmatrix} (x^{(1)})^T \\ (x^{(2)})^T \\ \vdots \\ (x^{(n)})^T \end{bmatrix} = \begin{bmatrix} 1 & x_1^{(1)} & \dots & x_d^{(1)} \\ 1 & x_1^{(2)} & \dots & x_d^{(2)} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & x_1^{(n)} & \dots & x_d^{(n)} \end{bmatrix}, \quad y = \begin{bmatrix} y^{(1)} \\ y^{(2)} \\ \vdots \\ y^{(n)} \end{bmatrix}\]
+
+      <h3>ការទាញរូបមន្តតាមបែបម៉ាទ្រីស</h3>
+      <p>យើងអាចសរសេរមុខងារថ្លៃដើម Least Squares ឡើងវិញក្នុងទម្រង់វ៉ិចទ័រ-ម៉ាទ្រីស ដោយប្រើប្រាស់ផលគុណក្នុងនៃ \(L_2\) norm៖</p>
+      \[J(\theta) = \frac{1}{2} (X\theta - y)^T (X\theta - y) = \frac{1}{2} \left( \theta^T X^T X \theta - 2\theta^T X^T y + y^T y \right)\]
+      <p>រកជម្រាលធៀបនឹងវ៉ិចទ័រ \(\theta\) ហើយកំណត់ឱ្យស្មើ ០ ដើម្បីស្វែងរកចំណុចអប្បបរមា៖</p>
+      \[\nabla_\theta J(\theta) = \frac{1}{2} \left( 2 X^T X \theta - 2 X^T y \right) = 0 \implies X^T X \theta = X^T y\]
+      <p>ប្រព័ន្ធសមីការនេះត្រូវបានគេស្គាល់ថាជា <strong>សមីការធម្មតា (The Normal Equations)</strong>។</p>
+      <p>ដោះស្រាយរក \(\theta\) នាំឱ្យយើងទទួលបានរូបមន្តប៉ាន់ស្មានទម្រង់បិទនៃ Least Squares៖</p>
+      \[\theta = (X^T X)^{-1} X^T y\]
+
+      <h3>ឧទាហរណ៍គំរូតូចជាក់ស្តែង (Worked Micro-Example)</h3>
+      <p>ឧបមាថាយើងមានចំណុចទិន្នន័យហ្វឹកហាត់ចំនួនពីរ៖ \((x^{(1)}, y^{(1)}) = (0, 1)\) និង \((x^{(2)}, y^{(2)}) = (1, 3)\) ដោយយកអនុសញ្ញា \(x_0 = 1\)៖</p>
+      \[X = \begin{bmatrix} 1 & 0 \\ 1 & 1 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 3 \end{bmatrix}\]
+      <p><strong>ការគណនាតាមសមីការធម្មតា:</strong></p>
+      \[X^T X = \begin{bmatrix} 2 & 1 \\ 1 & 1 \end{bmatrix}, \quad X^T y = \begin{bmatrix} 4 \\ 3 \end{bmatrix} \implies \theta = (X^T X)^{-1} X^T y = \begin{bmatrix} 1 \\ 2 \end{bmatrix}\]
+      <p>ដូច្នេះ \(h_\theta(x) = 1 + 2x\) ដែលខ្សែកោងនេះកាត់ចំចំណុចទាំងពីរយ៉ាងល្អឥតខ្ចោះ (កំហុសហ្វឹកហាត់ស្មើ ០)។</p>
+      <p><strong>ការគណនាតាម Gradient Descent:</strong></p>
+      <p>ប្រសិនបើចាប់ផ្តើមពី \(\theta = \begin{bmatrix} 0 \\ 0 \end{bmatrix}\) ជាមួយ \(\alpha = 0.1\), ជំហានទី ១ ផ្តល់សំណល់ \((1, 3)\) នាំឱ្យ៖</p>
+      \[\theta_1 = \begin{bmatrix} 0 \\ 0 \end{bmatrix} - 0.1 \begin{bmatrix} 4 \\ 3 \end{bmatrix} = \begin{bmatrix} -0.4 \\ -0.3 \end{bmatrix}\]
+      <p>ការធ្វើរង្វិលជុំដដែលៗជាបន្តបន្ទាប់នឹងរួមគ្នាមកកាន់ \(\begin{bmatrix} 1 \\ 2 \end{bmatrix}\) — ដែលជាចម្លើយដូចគ្នាទៅនឹងសមីការធម្មតាដោះស្រាយបានក្នុងមួយជំហាន។</p>
+
+      <h3>ការបកស្រាយតាមបែបប្រូបាប៊ីលីតេ (Probabilistic Interpretation)</h3>
+      <p>Least Squares មិនមែនជាជម្រើសដែលកើតឡើងដោយចៃដន្យឡើយ៖ វាគឺជា <strong>ឧបករណ៍ប៉ាន់ស្មានលទ្ធភាពអតិបរមា (Maximum Likelihood Estimator - MLE)</strong> ក្រោមការសន្មតថាតម្លៃគោលដៅមានលក្ខណៈលីនេអ៊ែរបូកនឹងកំហុសរំខាន Gaussian៖</p>
+      \[y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \quad \epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)\]
+      <p>ការធ្វើអតិបរមាកម្មលើ Gaussian Log-Likelihood \(\sum_i \log p(y^{(i)} \mid x^{(i)}; \theta)\) នាំឱ្យយើងទទួលបានការកាត់បន្ថយ \(J(\theta)\) យ៉ាងត្រឹមត្រូវបំផុត — ទាំងកត្តា \(\frac{1}{2}\) និងកំហុសលើកជាការេ សុទ្ធតែធ្លាក់ចេញមកពីស្វ័យគុណនៃអនុគមន៍ Gaussian។</p>
+
+      <h3>ភាពអាចច្រាសបាន និងភាពច្រំដែលនៃលក្ខណៈពិសេស</h3>
+      <p>ការទាញរូបមន្តនេះសន្មតថា ម៉ាទ្រីស \(X^T X\) អាចច្រាសបាន (Invertible)។</p>
+      <ul>
+        <li>ប្រសិនបើ \(X^T X\) ជាម៉ាទ្រីស <strong>Singular (មិនអាចច្រាសបាន)</strong> នោះមានន័យថា មានលក្ខណៈពិសេសដែលច្រំដែល ឬអាស្រ័យលីនេអ៊ែរលើគ្នា ឬដោយសារចំនួនទិន្នន័យហ្វឹកហាត់តិចជាងចំនួនលក្ខណៈពិសេស (\(n < d\))។</li>
+        <li>ក្នុងករណីនេះ វានឹងកើតមាន <strong>លំហសូន្យមិនសូន្យ (Non-trivial Null Space)</strong>។ រាល់វ៉ិចទ័រណាមួយដែលបូកបញ្ចូលពីលំហសូន្យនេះ នឹងបង្កើតបានសំណុំប៉ារ៉ាម៉ែត្រដែលមានប្រសិទ្ធភាពល្អស្មើគ្នាទាំងអស់ មានន័យថាមានអនុលំហទាំងមូលនៃដំណោះស្រាយត្រឹមត្រូវ។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៦. បទពិសោធន៍វិស្វកម្ម &amp; ផ្នែករឹងក្នុង ML ទំនើប</h2>
+      <ul>
+        <li><strong>CapEx និងការប្រើប្រាស់សមត្ថភាពគណនា Flops នៃម៉ូដែល (CapEx &amp; MFU)</strong>៖ វិស័យ Deep Learning ទំនើបត្រូវបានកម្រិតយ៉ាងខ្លាំងដោយការចំណាយដើមទុនដ៏មហាសាល (CapEx) លើហេដ្ឋារចនាសម្ព័ន្ធផ្នែករឹង។ ការជ្រើសរើសទំហំ Batch Size និងកាលវិភាគកែសម្រួលទំហំជំហាន (ឧ. Cosine Decay Schedules) ជារឿយៗត្រូវបានកំណត់ដោយកត្តាកម្រិតព្រំដែននៃផ្នែករឹង ដើម្បីរក្សាអង្គចងចាំ GPU (HBM) ឱ្យដំណើរការពេញសមត្ថភាព និងបង្កើនល្បឿនគណនាឱ្យដល់កម្រិតអតិបរមា។</li>
+        <li><strong>តុល្យភាពនៃភាពច្រំដែល (The Redundancy Trade-off)</strong>៖ Batch តូចៗមានកម្រិតប្រែប្រួលខ្ពស់ ប៉ុន្តែវាមានប្រសិទ្ធភាពអស្ចារ្យលើសំណុំទិន្នន័យដែលមានភាពច្រំដែលខ្ពស់។ ប្រសិនបើសំណុំទិន្នន័យមានរូបភាពដូចគ្នាចំនួន ៩០ ច្បាប់ ការដំណើរការវាក្នុង Batch ធំតែមួយគឺជាការខ្ជះខ្ជាយធនធាន។ ផ្ទុយទៅវិញ Batch តូចអនុញ្ញាតឱ្យម៉ូដែលធ្វើបច្ចុប្បន្នភាពបានដល់ទៅ ៩០ ដង ដែលជួយឱ្យវាប្រមូលផ្តុំរួមគ្នាកាន់តែលឿន។</li>
+        <li><strong>ហេតុអ្វីបានជាការរៀនរបស់ម៉ាស៊ីន មិនមែនគ្រាន់តែជាស្ថិតិ?</strong>៖ ស្ថិតិបុរាណផ្តោតលើការធានានូវការទាញយកប៉ារ៉ាម៉ែត្រពិតឡើងវិញ (\(\theta^*\)) និងការធ្វើតេស្តការរួមគ្នាយ៉ាងម៉ត់ចត់។ ចំណែកឯ ML ទំនើប ផ្តោតសំខាន់លើកំហុសក្នុងការឆ្លើយតបទៅនឹងទិន្នន័យថ្មី (Generalization Error លើ Test Sets ដែលមិនធ្លាប់ជួប)។ ក្នុងការអនុវត្តជាក់ស្តែង យើងតែងហ្វឹកហាត់ម៉ូដែលរហូតដល់អស់កញ្ចប់ថវិកាគណនា (Compute Credits) ហើយបញ្ឈប់ត្រឹមនោះ ប៉ុន្តែម៉ូដែលនៅតែបង្ហាញសមត្ថភាពឆ្លើយតបទៅនឹងទិន្នន័យថ្មីបានយ៉ាងល្អអស្ចារ្យ។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៧. កម្មវិធីអនុវត្តជាក់ស្តែង</h2>
+      <ul>
+        <li><strong>ការកំណត់តម្លៃអចលនទ្រព្យ (Real Estate Valuation)</strong>៖ ការប្រើប្រាស់លក្ខណៈពិសេសដូចជា ផ្ទៃក្រឡាផ្ទះ ទំហំដី និងចំនួនបន្ទប់គេង ដើម្បីទស្សន៍ទាយតម្លៃលក់ផ្ទះជាលេខបន្តបន្ទាប់ (ឧទាហរណ៍៖ ការប្រើប្រាស់ទិន្នន័យជាក់ស្តែងដូចជា Ames Housing Dataset)។</li>
+        <li><strong>ម៉ូដែលលំដាប់លំដោយ - Classifier Heads (Sequence Modeling)</strong>៖ ទោះបីជាម៉ូដែលលីនេអ៊ែរមានភាពសាមញ្ញក៏ដោយ វានៅតែដើរតួជាជំហានបញ្ចេញលទ្ធផលចុងក្រោយដ៏សំខាន់ (ហៅថា "Classification Head") នៅក្នុងស្ថាបត្យកម្ម Deep Learning ទំនើប ដូចជាការទស្សន៍ទាយ Token បន្ទាប់នៅក្នុង LLMs ដោយប្រើប្រាស់ Softmax Projections។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៨. សំណួរត្រិះរិះពិចារណា</h2>
+      <ol>
+        <li><strong>ការបែកចេញដោយសារទំហំជំហាន (Step-Size Divergence)</strong>៖ តាមបែបគណិតវិទ្យា តើមានអ្វីកើតឡើងចំពោះការធ្វើបច្ចុប្បន្នភាពប៉ារ៉ាម៉ែត្រក្នុង Gradient Descent ប្រសិនបើអត្រារៀន \(\alpha\) ត្រូវបានជ្រើសរើសធំជ្រុលហួសហេតុ ហើយតើបាតុភូតនេះស្តែងចេញជារូបរាងយ៉ាងដូចម្តេចនៅលើខ្សែកោងថ្លៃដើម \(J(\theta)\)?</li>
+        <li><strong>ម៉ាទ្រីសរចនា Singular (Singular Design Matrices)</strong>៖ ប្រសិនបើសំណុំទិន្នន័យមានចំនួនឧទាហរណ៍ហ្វឹកហាត់តិចជាងចំនួនវិមាត្រ (\(n < d\)) ហេតុអ្វីបានជា \(X^T X\) ក្លាយជាម៉ាទ្រីសមិនអាចច្រាសបាន? តើចំណុចនេះបញ្ជាក់យ៉ាងដូចម្តេចអំពីភាពតែមួយគត់នៃវ៉ិចទ័រប៉ារ៉ាម៉ែត្រ \(\theta\) ដែលកាត់បន្ថយថ្លៃដើម Least Squares?</li>
+        <li><strong>គោលដៅស្ថិតិ ទល់នឹង ការរៀនរបស់ម៉ាស៊ីន</strong>៖ ចូរពន្យល់ពីទំនាស់គំនិតរវាងការកាត់បន្ថយ Training Loss \(J(\theta)\) ឱ្យដល់កម្រិតសុក្រឹតនៃលេខខ្ពស់បំផុត និងការបង្កើនសមត្ថភាពរបស់ម៉ូដែលក្នុងការឆ្លើយតបទៅនឹងទិន្នន័យថ្មី (Generalization) លើ Test Set ជាពិសេសនៅក្នុងបរិបទនៃការជ្រើសរើសទំហំ Batch Size។</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>៩. ឯកសារយោង &amp; ការអានបន្ថែម</h2>
+      <ul>
+        <li><strong>Stephen Boyd's Convex Optimization</strong>៖ សៀវភៅដែលត្រូវបានណែនាំយ៉ាងខ្លាំងដោយសាស្ត្រាចារ្យ សម្រាប់ការស្វែងយល់ស៊ីជម្រៅលើគណិតវិទ្យា Vector/Matrix Calculus និងលក្ខណៈសម្បត្តិនៃម៉ាទ្រីស Semidefinite។</li>
+        <li><strong>Friday TA Sections</strong>៖ វគ្គសិក្ខាសាលាសំខាន់ប្រចាំសប្តាហ៍សម្រាប់ការស្វែងយល់ច្បាស់ពី Matrix Gradients, Rank, Null Spaces, និងដេរីវេនៃវ៉ិចទ័រ។</li>
+        <li><strong>ឯកសារស្រាវជ្រាវស្តីពី Data Mixing &amp; Cosine Scheduling</strong>៖ អត្ថបទស្រាវជ្រាវសិក្សាអំពីរបៀបដែល Foundation Models កំណត់កាលវិភាគអត្រារៀន និងការលាយបញ្ចូលគ្នានៃសំណុំទិន្នន័យហ្វឹកហាត់។</li>
+      </ul>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-1.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ១: សេចក្តីផ្តើម">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ១: សេចក្តីផ្តើម</span>
+        </span>
+      </a>
+      <a href="lecture-3.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ៣: Logistic Regression">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ៣: Logistic Regression</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture2-charts.js"></script>
+</body>
+
+</html>

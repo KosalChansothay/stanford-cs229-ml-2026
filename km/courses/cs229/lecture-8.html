@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ៨: Neural Networks 2 (Backpropagation) — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ៨ សម្រាប់ Stanford CS229 ML៖ ការផ្សាយបញ្ច្រាស (Backpropagation), សៀគ្វីដេរីវេបាន, វិធានច្រវាក់វ៉ិចទ័រ, ម៉ាទ្រីសហ្សាខូប៊ី, ផលគុណ Hessian-Vector និងវិស្វកម្មអង្គចងចាំ GPU ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-8.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-8-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ៨: បណ្តាញញាណសិប្បនិម្មិត ២ — ការផ្សាយបញ្ច្រាស (Backpropagation)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ៨
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះរៀបរាប់យ៉ាងលម្អិតអំពី <strong>ការផ្សាយបញ្ច្រាស (Backpropagation)</strong> ឬ <strong>Reverse-mode Automatic Differentiation</strong> ដែលជាក្បួនដោះស្រាយស្នូលក្នុងការគណនាជម្រាលនៃអនុគមន៍កំហុសធៀបនឹងគ្រប់ប៉ារ៉ាម៉ែត្រទាំងអស់នៃបណ្តាញញាណ។ តាមរយៈទ្រឹស្តីបទនៃ <strong>សៀគ្វីដេរីវេបាន (Differentiable Circuits)</strong> ប្រសិនបើការផ្សាយទៅមុខចំណាយពេល \(O(N)\) នោះជម្រាលទាំងអស់អាចត្រូវបានគណនាក្នុងរយៈពេលដូចគ្នាបេះបិទគឺ \(O(N)\) ក្នុងដំណើរការផ្សាយបញ្ច្រាស។
+      </p>
+      <p>
+        សាស្ត្រាចារ្យ Tengyu បានបកស្រាយលម្អិតពីការទាញរកដេរីវេវ៉ិចទ័រ និងម៉ាទ្រីសតាមរយៈ <strong>វិធានច្រវាក់ពហុអថេរ (Multivariate Chain Rule)</strong> សម្រាប់ស្រទាប់គុណម៉ាទ្រីស (\(u = Wz + b\)) ដោយបង្ហាញពីទំនាក់ទំនងទៅនឹង <strong>ការរៀនបែបហេបប៊ី (Hebbian Learning)</strong> ក្នុងប្រព័ន្ធប្រសាទជីវសាស្ត្រ (\(\frac{\partial J}{\partial W} = \gamma z^T\)) និងស្រទាប់អនុគមន៍សកម្មកម្ម (\(u = \sigma(z)\)) ជាមួយផលគុណ Hadamard \(\odot\)។ មេរៀនបញ្ចប់ដោយការស្វែងយល់ពី <strong>ផលគុណ Hessian-Vector</strong> និងវិស្វកម្មអង្គចងចាំ <strong>Activation Caching</strong> លើ GPU។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>សៀគ្វីដេរីវេបាន (Differentiable Circuit)</strong>: ក្រាហ្វគណនា DAG នៃប្រតិបត្តិការបឋម និងអនុគមន៍ដេរីវេបាន។</li>
+        <li><strong>ការផ្សាយបញ្ច្រាស (Backpropagation)</strong>: ក្បួនដោះស្រាយដែលអនុវត្តវិធានច្រវាក់ពីទិន្នផលត្រឡប់មកធាតុចូលវិញ។</li>
+        <li><strong>ម៉ាទ្រីសហ្សាខូប៊ី (Jacobian Matrix)</strong>: ម៉ាទ្រីសនៃដេរីវេដោយផ្នែកលំដាប់ទីមួយទាំងអស់នៃអនុគមន៍វ៉ិចទ័រធៀបនឹងធាតុចូលរបស់វា។</li>
+        <li><strong>ផលគុណហាដាម៉ាដ (Hadamard Product, \(\odot\))</strong>: ផលគុណគុណតាមធាតុនីមួយៗនៃវ៉ិចទ័រ ឬម៉ាទ្រីសពីរ។</li>
+        <li><strong>វិធានរៀនបែបហេបប៊ី (Hebbian Learning Rule)</strong>: គោលការណ៍ជីវសាស្ត្រដែលទម្ងន់ស៊ីណាប់ជាផលគុណនៃសញ្ញាមុន និងក្រោយស៊ីណាប់ (\(\frac{\partial J}{\partial W_{ij}} = \frac{\partial J}{\partial u_i} z_j\))។</li>
+        <li><strong>ផលគុណហេសស៊ាន-វ៉ិចទ័រ (Hessian-Vector Product)</strong>: ការគណនា \(Hv\) ក្នុងរយៈពេល \(O(N)\) ដោយពុំចាំបាច់បង្កើតម៉ាទ្រីស Hessian \(N \times N\) ពេញលេញ។</li>
+        <li><strong>Activation Caching</strong>: ការរក្សាទុកតម្លៃ Activations កម្រិតមធ្យមក្នុង GPU HBM សម្រាប់ប្រើប្រាស់កំឡុងពេល Backward Pass។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា &amp; វិធានច្រវាក់វ៉ិចទ័រ</h2>
+      <p>វិធានច្រវាក់ពហុអថេរជាទម្រង់ម៉ាទ្រីសហ្សាខូប៊ី៖</p>
+      \[\frac{\partial J}{\partial z} = \left(\frac{\partial g}{\partial z}\right)^T \frac{\partial J}{\partial u}\]
+
+      <p><strong>ស្រទាប់គុណម៉ាទ្រីស (\(u = Wz + b\))៖</strong></p>
+      <ul>
+        <li>ជម្រាលធៀបនឹងធាតុចូល \(z\)៖ \(\frac{\partial J}{\partial z} = W^T \frac{\partial J}{\partial u}\)</li>
+        <li>ជម្រាលធៀបនឹងទម្ងន់ \(W\) (Outer Product, Rank-1)៖ \(\frac{\partial J}{\partial W} = \left(\frac{\partial J}{\partial u}\right) z^T\)</li>
+        <li>ជម្រាលធៀបនឹងលម្អៀង \(b\)៖ \(\frac{\partial J}{\partial b} = \frac{\partial J}{\partial u}\)</li>
+      </ul>
+
+      <p><strong>ស្រទាប់អនុគមន៍សកម្មកម្ម (\(u = \sigma(z)\))៖</strong></p>
+      \[\frac{\partial J}{\partial z} = \sigma'(z) \odot \frac{\partial J}{\partial u}\]
+    </div>
+
+    <div class="card">
+      <h2>៤. លំហូរការងារការផ្សាយបញ្ច្រាស &amp; ក្រាហ្វិកអន្តរកម្ម</h2>
+      <p>ដំណើរការ ៤ ជំហាននៃការផ្សាយបញ្ច្រាសតាមស្រទាប់នីមួយៗ៖</p>
+      <ol>
+        <li>\(\gamma^{(l)} = \delta^{(l)} \odot \sigma'\left(z^{(l)}\right)\)</li>
+        <li>\(\frac{\partial J}{\partial W^{(l)}} = \gamma^{(l)} \left(a^{(l-1)}\right)^T\)</li>
+        <li>\(\frac{\partial J}{\partial b^{(l)}} = \gamma^{(l)}\)</li>
+        <li>\(\delta^{(l-1)} = \left(W^{(l)}\right)^T \gamma^{(l)}\)</li>
+      </ol>
+
+      <div id="plotly-backprop-graph" class="plotly-chart" aria-label="Interactive Plotly diagram: computational graph of backpropagation with forward pass left-to-right and backward pass right-to-left"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ក្រាហ្វគណនានៃការផ្សាយបញ្ច្រាស — ដំណើរការ Forward Pass (ឆ្វេងទៅស្តាំ) និង Backward Pass (ស្តាំទៅឆ្វេង)។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៥. ផលគុណ Hessian-Vector ក្នុងរយៈពេល \(O(N)\)</h2>
+      <p>
+        ដើម្បីគណនាផលគុណហេសស៊ាន-វ៉ិចទ័រ \(H(\theta) v\) ដោយពុំចាំបាច់ចំណាយអង្គចងចាំ \(O(N^2)\) យើងកំណត់អនុគមន៍ស្កាលែជំនួយ៖
+      </p>
+      \[g(\theta) = \left(\nabla_\theta J(\theta)\right)^T v\]
+      <p>បន្ទាប់មកធ្វើដេរីវេលើកទីពីរតាមរយៈការផ្សាយបញ្ច្រាស៖</p>
+      \[\nabla_\theta g(\theta) = \nabla_\theta \left( \nabla_\theta J(\theta)^T v \right) = H(\theta) v\]
+      <p>ដំណើរការនេះចំណាយពេល និងអង្គចងចាំត្រឹមតែ \(O(N)\) ប៉ុណ្ណោះ។</p>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-7.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ៧: ស្ថាបត្យកម្មបណ្តាញញាណសិប្បនិម្មិត">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ៧: ស្ថាបត្យកម្មបណ្តាញញាណសិប្បនិម្មិត</span>
+        </span>
+      </a>
+      <a href="lecture-9.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ៩: K-Means និង GMM">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ៩: K-Means និង GMM</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture8-charts.js"></script>
+</body>
+
+</html>

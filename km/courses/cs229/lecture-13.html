@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ១៣: Contrastive Learning &amp; RAG — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ១៣ សម្រាប់ Stanford CS229 ML៖ Embeddings, ការរៀនប្រៀបធៀប SimCLR, តុល្យភាពកម្លាំង NT-Xent, ការស្វែងរកវ៉ិចទ័រសេម៉ង់ទិក និង Retrieval-Augmented Generation (RAG) ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពីយើង</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-13-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ១៣: ការរៀនប្រៀបធៀប និង RAG (Contrastive Learning &amp; RAG)</h1>
+      <p class="subtitle">Stanford CS229 — ម៉ូដែលភាសាធំៗ ការរៀនទម្រង់តំណាង និងការស្វែងរកសេម៉ង់ទិក</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ១៣
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <!-- Fallback Content for Non-JS / Direct Readers -->
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះបង្ហាញពីការវិវត្តពីម៉ូដែលបង្កើតរូបភាព (Diffusion) ទៅកាន់ពិភពនៃ <strong>ម៉ូដែលគ្រឹះ (Foundation Models)</strong> និងប្រព័ន្ធភាសាធំៗ (LLMs) ដោយផ្តោតលើបច្ចេកវិទ្យាស្នូលពីរគឺ៖ <strong>ការរៀនទម្រង់តំណាង (Representation Learning)</strong> និង <strong>ការស្វែងរកសេម៉ង់ទិក (Semantic Search)</strong>។
+      </p>
+      <p>
+        មេរៀនពិនិត្យលើដែនកំណត់នៃ Supervised Pre-training និងណែនាំ <strong>ការរៀនប្រៀបធៀបដោយខ្លួនឯង (Self-Supervised Contrastive Learning - SimCLR)</strong> ដែលប្រើប្រាស់កម្លាំងទាញចូល (Attract) លើគូវិជ្ជមាន និងកម្លាំងរុញច្រាន (Repel) លើគូអវិជ្ជមានដើម្បីទប់ស្កាត់ការដួលរលំ (Collapse)។ នៅផ្នែកចុងក្រោយ មេរៀនបានពន្យល់ពីស្ថាបត្យកម្ម <strong>Retrieval-Augmented Generation (RAG)</strong> និងគុណសម្បត្តិដ៏លើសលប់របស់វាលើ Fine-Tuning ក្នុងការការពារសុវត្ថិភាពទិន្នន័យ ការកាត់បន្ថយការចំណាយ និងភាពងាយស្រួលក្នុងការធ្វើបច្ចុប្បន្នភាពចំណេះដឹង។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ការរៀនប្រៀបធៀប (Contrastive Learning)</strong>: ការបណ្តុះបណ្តាល Embeddings ដោយទាញគូវិជ្ជមានឱ្យជិតគ្នា និងរុញច្រានគូអវិជ្ជមានឱ្យឆ្ងាយពីគ្នា។</li>
+        <li><strong>ការដួលរលំចុះខ្សោយ (Degenerate Collapse)</strong>: ស្ថានភាពបរាជ័យដែល Encoder ផ្គូផ្គងធាតុចូលទាំងអស់ទៅជាវ៉ិចទ័រថេរតែមួយ ដែលត្រូវបានទប់ស្កាត់ដោយកម្លាំងរុញច្រាននៃគូអវិជ្ជមាន។</li>
+        <li><strong>SimCLR</strong>: ក្របខ័ណ្ឌរៀនប្រៀបធៀបដោយខ្លួនឯងលើរូបភាពដែលប្រើប្រាស់ Data Augmentations និងអនុគមន៍បាត់បង់ NT-Xent។</li>
+        <li><strong>RAG (Retrieval-Augmented Generation)</strong>: ប្រព័ន្ធដែលទាញយកឯកសារពាក់ព័ន្ធពី Vector DB មកភ្ជាប់ក្នុង Prompt ដើម្បីឱ្យ LLM បង្កើតចម្លើយផ្អែកលើការពិតជាក់ស្តែង។</li>
+        <li><strong>ការស្វែងរកកូនកាត់ (Hybrid Search)</strong>: ការរួមបញ្ចូលគ្នារវាង Semantic Vector Search និង Exact Regex/Keyword Pattern Matching សម្រាប់កូដកម្មវិធី។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យានៃ SimCLR &amp; តុល្យភាពកម្លាំង</h2>
+      <p>អនុគមន៍បាត់បង់ NT-Xent សម្រាប់គំរូយុថ្កា \(i\)៖</p>
+      \[\mathcal{L}_i = -\log \frac{\exp(S_{ii} / \tau)}{\exp(S_{ii} / \tau) + \sum_{j \neq i} \exp(S_{ij} / \tau)}\]
+      <p>តាមរយៈការតាង \(A = \exp(S_{ii}/\tau)\) (គូវិជ្ជមាន) និង \(B = \sum_{j \neq i} \exp(S_{ij}/\tau)\) (គូអវិជ្ជមាន)៖</p>
+      \[\frac{\partial \mathcal{L}}{\partial A} = \frac{-B}{A(A+B)} < 0 \quad (\text{កម្លាំងទាញចូលឱ្យបង្កើនភាពស្រដៀងគ្នានៃគូវិជ្ជមាន})\]
+      \[\frac{\partial \mathcal{L}}{\partial B} = \frac{1}{A+B} > 0 \quad (\text{កម្លាំងរុញច្រានឱ្យកាត់បន្ថយភាពស្រដៀងគ្នានៃគូអវិជ្ជមាន})\]
+
+      <div id="plotly-13-contrastive-loss" class="plotly-chart" aria-label="Interactive Plotly chart: NT-Xent loss versus positive similarity"></div>
+      <p><em>រូបភាព៖ អនុគមន៍បាត់បង់ NT-Xent ថយចុះជាម៉ូណូតូនធៀបនឹងភាពស្រដៀងគ្នានៃគូវិជ្ជមាន។</em></p>
+
+      <div id="plotly-13-embedding-space" class="plotly-chart" aria-label="Interactive Plotly chart: SimCLR force balance in embedding space"></div>
+      <p><em>រូបភាព៖ តុល្យភាពកម្លាំង SimCLR ក្នុងលំហបង្កប់។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៤. ស្ថាបត្យកម្ម RAG &amp; ការប្រៀបធៀបជាមួយ Fine-Tuning</h2>
+      <div id="plotly-13-rag-architecture" class="plotly-chart" aria-label="Interactive Plotly chart: RAG system architecture"></div>
+      <p><em>រូបភាព៖ ស្ថាបត្យកម្មប្រព័ន្ធ RAG ជាមួយ Vector Database និង Large Language Model។</em></p>
+      <ul>
+        <li><strong>Data Governance</strong>: RAG អាចកំណត់សិទ្ធិចូលមើលឯកសារពេល Retrieval បានយ៉ាងងាយស្រួល ឯ Fine-Tuning អាចប្រឈមការលេចធ្លាយទិន្នន័យសម្ងាត់។</li>
+        <li><strong>ការធ្វើបច្ចុប្បន្នភាព</strong>: RAG គ្រាន់តែកែប្រែ ឬលុប chunk ក្នុង Vector Database បានភ្លាមៗ ខណៈ Fine-Tuning ទាមទារ re-train ឡើងវិញទាំងស្រុង។</li>
+        <li><strong>ថ្លៃដើមគណនា</strong>: RAG មិនទាមទារការបណ្តុះបណ្តាល GPU ថ្លៃៗ និងមិនបាច់ផ្ទុក dedicated model សម្រាប់អតិថិជនម្នាក់ៗឡើយ។</li>
+      </ul>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-12.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ១២: ការរៀនទម្រង់តំណាង និងម៉ូដែលគ្រឹះ">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ១២: ការរៀនទម្រង់តំណាង និងម៉ូដែលគ្រឹះ</span>
+        </span>
+      </a>
+      <a href="lecture-14.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ១៤: Transformers & In-Context Learning">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ១៤: Transformers & In-Context Learning</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture13-charts.js"></script>
+</body>
+
+</html>

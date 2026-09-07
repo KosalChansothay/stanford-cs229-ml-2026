@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ៧: Neural Networks 1 (Architecture) — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ៧ សម្រាប់ Stanford CS229 ML៖ ស្ថាបត្យកម្មបណ្តាញញាណសិប្បនិម្មិត, អនុគមន៍សកម្មកម្ម (Activation Functions), MLPs, Residual Connections (ResNets), Layer Normalization និង CNNs ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-7.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-7-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ៧: បណ្តាញញាណសិប្បនិម្មិត ១ — ស្ថាបត្យកម្ម (Neural Networks 1: Architecture)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ៧
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះណែនាំអំពីស្ថាបត្យកម្មគ្រឹះនៃ <strong>Deep Learning</strong> និង <strong>បណ្តាញញាណសិប្បនិម្មិត (Neural Networks)</strong> ដោយផ្លាស់ប្តូរទស្សនវិស័យពីម៉ូដែលលីនេអ៊ែរ ទៅកាន់ម៉ូដែលមិនលីនេអ៊ែរដែលមានប៉ារ៉ាម៉ែត្រ (Parameterized Nonlinear Models)។ មេរៀនបានគ្របដណ្តប់លើបញ្ហា Continuous Regression និង Multi-Class Classification ដោយប្រើប្រាស់អនុគមន៍ Softmax និងកំហុស Cross-Entropy Loss។
+      </p>
+      <p>
+        សាស្ត្រាចារ្យបានពន្យល់ពីមូលហេតុដែលវិធីសាស្ត្រលំដាប់ទីពីរ (ដូចជា Newton's Method) ទទួលបរាជ័យក្នុងស្ថានភាពមិនប៉ោង (Non-convexity) ដោយសារចំណុចកែបសេះ (Saddle points) និងបានបង្ហាញពីសារៈសំខាន់នៃ <strong>Minibatch Stochastic Gradient Descent (SGD)</strong> ក្នុងនាមជាអ្នកប៉ាន់ស្មានមិនលម្អៀង (Unbiased estimator) ដែលទាញយកអត្ថប្រយោជន៍ពេញលេញពី GPU Hardware។ ជាចុងក្រោយ មេរៀនបានកសាងបណ្តាញញាណពីណឺរ៉ុនទោល អនុគមន៍សកម្មកម្ម (ReLU, Sigmoid, GELU), Multi-layer Perceptron (MLP), Residual Connections (ResNets) និង Layer Normalization (LayerNorm, RMS Norm)។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ម៉ូដែលមិនលីនេអ៊ែរ (Nonlinear Model)</strong>: ម៉ូដែលដែលមិនលីនេអ៊ែរធៀបនឹងប៉ារ៉ាម៉ែត្ររបស់វា (\(\theta\))។</li>
+        <li><strong>ឡូជីត (Logits)</strong>: តម្លៃទិន្នផលវិមាត្រ \(k\) មិនទាន់ធ្វើស្តង់ដារមុនពេលបញ្ជូនកាត់ Softmax។</li>
+        <li><strong>អនុគមន៍សកម្មកម្ម (Activation Function, \(\sigma\))</strong>: អនុគមន៍មិនលីនេអ៊ែរដែលផ្តល់សមត្ថភាពបញ្ចេញមតិដល់បណ្តាញញាណ។</li>
+        <li><strong>Multi-layer Perceptron (MLP)</strong>: បណ្តាញញាណផ្សាយទៅមុខដែលមានស្រទាប់គុណម៉ាទ្រីសជង់លើគ្នា អមដោយអនុគមន៍សកម្មកម្មមិនលីនេអ៊ែរ។</li>
+        <li><strong>ប្លុកសំណល់ (Residual Block)</strong>: សមាសភាគដែលបូកបញ្ចូលធាតុចូលដោយផ្ទាល់ត្រឡប់ទៅកាន់ទិន្នផល (\(\text{Res}(z) = F(z) + z\)) ដើម្បីដោះស្រាយបញ្ហាជម្រាលរលាយបាត់ (Vanishing Gradients)។</li>
+        <li><strong>ភាពមិនប្រែប្រួលតាមមាត្រដ្ឋាន (Scaling Invariance)</strong>: លក្ខណៈសម្បត្តិនៃ LayerNorm/RMSNorm ដែល \(\text{LN}(\alpha z) = \text{LN}(z)\) សម្រាប់ \(\alpha > 0\)។</li>
+        <li><strong>ខនវ៉ូលូសិន (Convolution)</strong>: ប្រតិបត្តិការគុណម៉ាទ្រីសដែលមានរចនាសម្ព័ន្ធចែករំលែកទម្ងន់ និងកំណត់ត្រឹមដែនទទួលសញ្ញាក្នុងតំបន់ (Local Receptive Fields)។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា &amp; Cross-Entropy Loss</h2>
+      <p><strong>អនុគមន៍ Softmax៖</strong></p>
+      \[P(y = j \mid x; \theta) = \frac{e^{h_{\theta, j}(x)}}{\sum_{l=1}^k e^{h_{\theta, l}(x)}}\]
+
+      <p><strong>រូបមន្ត Cross-Entropy Loss (ទាញចេញពី Negative Log-Likelihood)៖</strong></p>
+      \[\mathcal{L}_{\text{CE}}(\theta) = -\log P(y \mid x; \theta) = -h_{\theta, y}(x) + \log \sum_{l=1}^k e^{h_{\theta, l}(x)}\]
+    </div>
+
+    <div class="card">
+      <h2>៤. Minibatch SGD &amp; ក្រាហ្វិកអន្តរកម្ម</h2>
+      <p>ការធ្វើបច្ចុប្បន្នភាព Minibatch SGD លើកញ្ចប់ \(\mathcal{B}\) ទំហំ \(B\)៖</p>
+      \[\theta := \theta - \eta \left( \frac{1}{B} \sum_{i \in \mathcal{B}} \nabla_\theta \mathcal{L}_i(\theta) \right)\]
+      <p>Minibatch SGD គឺជាអ្នកប៉ាន់ស្មានមិនលម្អៀងនៃជម្រាលពេញលេញ៖ \(\mathbb{E}[\nabla_\theta \mathcal{L}_{\mathcal{B}}(\theta)] = \nabla_\theta \mathcal{L}(\theta)\)។</p>
+
+      <div id="plotly-sgd-unbiased" class="plotly-chart" aria-label="Interactive Plotly chart: stochastic gradient vectors clustering around the true full-batch gradient, demonstrating unbiasedness"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ការប៉ាន់ស្មានជម្រាលដោយ Minibatch SGD — ចំណុចកណ្តាលនៃជម្រាលស្តូកាស្ទីក (ព្រួញខៀវ) តម្រង់ជួរស្មើនឹងជម្រាលពេញលេញ (ព្រួញខ្មៅ)។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៥. Residual Connections &amp; Layer Normalization</h2>
+      <p>រូបមន្តប្លុកសំណល់ ResNet៖</p>
+      \[\text{Res}(z) = F(z) + z = \sigma\left(W^{(2)} \sigma\left(W^{(1)} z + b^{(1)}\right) + b^{(2)}\right) + z\]
+
+      <div id="plotly-residual-block" class="plotly-chart" aria-label="Interactive Plotly diagram: a residual block with skip connection, hover each node for details"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ស្ថាបត្យកម្មប្លុកសំណល់ (Residual Block) ជាមួយផ្លូវកាត់ Skip Connection។</em></p>
+
+      <p><strong>RMS Norm (Root Mean Square Normalization)៖</strong></p>
+      \[\hat{\sigma} = \sqrt{\frac{1}{m} \sum_{i=1}^m z_i^2}, \quad \text{RMSNorm}(z) = \gamma \odot \left( \frac{z}{\hat{\sigma} + \epsilon} \right)\]
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-6.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ៦: ការបែងចែកទិន្នន័យ &amp; ដំបូន្មាន ML">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ៦: ការបែងចែកទិន្នន័យ &amp; ដំបូន្មាន ML</span>
+        </span>
+      </a>
+      <a href="lecture-8.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ៨: បណ្តាញញាណសិប្បនិម្មិត ២ (Neural Networks 2)">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ៨: បណ្តាញញាណសិប្បនិម្មិត ២ (Neural Networks 2)</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture7-charts.js"></script>
+</body>
+
+</html>

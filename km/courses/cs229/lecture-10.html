@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ១០: GMM (EM) និង PCA — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ១០ សម្រាប់ Stanford CS229 ML៖ ក្បួនដោះស្រាយ Expectation-Maximization (EM), ព្រំដែនក្រោម ELBO, ការបង្វឹក GMM និងការវិភាគសមាសភាគចម្បង (PCA) ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-10.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-10-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ១០: ម៉ូដែលល្បាយហ្គោស (EM) និងការវិភាគសមាសភាគចម្បង (PCA)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ១០
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះបង្រួបបង្រួមការយល់ដឹងអំពី <strong>ការរៀនគ្មានការត្រួតពិនិត្យ (Unsupervised Learning)</strong> តាមរយៈបទដ្ឋានពីរគឺ៖ ការកសាងម៉ូដែលអថេរលាក់កំបាំងតាមប្រូបាប៊ីលីតេ (GMMs ជាមួយក្បួនដោះស្រាយ EM) និងការកាត់បន្ថយវិមាត្រលីនេអ៊ែរ (PCA)។
+      </p>
+      <p>
+        សាស្ត្រាចារ្យបានទាញរកជាផ្លូវការនូវ <strong>ក្បួនដោះស្រាយ Expectation-Maximization (EM)</strong> ដោយប្រើប្រាស់ <strong>ព្រំដែនក្រោមនៃភស្តុតាង (ELBO)</strong> តាមរយៈ <strong>វិសមភាពហ្សង់សែន (Jensen's Inequality)</strong> ដើម្បីធានាការរួមចំណុះម៉ូណូតូនទៅកាន់ចំណុចអតិបរមាក្នុងតំបន់នៃ Marginal Log-Likelihood។ បន្ទាប់មក មេរៀនបានទាញរក <strong>ការវិភាគសមាសភាគចម្បង (PCA)</strong> ដោយបង្ហាញថាការធ្វើអតិបរមាកម្មលើវ៉ារ្យ៉ង់ទិន្នន័យបញ្ចាំង (\(u^T \Sigma u\)) នាំទៅកាន់ <strong>សមីការតម្លៃផ្ទាល់ (Eigenvalue Problem)</strong> \(\Sigma u = \lambda u\) នៃម៉ាទ្រីសកូវ៉ារ្យ៉ង់ជាក់ស្តែង។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>អថេរលាក់កំបាំង (\(z\) - Latent Variable)</strong>: អថេរមិនត្រូវបានសង្កេតឃើញ ដែលតំណាងឱ្យរចនាសម្ព័ន្ធលាក់កំបាំងនៃទិន្នន័យ។</li>
+        <li><strong>ព្រំដែនក្រោមនៃភស្តុតាង (ELBO)</strong>: អនុគមន៍ព្រំដែនក្រោម \(\mathcal{L}(Q, \theta)\) ដែលកសាងឡើងតាមវិសមភាពហ្សង់សែន ដើម្បីប៉ាន់ស្មានពីក្រោមនូវ \(l(\theta)\)។</li>
+        <li><strong>ភាពម៉ូណូតូនតឹងរ៉ឹង (Strict Monotonicity)</strong>: លក្ខណៈដែលលោការីតលទ្ធភាពរឹម \(l(\theta^{(t)})\) តែងតែកើនឡើង ឬនៅថេរនៅគ្រប់ជំហាន EM។</li>
+        <li><strong>សមាសភាគចម្បង (Principal Component)</strong>: វ៉ិចទ័រទិសដៅឯកតា \(u\) ដែលក្តោបក្តាប់វ៉ារ្យ៉ង់អតិបរមានៃទិន្នន័យបញ្ចាំង។</li>
+        <li><strong>ការតម្រឹមកណ្តាលមធ្យម (Mean Centering)</strong>: ការដកមធ្យមចេញ (\(\mu = 0\)) ដើម្បីឱ្យវ៉ិចទ័រផ្ទាល់តំណាងឱ្យទិសដៅវ៉ារ្យ៉ង់។</li>
+        <li><strong>ការធ្វើមាត្រដ្ឋានឡើងវិញ (Standardization)</strong>: ការបែងចែកនឹងគម្លាតស្តង់ដារ ដើម្បីការពារកុំឱ្យលក្ខណៈទិន្នន័យធំៗគ្របដណ្តប់លើ PCA។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា &amp; ការទាញរក ELBO</h2>
+      <p>ការកសាង ELBO តាមរយៈវិសមភាពហ្សង់សែន៖</p>
+      \[l(\theta) \ge \sum_{i=1}^n \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} = \mathcal{L}(Q, \theta)\]
+      <p>ដំណោះស្រាយ E-Step ធ្វើឱ្យព្រំដែនក្រោមប៉ះស្មើគ្នាទៅនឹងលទ្ធភាពពិត៖</p>
+      \[Q_i(z^{(i)}) = p(z^{(i)} \mid x^{(i)}; \theta^{(t)})\]
+
+      <div id="plotly-em-geometry" class="plotly-chart" aria-label="Interactive Plotly chart: the EM step geometry with tangent lower bound, slider to advance iterations"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ធរណីមាត្រនៃជំហាន EM — ព្រំដែនក្រោម ELBO (ពណ៌ទឹកក្រូច) ប៉ះផ្ទៃលទ្ធភាពពិត (ពណ៌បៃតង) ត្រង់ \(\theta^{(t)}\) និងបង្កើនប្រសិទ្ធភាពទៅកាន់ \(\theta^{(t+1)}\)។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៤. ការទាញរក PCA &amp; សមីការតម្លៃផ្ទាល់</h2>
+      <p>វ៉ារ្យ៉ង់បញ្ចាំងនៃទិន្នន័យដែលបានតម្រឹមកណ្តាលមធ្យមរួច៖</p>
+      \[\sigma_{\text{proj}}^2 = u^T \Sigma u \quad \text{ដោយ } u^T u = 1\]
+      <p>តាមរយៈមេគុណឡាក្រង់ \(\mathcal{L}(u, \lambda) = u^T \Sigma u - \lambda(u^T u - 1)\) យើងទទួលបានសមីការតម្លៃផ្ទាល់៖</p>
+      \[\Sigma u = \lambda u \implies u^T \Sigma u = \lambda\]
+      <p>ដើម្បីឱ្យវ៉ារ្យ៉ង់បញ្ចាំងអតិបរមា \(u\) ត្រូវតែជាវ៉ិចទ័រផ្ទាល់ដែលត្រូវនឹងតម្លៃផ្ទាល់ធំបំផុត \(\lambda_1\)។</p>
+
+      <div id="plotly-pca-projection" class="plotly-chart" aria-label="Interactive Plotly chart: PCA first principal component with a slider to rotate the projection direction and watch variance change"></div>
+      <p class="chart-caption"><em>រូបភាព៖ PCA ក្នុងនាមជាការបញ្ចាំងវ៉ារ្យ៉ង់អតិបរមា — អូស Slider ដើម្បីបង្វិលទិសដៅបញ្ចាំង \(u\) និងសង្កេតមើលការប្រែប្រួលវ៉ារ្យ៉ង់។</em></p>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-9.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ៩: K-Means និង GMM">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ៩: K-Means និង GMM</span>
+        </span>
+      </a>
+      <a href="lecture-11.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ១១: ម៉ូដែលឌីភ្យូសិន (Diffusion Models)">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ១១: ម៉ូដែលឌីភ្យូសិន (Diffusion Models)</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture10-charts.js"></script>
+</body>
+
+</html>

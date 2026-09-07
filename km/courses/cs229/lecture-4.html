@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ៤: Exponential Family, GLMs &amp; Classification — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ៤ សម្រាប់ Stanford CS229 ML៖ អម្បូរបំណែងចែកអិចស្ប៉ូណង់ស្យែល (Exponential Family), គំរូលីនេអ៊ែរទូទៅ (GLMs), Softmax Regression និង Label Smoothing ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-4.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-4-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ៤: Exponential Family, GLMs &amp; Classification</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ៤
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះណែនាំអំពី <strong>អម្បូរបំណែងចែកអិចស្ប៉ូណង់ស្យែល (Exponential Family of Distributions)</strong> ដែលជាក្របខ័ណ្ឌគណិតវិទ្យាបង្រួបបង្រួមដ៏មានឥទ្ធិពលបំផុតមួយ សម្រាប់តភ្ជាប់ម៉ូដែល Machine Learning បុរាណជាច្រើនដែលបានសិក្សាក្នុងវគ្គនេះ។ សាស្ត្រាចារ្យ Chris Ré បានបង្ហាញថា បំណែងចែកកំហុសទូទៅជាច្រើន (ដូចជា Bernoulli សម្រាប់ទិន្នន័យទ្វេភាគ និង Gaussian សម្រាប់ទិន្នន័យបន្តបន្ទាប់) សុទ្ធសឹងតែជាករណីពិសេសនៃអម្បូរអិចស្ប៉ូណង់ស្យែលនេះទាំងអស់។
+      </p>
+      <p>
+        ផ្អែកលើគ្រឹះដ៏រឹងមាំនេះ មេរៀនបានណែនាំអំពី <strong>គំរូលីនេអ៊ែរទូទៅ (Generalized Linear Models - GLMs)</strong> ដែលផ្តល់នូវរូបមន្តរៀបចំ ៣ ជំហានដ៏ច្បាស់លាស់ក្នុងការកសាងម៉ូដែលទស្សន៍ទាយសម្រាប់ប្រភេទបញ្ហាស្ទើរតែទាំងអស់ក្នុងពិភពពិត។ មេរៀនបញ្ចប់ដោយការផ្តោតលើក្បួនដោះស្រាយចំណាត់ថ្នាក់ដ៏មានសារៈសំខាន់បំផុតក្នុងវិស័យឧស្សាហកម្មបច្ចុប្បន្ន គឺ <strong>ការវិភាគតម្រែតម្រង់ Softmax (Softmax Regression)</strong> សម្រាប់ការធ្វើចំណាត់ថ្នាក់ពហុថ្នាក់ (Multi-Class Classification)។ សាស្ត្រាចារ្យបានភ្ជាប់គំនិតនេះទៅនឹងស្ថាបត្យកម្ម Deep Learning ទំនើបៗ រួមទាំងយន្តការ Attention Heads ក្នុងម៉ូដែល Transformer (ដូចជា GPT-2) និងបានណែនាំបច្ចេកទេស Regularization ដ៏មានប្រសិទ្ធភាពគឺ <strong>Label Smoothing</strong>។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>អម្បូរបំណែងចែកអិចស្ប៉ូណង់ស្យែល (Exponential Family)</strong>: ថ្នាក់នៃបំណែងចែកប្រូបាប៊ីលីតេ ដែលអនុគមន៍ដង់ស៊ីតេប្រូបាប៊ីលីតេអាចសរសេរបានក្នុងទម្រង់កាណូនិច៖
+          \[p(y; \eta) = b(y) \exp\left(\eta^T T(y) - a(\eta)\right)\]
+        </li>
+        <li><strong>ប៉ារ៉ាម៉ែត្រធម្មជាតិ (\(\eta\) - Natural Parameter)</strong>: ប៉ារ៉ាម៉ែត្រកាណូនិចដែលកំណត់លក្ខណៈនៃបំណែងចែក។</li>
+        <li><strong>ស្ថិតិគ្រប់គ្រាន់ (\(T(y)\) - Sufficient Statistic)</strong>: អនុគមន៍នៃទិន្នន័យ \(y\) ដែលក្តោបក្តាប់រាល់ព័ត៌មានទាំងអស់អំពីប៉ារ៉ាម៉ែត្រ (ជាទូទៅ \(T(y) = y\))។</li>
+        <li><strong>រង្វាស់មូលដ្ឋាន (\(b(y)\) - Base Measure)</strong>: កត្តាធ្វើមាត្រដ្ឋានដែលអាស្រ័យតែលើទិន្នន័យ \(y\) ប៉ុណ្ណោះ។</li>
+        <li><strong>អនុគមន៍ Log Partition (\(a(\eta)\))</strong>: កត្តាកំណត់ស្តង់ដារដែលធានាថាផលបូក ឬអាំងតេក្រាលនៃប្រូបាប៊ីលីតេមានតម្លៃស្មើ ១ ជានិច្ច៖
+          \[a(\eta) = \log \int b(y) \exp\left(\eta^T T(y)\right) dy\]
+        </li>
+        <li><strong>អនុគមន៍ភ្ជាប់ (Link Function, \(g^{-1}\))</strong>: អនុគមន៍ផ្គូផ្គងតម្លៃរំពឹងទុកនៃបំណែងចែកគោលដៅ ទៅកាន់ប៉ារ៉ាម៉ែត្រធម្មជាតិ \(\eta\)។</li>
+        <li><strong>អនុគមន៍ឆ្លើយតបកាណូនិច (Canonical Response Function, \(g\))</strong>: អនុគមន៍ផ្គូផ្គងប៉ារ៉ាម៉ែត្រធម្មជាតិ \(\eta\) ទៅកាន់តម្លៃរំពឹងទុក \(\mathbb{E}[T(y)]\)។</li>
+        <li><strong>អនុគមន៍ Softmax (Softmax Function)</strong>: ទម្រង់ទូទៅនៃ sigmoid ដែលបម្លែងវ៉ិចទ័រ Logits ទៅជាបំណែងចែកប្រូបាប៊ីលីតេលើ \(k\) ថ្នាក់ដាច់ដោយឡែកពីគ្នា។</li>
+        <li><strong>ការធ្វើឱ្យស្លាកសម្គាល់រលូន (Label Smoothing)</strong>: បច្ចេកទេស Regularization ដែលជំនួសស្លាកសម្គាល់រឹង One-Hot ដោយបំណែងចែកគោលដៅទន់ និងរលូន ដើម្បីកាត់បន្ថយ Overfitting។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា និងការទាញសមីការ</h2>
+      <h3>ក. លក្ខណៈសម្បត្តិបង្រួបបង្រួមនៃ \(a(\eta)\)</h3>
+      <p>ដេរីវេនៃអនុគមន៍ Log Partition \(a(\eta)\) ផ្តល់នូវម៉ូម៉ង់ស្ថិតិនៃស្ថិតិគ្រប់គ្រាន់ \(T(y)\) ដោយស្វ័យប្រវត្តិ៖</p>
+      <ol>
+        <li><strong>ដេរីវេទីមួយ (តម្លៃរំពឹងទុក)</strong>:
+          \[\frac{\partial}{\partial \eta} a(\eta) = \mathbb{E}[T(y)]\]
+        </li>
+        <li><strong>ដេរីវេទីពីរ (វ៉ារ្យ៉ង់)</strong>:
+          \[\frac{\partial^2}{\partial \eta^2} a(\eta) = \text{Var}(T(y)) \ge 0\]
+        </li>
+      </ol>
+      <p>ដោយសារវ៉ារ្យ៉ង់មិនអវិជ្ជមានជានិច្ច នោះ \(a(\eta)\) ត្រូវបានធានាថាជា <strong>អនុគមន៍ប៉ោង (Convex Function)</strong> ធ្វើឱ្យការបង្កើនប្រសិទ្ធភាពតាមជម្រាលមានស្ថេរភាព និងរួមគ្នាមកកាន់ Global Optima ជានិច្ច។</p>
+
+      <h3>ខ. ភស្តុតាង៖ បំណែងចែក Bernoulli ក្នុង Exponential Family</h3>
+      <p>សម្រាប់ \(p(y; \phi) = \phi^y (1-\phi)^{1-y}\) ដោយសរសេរជា \(\exp(\log(\dots))\) យើងកំណត់បាន៖</p>
+      <ul>
+        <li>\(b(y) = 1\)</li>
+        <li>\(T(y) = y\)</li>
+        <li>\(\eta = \log\left(\frac{\phi}{1-\phi}\right) \implies \phi = \frac{1}{1 + e^{-\eta}}\) (Sigmoid Response Function!)</li>
+        <li>\(a(\eta) = \log(1 + e^\eta)\)</li>
+      </ul>
+
+      <h3>គ. ភស្តុតាង៖ បំណែងចែក Gaussian ក្នុង Exponential Family</h3>
+      <p>សម្រាប់ Gaussian ដែលមាន \(\sigma^2 = 1\)៖</p>
+      \[p(y; \mu) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{(y-\mu)^2}{2}\right) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{y^2}{2}\right) \exp\left(\mu y - \frac{\mu^2}{2}\right)\]
+      <ul>
+        <li>\(b(y) = \frac{1}{\sqrt{2\pi}} \exp(-y^2/2)\)</li>
+        <li>\(T(y) = y\)</li>
+        <li>\(\eta = \mu\)</li>
+        <li>\(a(\eta) = \frac{\mu^2}{2} = \frac{\eta^2}{2}\)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៤. គំរូលីនេអ៊ែរទូទៅ (GLMs)</h2>
+      <p>ការសន្មតរៀបចំចំនួន ៣ នៃ GLM៖</p>
+      <ol>
+        <li>\(y \mid x; \theta \sim \text{ExponentialFamily}(\eta)\)</li>
+        <li>គោលដៅទស្សន៍ទាយតម្លៃរំពឹងទុក៖ \(h_\theta(x) = \mathbb{E}[T(y) \mid x]\)</li>
+        <li>ទំនាក់ទំនងលីនេអ៊ែរ៖ \(\eta = \theta^T x\)</li>
+      </ol>
+      <p>ក្រោម MLE គ្រប់បំណែងចែកទាំងអស់ក្នុង Exponential Family សុទ្ធតែចែករំលែកនូវវិធានធ្វើបច្ចុប្បន្នភាពជម្រាលកែកំហុសដូចគ្នាបេះបិទ៖</p>
+      \[\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}\]
+
+      <div id="plotly-glm-crank" class="plotly-chart" aria-label="Interactive Plotly diagram: the GLM parameter crank mapping features through weights, the natural parameter, and the canonical response function to the prediction"></div>
+    </div>
+
+    <div class="card">
+      <h2>៥. ការធ្វើចំណាត់ថ្នាក់ពហុថ្នាក់៖ Softmax Regression</h2>
+      <p>សម្រាប់ \(k > 2\) ថ្នាក់ ស្លាកសម្គាល់ត្រូវបានតំណាងដោយវ៉ិចទ័រ One-Hot \(y \in \mathbb{R}^k\) ហើយប៉ារ៉ាម៉ែត្ររួមមាន \(\theta_1, \dots, \theta_k \in \mathbb{R}^{d+1}\)។</p>
+      <h3>រូបមន្ត Softmax</h3>
+      \[p(y = j \mid x; \theta) = \frac{\exp(\theta_j^T x)}{\sum_{l=1}^k \exp(\theta_l^T x)}\]
+      <h3>Cross-Entropy Loss</h3>
+      \[\mathcal{L}(\theta) = -\sum_{i=1}^n \sum_{j=1}^k y_j^{(i)} \log p(y^{(i)} = j \mid x^{(i)}; \theta)\]
+
+      <div id="plotly-softmax-geometry" class="plotly-chart" aria-label="Interactive Plotly chart: softmax decision regions for four classes in a 2D feature plane with probability heatmap"></div>
+    </div>
+
+    <div class="card">
+      <h2>៦. ការធ្វើឱ្យស្លាកសម្គាល់រលូន (Label Smoothing)</h2>
+      <p>ជំនួសឱ្យស្លាក One-Hot រឹង \([1, 0, 0, 0]^T\) ដែលរុញទម្ងន់ឱ្យខិតទៅរកអនន្ត Label Smoothing បែងចែកទម្ងន់ប្រូបាប៊ីលីតេតូច \(\epsilon\) ស្មើៗគ្នាទៅគ្រប់ថ្នាក់៖</p>
+      \[y_{\text{smooth}, j} = y_j (1 - \epsilon) + \frac{\epsilon}{k}\]
+      <p>ឧទាហរណ៍ សម្រាប់ ៤ ថ្នាក់ជាមួយ \(\epsilon = 0.1\)៖ \([1, 0, 0, 0]^T \implies [0.925, 0.025, 0.025, 0.025]^T\)។ បច្ចេកទេសនេះជួយទប់ស្កាត់ Overfitting, បង្កើនភាពធន់នឹងកំហុសទិន្នន័យ (Label Noise) និងជួយឱ្យលំហូរជម្រាលមានស្ថេរភាពល្អ។</p>
+    </div>
+
+    <div class="card">
+      <h2>៧. កម្មវិធីអនុវត្តជាក់ស្តែង</h2>
+      <ul>
+        <li><strong>ការទស្សន៍ទាយ Token បន្ទាប់ក្នុង LLMs</strong>: ស្រទាប់ Softmax ដ៏ធំសម្បើមត្រូវបានប្រើជា Prediction Head ចុងក្រោយដើម្បីជ្រើសរើស Token បន្ទាប់ពីវចនានុក្រមទំហំ \(50k - 250k\) Tokens។</li>
+        <li><strong>យន្តការ Self-Attention ក្នុង Transformers</strong>:
+          \[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\]
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៨. សំណួរត្រិះរិះពិចារណា</h2>
+      <ol>
+        <li><strong>ភាពប៉ោងតាមបែបគណិតវិទ្យា</strong>: ហេតុអ្វីបានជាអនុគមន៍ Log Partition \(a(\eta)\) ត្រូវបានធានាថាជាអនុគមន៍ប៉ោង? (ចម្លើយ៖ ពីព្រោះដេរីវេទីពីរស្មើនឹង \(\text{Var}(T(y)) \ge 0\))។</li>
+        <li><strong>ភាពច្រំដែលក្នុង Softmax</strong>: ចូរបង្ហាញថាការដកវ៉ិចទ័រថេរ \(\psi\) ពីគ្រប់ \(\theta_j\) មិនធ្វើឱ្យប៉ះពាល់ដល់ប្រូបាប៊ីលីតេ Softmax ឡើយ។</li>
+        <li><strong>ដែនកំណត់នៃភាពខណ្ឌចែកលីនេអ៊ែរ</strong>: ហេតុអ្វីបានជាលំហដែលមានវិមាត្រខ្ពស់ (ដូចជា ៧៦៨ វិមាត្ររបស់ GPT-2) ធ្វើឱ្យ Linear Classifiers ដំណើរការបានល្អអស្ចារ្យ?</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>៩. ឯកសារយោង &amp; ការអានបន្ថែម</h2>
+      <ul>
+        <li><strong>Convex Optimization (Boyd &amp; Vandenberghe)</strong>: ជំពូកទី ៣ ស្តីអំពីអនុគមន៍ Log-Convex និង Partition Functions។</li>
+        <li><strong>The Exponential Family in Statistics (Brown, 1986)</strong>: សៀវភៅគោលសម្រាប់លក្ខណៈសម្បត្តិ Exponential Families។</li>
+        <li><strong>"Large Language Monkeys" (CS229 Lore)</strong>: ការស្រាវជ្រាវស្តីពី Temperature Scaling និង Stochastic Token Sampling។</li>
+      </ul>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-3.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ៣: Logistic Regression">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ៣: Logistic Regression</span>
+        </span>
+      </a>
+      <a href="lecture-5.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ៥: Gaussian Discriminant Analysis">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ៥: Gaussian Discriminant Analysis</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture4-charts.js"></script>
+</body>
+
+</html>

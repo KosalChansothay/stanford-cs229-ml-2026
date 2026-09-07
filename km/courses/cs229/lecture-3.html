@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ៣: Logistic Regression — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ៣ សម្រាប់ Stanford CS229 ML៖ ការប៉ាន់ស្មានលទ្ធភាពអតិបរមា (MLE), ការវិភាគតម្រែតម្រង់ឡូជីស្ទីក (Logistic Regression), Sigmoid Link Function, Newton's Method និង IRLS ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-3.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-3-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ៣: Logistic Regression</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ៣
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះផ្តោតសំខាន់លើការភ្ជាប់ទំនាក់ទំនងយ៉ាងស៊ីជម្រៅរវាង <strong>ស្ថិតិប្រូបាប៊ីលីតេ (Probability Statistics)</strong> និង <strong>ក្បួនដោះស្រាយបង្កើនប្រសិទ្ធភាពក្នុងការរៀនរបស់ម៉ាស៊ីន (Machine Learning Optimization Algorithms)</strong>។ ដំបូងបង្អស់ សាស្ត្រាចារ្យ Chris Ré បានផ្តល់នូវមូលដ្ឋានគ្រឹះយុត្តិកម្មតាមបែបប្រូបាប៊ីលីតេយ៉ាងរឹងមាំសម្រាប់ <strong>មុខងារថ្លៃដើម Least Squares</strong> ពីមេរៀនទី ២ ដោយបង្ហាញថា ការកាត់បន្ថយផលបូកការេនៃកំហុសលំអៀង គឺដូចគ្នាបេះបិទទៅនឹងការធ្វើអតិបរមាកម្មលើលទ្ធភាព (Log-Likelihood) ក្រោមការសន្មតថាទិន្នន័យមានកំហុសរំខាន Gaussian ដែលមានលក្ខណៈឯករាជ្យ និងបំណែងចែកដូចគ្នា (IID Gaussian noise)។
+      </p>
+      <p>
+        បន្ទាប់មក មេរៀនបានផ្លាស់ប្តូរទិសដៅពីការវិភាគតម្រែតម្រង់ជាលេខបន្តបន្ទាប់ ទៅកាន់ <strong>ការធ្វើចំណាត់ថ្នាក់ទ្វេភាគ (Binary Classification)</strong>។ សាស្ត្រាចារ្យបានគូសបញ្ជាក់ពីចំណុចខ្វះខាតគ្រឹះនៃការយក Linear Regression មកប្រើដោយផ្ទាល់លើបញ្ហាចំណាត់ថ្នាក់ (ដូចជាការបង្ខូចទ្រង់ទ្រាយព្រំដែនសម្រេចចិត្តដោយសារតែទិន្នន័យ Outliers នៅឆ្ងាយ) ហើយបានណែនាំនូវ <strong>ការវិភាគតម្រែតម្រង់ឡូជីស្ទីក (Logistic Regression)</strong>។ តាមរយៈការបញ្ជូនលទ្ធផលបន្សំលីនេអ៊ែរនៃ Features ឆ្លងកាត់ <strong>អនុគមន៍ភ្ជាប់ Sigmoid</strong> ម៉ូដែលនេះអាចបញ្ចេញតម្លៃប្រូបាប៊ីលីតេត្រឹមត្រូវចន្លោះពី ០ ដល់ ១។ ការទាញដេរីវេ Log-Likelihood នៃម៉ូដែលចំណាត់ថ្នាក់នេះ និងការបង្កើនប្រសិទ្ធភាពតាមរយៈ <strong>Gradient Ascent</strong> បានបង្ហាញនូវលទ្ធផលគួរឱ្យភ្ញាក់ផ្អើលមួយ៖ ទម្រង់ជម្រាលកែកំហុសមានទម្រង់រូបមន្ត \(y - h(x)\) ដូចគ្នាទាំងស្រុងទៅនឹង Linear Regression!
+      </p>
+      <p>
+        ជាចុងក្រោយ មេរៀនបានស្វែងយល់លើវិធីសាស្ត្របង្កើនប្រសិទ្ធភាពលំដាប់ទីពីរ គឺ <strong>វិធីសាស្ត្រញូតុន (Newton's Method)</strong>។ សាស្ត្រាចារ្យ Chris Ré បានប្រៀបធៀបល្បឿននៃការរួមគ្នាក្នុងកម្រិតការ៉េដ៏លឿនបំផុតរបស់ Newton's Method ទៅនឹងភាពស្មុគស្មាញនៃការគណនាកម្រិតធ្ងន់ \(O(nd^2 + d^3)\) ក្នុងមួយជំហាន ដែលពន្យល់ពីមូលហេតុដែលក្បួនដោះស្រាយសាមញ្ញ និងស្រាលដូចជា <strong>SGD</strong> នៅតែជាកម្លាំងស្នូលក្នុងការពង្រីកមាត្រដ្ឋានម៉ូដែលធំៗទំនើបៗ។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ការធ្វើចំណាត់ថ្នាក់ទ្វេភាគ (Binary Classification)</strong>: កិច្ចការរៀនដោយមានការណែនាំដែលលំហស្លាកសម្គាល់គោលដៅគឺជាតម្លៃដាច់ដោយឡែកកំណត់ត្រឹមពីរ តាមអនុសញ្ញាកំណត់ដោយ \(y^{(i)} \in \{0, 1\}\)។</li>
+        <li><strong>ការសន្មតកំហុសរំខានគ្មានលំអៀង (Unbiased Noise Assumption)</strong>: ការសន្មតថាតម្លៃរំពឹងទុកនៃកំហុសរំខាន \(\epsilon^{(i)}\) ស្មើនឹងសូន្យ (\(E[\epsilon^{(i)}] = 0\))។</li>
+        <li><strong>ឯករាជ្យ និងបំណែងចែកដូចគ្នា (IID)</strong>: ការសន្មតគំរូស្នូលដែលទិន្នន័យ ឬកំហុសរំខាននីមួយៗត្រូវបានទាញចេញដោយឯករាជ្យពីបំណែងចែកប្រូបាប៊ីលីតេដូចគ្នា។</li>
+        <li><strong>អនុគមន៍លទ្ធភាព (Likelihood, \(L(\theta)\))</strong>: ប្រូបាប៊ីលីតេនៃសំណុំទិន្នន័យដែលបានសង្កេត គិតជាអនុគមន៍នៃវ៉ិចទ័រប៉ារ៉ាម៉ែត្រ \(\theta\)។</li>
+        <li><strong>អនុគមន៍ Log-Likelihood (\(l(\theta)\))</strong>: អនុគមន៍លោការីតធម្មជាតិនៃ Likelihood ដែលបំប្លែងផលគុណឱ្យទៅជាផលបូក និងសម្រួលដល់ការគណនាដេរីវេ។</li>
+        <li><strong>ការប៉ាន់ស្មានលទ្ធភាពអតិបរមា (Maximum Likelihood Estimation - MLE)</strong>: គោលការណ៍ស្ថិតិដែលជ្រើសរើសប៉ារ៉ាម៉ែត្រ \(\theta\) ណាដែលធ្វើឱ្យ Log-Likelihood នៃទិន្នន័យសង្កេតមានតម្លៃអតិបរមា។</li>
+        <li><strong>អនុគមន៍ភ្ជាប់ (Link Function)</strong>: អនុគមន៍ម៉ូណូតូន \(g\) ដែលផ្គូផ្គងតម្លៃទស្សន៍ទាយលីនេអ៊ែរ (\(\theta^T x\)) ទៅកាន់លំហធាតុចេញមានព្រំដែនកំណត់ (ចន្លោះ \((0, 1)\) សម្រាប់ប្រូបាប៊ីលីតេ)។</li>
+        <li><strong>អនុគមន៍ Sigmoid / Logistic Function</strong>: អនុគមន៍ភ្ជាប់ \(g(z) = \frac{1}{1 + e^{-z}}\) ដែលបម្លែងតម្លៃពិត \(z \in \mathbb{R}\) ទៅជាតម្លៃប្រូបាប៊ីលីតេក្នុងចន្លោះ \((0, 1)\) យ៉ាងរលូន។</li>
+        <li><strong>ម៉ាទ្រីស Hessian (\(H\))</strong>: ម៉ាទ្រីសការេវិមាត្រ \((d+1) \times (d+1)\) នៃដេរីវេដោយផ្នែកលំដាប់ទីពីរ ដែលឆ្លុះបញ្ចាំងពីកម្រិតកោង (Curvature) នៃមុខងារគោលដៅ។</li>
+        <li><strong>ម៉ាទ្រីសច្រាសក្លែងក្លាយ Moore-Penrose (\(H^{\dagger}\))</strong>: ទម្រង់ទូទៅនៃម៉ាទ្រីសច្រាសដែលប្រើក្នុង Newton's Method នៅពេលដែល Hessian មិនអាចច្រាសបាន (Singular)។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា និងការទាញសមីការ</h2>
+      <h3>ក. មូលដ្ឋានគ្រឹះយុត្តិកម្មតាមបែបប្រូបាប៊ីលីតេនៃ Least Squares (MLE)</h3>
+      <p>យើងសន្មតថាស្លាកសម្គាល់គោលដៅត្រូវបានបង្កើតឡើងដោយម៉ូដែលលីនេអ៊ែរបូកនឹងកំហុសរំខាន Gaussian៖</p>
+      \[y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \quad \epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2) \text{ (IID)}\]
+      <p>នាំឱ្យអនុគមន៍ដង់ស៊ីតេប្រូបាប៊ីលីតេមានទម្រង់៖</p>
+      \[p(y^{(i)} \mid x^{(i)}; \theta) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left( -\frac{(y^{(i)} - \theta^T x^{(i)})^2}{2\sigma^2} \right)\]
+      <p>អនុគមន៍ Log-Likelihood នៃសំណុំទិន្នន័យទាំងមូលគឺ៖</p>
+      \[l(\theta) = \log \prod_{i=1}^n p(y^{(i)} \mid x^{(i)}; \theta) = n \log \frac{1}{\sqrt{2\pi}\sigma} - \frac{1}{2\sigma^2} \sum_{i=1}^n \left( y^{(i)} - \theta^T x^{(i)} \right)^2\]
+      <p>ដូច្នេះ ការធ្វើអតិបរមាកម្មលើ \(l(\theta)\) គឺដូចគ្នាបេះបិទទៅនឹងការកាត់បន្ថយផលបូកការេនៃកំហុស (Least Squares)៖</p>
+      \[\arg\max_\theta l(\theta) = \arg\min_\theta \frac{1}{2} \sum_{i=1}^n \left( y^{(i)} - \theta^T x^{(i)} \right)^2 = \arg\min_\theta J(\theta)\]
+
+      <h3>ខ. ការវិភាគតម្រែតម្រង់ឡូជីស្ទីក (Sigmoid Link Function &amp; MLE)</h3>
+      <p>សម្រាប់ \(y \in \{0, 1\}\) យើងកំណត់៖</p>
+      \[h_\theta(x) = g(\theta^T x) = \frac{1}{1 + e^{-\theta^T x}}\]
+      \[P(y = 1 \mid x; \theta) = h_\theta(x), \quad P(y = 0 \mid x; \theta) = 1 - h_\theta(x)\]
+      <p>សរសេររួមគ្នាតាមទម្រង់ Bernoulli៖</p>
+      \[p(y \mid x; \theta) = (h_\theta(x))^y (1 - h_\theta(x))^{1-y}\]
+      <p>អនុគមន៍ Log-Likelihood គឺ៖</p>
+      \[l(\theta) = \sum_{i=1}^n \left[ y^{(i)} \log h_\theta(x^{(i)}) + (1 - y^{(i)}) \log(1 - h_\theta(x^{(i)})) \right]\]
+
+      <h3>ការទាញដេរីវេនៃ Log-Likelihood</h3>
+      <p>ដោយសារ \(g'(z) = g(z)(1 - g(z))\) ការធ្វើដេរីវេតាមវិធានច្រវាក់នាំឱ្យទទួលបាន៖</p>
+      \[\frac{\partial}{\partial \theta_j} l(\theta) = (y - h_\theta(x))x_j \implies \nabla_\theta l(\theta) = \sum_{i=1}^n \left( y^{(i)} - h_\theta(x^{(i)}) \right) x^{(i)}\]
+      <p>ជម្រាលនេះមានទម្រង់កែកំហុស \((y - h(x))\) ដូចគ្នាទៅនឹង Linear Regression!</p>
+
+      <h3>ភាពផតនៃ Logistic Log-Likelihood (Concavity)</h3>
+      <p>ម៉ាទ្រីស Hessian នៃ \(l(\theta)\) គឺ៖</p>
+      \[H = -\sum_{i=1}^n h_\theta(x^{(i)})\left(1 - h_\theta(x^{(i)})\right) x^{(i)} (x^{(i)})^T\]
+      <p>ដែលជាម៉ាទ្រីសអវិជ្ជមានពាក់កណ្តាលកំនត់ (Negative Semidefinite) ធានាថា \(l(\theta)\) ជាអនុគមន៍ផត ហើយការបង្កើនប្រសិទ្ធភាពនឹងរួមគ្នាមកកាន់ចំណុចអតិបរមាសកល (Global Maximum) ជានិច្ច។</p>
+    </div>
+
+    <div class="card">
+      <h2>៤. ក្បួនដោះស្រាយបង្កើនប្រសិទ្ធភាពជាជំហានៗ</h2>
+      <h3>ក. Gradient Ascent សម្រាប់ Logistic Regression</h3>
+      <p>ដោយសារយើងចង់ធ្វើអតិបរមាកម្មលើ \(l(\theta)\) យើងប្រើប្រាស់ <strong>Gradient Ascent</strong> (សញ្ញាបូក)៖</p>
+      <ul>
+        <li><strong>Batch Gradient Ascent</strong>:
+          \[\theta := \theta + \alpha \sum_{i=1}^n \left( y^{(i)} - h_\theta(x^{(i)}) \right) x^{(i)}\]
+        </li>
+        <li><strong>Stochastic Gradient Ascent (SGD)</strong>:
+          \[\theta := \theta + \alpha \left( y^{(i)} - h_{\theta^{(t)}}(x^{(i)}) \right) x^{(i)}\]
+        </li>
+      </ul>
+
+      <h3>ឧទាហរណ៍គំរូតូចជាក់ស្តែង</h3>
+      <p>ឧបមាចំណុចទិន្នន័យ \((x, y) = (2, 1)\) ជាមួយ \(x_0 = 1\) នាំឱ្យ \(x = \begin{bmatrix} 1 \\ 2 \end{bmatrix}\) ចាប់ផ្តើមពី \(\theta = \begin{bmatrix} 0 \\ 0 \end{bmatrix}\) និង \(\alpha = 0.1\)៖</p>
+      <ol>
+        <li>ទស្សន៍ទាយ៖ \(h_\theta(x) = g(0) = 0.5\)</li>
+        <li>កំហុស៖ \(y - h_\theta(x) = 1 - 0.5 = 0.5\)</li>
+        <li>បច្ចុប្បន្នភាព៖ \(\theta := \begin{bmatrix} 0 \\ 0 \end{bmatrix} + 0.1 \times 0.5 \times \begin{bmatrix} 1 \\ 2 \end{bmatrix} = \begin{bmatrix} 0.05 \\ 0.1 \end{bmatrix}\)</li>
+        <li>លទ្ធផលថ្មី៖ \(h_\theta(x) = g(0.25) \approx 0.562\) (ប្រូបាប៊ីលីតេរំកិលខិតជិតស្លាកពិត ១)</li>
+      </ol>
+
+      <div id="plotly-logistic-boundary" class="plotly-chart" aria-label="Interactive Plotly chart: Logistic Regression decision boundary with sigmoid probability gradient"></div>
+
+      <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-subtle, #334155);">
+
+      <h3>ខ. វិធីសាស្ត្រញូតុន (Newton's Method)</h3>
+      <p>វិធីសាស្ត្រលំដាប់ទីពីរដែលប្រើប្រាស់កម្រិតកោង (Curvature) នៃអនុគមន៍ដើម្បីលោតទៅកាន់ចំណុចអតិបរមា៖</p>
+      \[\theta^{(t+1)} := \theta^{(t)} - H^{-1} \nabla_\theta l(\theta^{(t)})\]
+      <p>ដែល \(H_{jk} = \frac{\partial^2 l(\theta)}{\partial \theta_j \partial \theta_k}\) គឺជាធាតុនៃម៉ាទ្រីស Hessian។</p>
+
+      <div id="plotly-optimization-compare" class="plotly-chart" aria-label="Interactive Plotly chart: Gradient Descent versus Newton's Method optimization paths"></div>
+    </div>
+
+    <div class="card">
+      <h2>៥. តុល្យភាពជាក់ស្តែង ប្រព័ន្ធ និងការបង្កើនប្រសិទ្ធភាព</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>លក្ខណៈពិសេស</th>
+              <th>Stochastic Gradient Descent (SGD)</th>
+              <th>វិធីសាស្ត្រញូតុន (Newton's Method)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ភាពស្មុគស្មាញពេលវេលាក្នុងមួយជំហាន</strong></td>
+              <td>\(O(d)\) (ឬ \(O(Bd)\) សម្រាប់ Minibatch)</td>
+              <td>\(O(n d^2 + d^3)\)</td>
+            </tr>
+            <tr>
+              <td><strong>ទំហំអង្គចងចាំ (Memory)</strong></td>
+              <td>\(O(d)\)</td>
+              <td>\(O(d^2)\) សម្រាប់ផ្ទុក Hessian</td>
+            </tr>
+            <tr>
+              <td><strong>អត្រានៃការរួមគ្នា</strong></td>
+              <td>Linear / Sublinear (ជំហានច្រើន)</td>
+              <td>Quadratic (ជំហានតិចតួចបំផុត)</td>
+            </tr>
+            <tr>
+              <td><strong>ការលៃតម្រូវ Step Size (\(\alpha\))</strong></td>
+              <td>ទាមទារការកំណត់កាលវិភាគល្អិតល្អន់</td>
+              <td>មិនត្រូវការ \(\alpha\) ឡើយ</td>
+            </tr>
+            <tr>
+              <td><strong>ការពង្រីកលើវិមាត្រខ្ពស់ (\(d \gg 10^5\))</strong></td>
+              <td>ពង្រីកបានយ៉ាងល្អឥតខ្ចោះ (ស្តង់ដារ LLMs)</td>
+              <td>មិនអាចអនុវត្តបាន (ថ្លៃដើម \(d^3\))</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>៦. Weighted Least Squares &amp; IRLS</h2>
+      <h3>ក. Weighted Least Squares (WLS)</h3>
+      <p>នៅពេលកំហុសរំខានមានកម្រិតប្រែប្រួលខុសគ្នា \(\epsilon^{(i)} \sim \mathcal{N}(0, \sigma_i^2)\) នោះទិន្នន័យនីមួយៗត្រូវបានថ្លឹងទម្ងន់ដោយ \(w^{(i)} = \frac{1}{\sigma_i^2}\)៖</p>
+      \[J(\theta) = \frac{1}{2} \sum_{i=1}^n w^{(i)} \left( y^{(i)} - \theta^T x^{(i)} \right)^2 \implies \theta = (X^T W X)^{-1} X^T W y\]
+
+      <h3>ខ. IRLS: Newton's Method លើ Logistic Regression គឺជា Reweighted Least Squares</h3>
+      <p>ការអនុវត្ត Newton's Method លើ Logistic Regression គឺដូចគ្នាបេះបិទទៅនឹងការដោះស្រាយ Weighted Least Squares ម្តងហើយម្តងទៀត ជាមួយនឹងទម្ងន់ \(w^{(i)} = h_\theta(x^{(i)})(1 - h_\theta(x^{(i)}))\)។ ដំណើរការនេះត្រូវបានគេហៅថា <strong>Iteratively Reweighted Least Squares (IRLS)</strong>។</p>
+    </div>
+
+    <div class="card">
+      <h2>៧. កម្មវិធីអនុវត្តជាក់ស្តែង</h2>
+      <ul>
+        <li><strong>ស្រទាប់បញ្ចេញលទ្ធផលចំណាត់ថ្នាក់ក្នុង LLMs (Softmax Output Layers)</strong>: ម៉ូដែលភាសាធំៗប្រើប្រាស់ទម្រង់ពហុថ្នាក់នៃ Logistic Regression (Softmax) ជាស្រទាប់ចុងក្រោយដើម្បីទស្សន៍ទាយ Token បន្ទាប់។</li>
+        <li><strong>ការវិភាគស្ថិតិក្នុងវិស័យជីវវេជ្ជសាស្ត្រ</strong>: ក្នុងទិន្នន័យដែលមានចំនួន Features តូច (\(d < 100\)) Newton's Method ឬ L-BFGS ត្រូវបានពេញចិត្តបំផុតព្រោះវារួមគ្នាភ្លាមៗដោយមិនបាច់លៃតម្រូវ Learning Rate។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៨. សំណួរត្រិះរិះពិចារណា</h2>
+      <ol>
+        <li><strong>ភាពរងប្រតិកម្មចំពោះ Outliers ក្នុង Least Squares</strong>: ហេតុអ្វីបានជា Linear Regression ផ្តល់ព្រំដែនសម្រេចចិត្តមិនល្អលើទិន្នន័យចំណាត់ថ្នាក់នៅពេលមាន Outlier ឆ្ងាយខ្លាំង ហើយហេតុអ្វីបានជា Logistic Regression ជៀសផុតពីបញ្ហានេះ?</li>
+        <li><strong>អត្ថន័យនៃគំរូកំហុសរំខាន</strong>: ប្រសិនបើយើងសន្មតថាកំហុសរំខានដើរតាមបំណែងចែក Laplace (\(p(\epsilon) \propto e^{-|\epsilon|/b}\)) ជំនួសឱ្យ Gaussian តើគោលដៅ MLE នឹងផ្លាស់ប្តូរទៅជាទម្រង់ណា? (ចម្លើយ៖ Least Absolute Deviations - LAD)។</li>
+        <li><strong>បញ្ហារាំងស្ទះនៃម៉ាទ្រីស Hessian</strong>: ហេតុអ្វីបានជា Newton's Method មិនអាចប្រើសម្រាប់ការហ្វឹកហាត់ LLM? តើតួគណិតវិទ្យាណាដែលជាឧបសគ្គផ្នែករឹង (ចម្លើយ៖ \(O(d^3)\) សម្រាប់បញ្ច្រាសម៉ាទ្រីស និង \(O(d^2)\) សម្រាប់ផ្ទុក Memory)?</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>៩. ឯកសារយោង &amp; ការអានបន្ថែម</h2>
+      <ul>
+        <li><strong>Generalized Linear Models (GLMs)</strong>: ក្របខ័ណ្ឌគណិតវិទ្យាទូទៅសម្រាប់ Lecture 4។</li>
+        <li><strong>Friday TA Sessions</strong>: ការពិនិត្យមើលឡើងវិញនូវ Taylor Expansions, Matrix Gradients និងលក្ខណៈសម្បត្តិនៃ Hessian។</li>
+        <li><strong>Curvature Approximations in Deep Learning</strong>: ឯកសារសិក្សាអំពី Quasi-Newton (L-BFGS), AdaGrad និង Adam Optimizer។</li>
+      </ul>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-2.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ២: Supervised Learning Setup">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ២: Supervised Learning Setup</span>
+        </span>
+      </a>
+      <a href="lecture-4.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ៤: Generalized Linear Models">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ៤: Generalized Linear Models</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture3-charts.js"></script>
+</body>
+
+</html>

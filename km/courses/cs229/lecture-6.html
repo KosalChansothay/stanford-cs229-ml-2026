@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ៦: Dataset Split, ML Advice — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ៦ សម្រាប់ Stanford CS229 ML៖ ការបំបែកសមាសធាតុ Bias-Variance, ការវិភាគតម្រែតម្រង់ Ridge, បាតុភូត Double Descent, សុពលកម្មខ្វែង k-fold និងក្បួនដោះស្រាយ Hyperband ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-6.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-6-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ៦: ការបែងចែកសំណុំទិន្នន័យ &amp; ដំបូន្មានអនុវត្ត ML (Dataset Split, ML Advice)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ៦
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះផ្តោតលើសំណួរគន្លឹះដ៏សំខាន់បំផុតក្នុងវិស័យ Machine Learning៖ តើយើងគួរជ្រើសរើសម៉ូដែលបែបណាដើម្បីឱ្យវាមានសមត្ថភាពធ្វើទូទៅកម្ម (Generalization) យ៉ាងមានប្រសិទ្ធភាពខ្ពស់លើទិន្នន័យថ្មីដែលមិនធ្លាប់ឃើញពីមុន? សាស្ត្រាចារ្យបានបកស្រាយយ៉ាងលម្អិតអំពីទំនាស់ជាមូលដ្ឋានរវាង <strong>ការផ្គូផ្គងខ្វះកម្រិត (Underfitting - គម្លាតលម្អៀងខ្ពស់ / High Bias)</strong> និង <strong>ការផ្គូផ្គងហួសកម្រិត (Overfitting - វ៉ារ្យ៉ង់ខ្ពស់ / High Variance)</strong> តាមរយៈទ្រឹស្តីស្ថិតិនៃ <strong>ការបំបែកសមាសធាតុ Bias-Variance (Bias-Variance Decomposition)</strong>។
+      </p>
+      <p>
+        ដើម្បីដោះស្រាយបញ្ហាវ៉ារ្យ៉ង់ខ្ពស់ បច្ចេកទេស <strong>Regularization</strong> (ដោយប្រើ <strong>Ridge Regression</strong> ជាករណីសិក្សា) ត្រូវបានណែនាំដើម្បីប្តូរយកការកើនឡើងនូវ Bias បន្តិចបន្តួចជាថ្នូរនឹងការកាត់បន្ថយវ៉ារ្យ៉ង់យ៉ាងច្រើនលើសលប់។ បន្ទាប់មក មេរៀនបានភ្ជាប់ទ្រឹស្តីបុរាណទៅកាន់ <strong>បទដ្ឋានគំនិត Machine Learning ទំនើបៗ</strong> រួមមានបាតុភូត <strong>Double Descent</strong> និងការសិក្សា <strong>ImageNet-V2</strong> ដែលលុបបំបាត់ការព្រួយបារម្ភអំពី Adaptive Overfitting។ ជាចុងក្រោយ លំហូរការងារជាក់ស្តែងដូចជា <strong>\(k\)-fold Cross-Validation</strong> និង <strong>ក្បួនដោះស្រាយ Hyperband</strong> ត្រូវបានណែនាំសម្រាប់ការលៃតម្រូវ Hyperparameter។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>គោលដៅនៃការធ្វើទូទៅកម្ម (Generalization)</strong>: ជ្រើសរើសម៉ូដែលដែលមានស្ថិរភាព និងទស្សន៍ទាយបានត្រឹមត្រូវលើទិន្នន័យអនាគត។</li>
+        <li><strong>ការផ្គូផ្គងខ្វះកម្រិត (Underfitting / High Bias)</strong>: ម៉ូដែលសាមញ្ញពេក មិនអាចក្តោបក្តាប់ទម្រង់ទិន្នន័យពិតប្រាកដបាន។</li>
+        <li><strong>ការផ្គូផ្គងហួសកម្រិត (Overfitting / High Variance)</strong>: ម៉ូដែលស្មុគស្មាញជ្រុល រៀនទាំងសំឡេងរំខានចៃដន្យ (Random Noise) នៃទិន្នន័យបង្វឹក។</li>
+        <li><strong>ការអន្តរគ្រិត (Interpolation)</strong>: ស្ថានភាពដែលម៉ូដែលកាត់កាត់គ្រប់ចំណុចទិន្នន័យបង្វឹកដោយគ្មានកំហុស (Zero training loss)។</li>
+        <li><strong>សំឡេងរំខានមិនអាចជៀសវាងបាន (\(\sigma^2\) - Unavoidable Noise)</strong>: វ៉ារ្យ៉ង់ខាងក្នុងនៃទិន្នន័យដែលគ្មានក្បួនដោះស្រាយណាអាចលុបបំបាត់បាន។</li>
+        <li><strong>បច្ចេកទេស Regularization</strong>: ការបន្ថែមទណ្ឌកម្មលើទំហំប៉ារ៉ាម៉ែត្រដើម្បីកាត់បន្ថយវ៉ារ្យ៉ង់ និងទប់ស្កាត់ Overfitting។</li>
+        <li><strong>សុពលកម្មខ្វែង \(k\)-ផ្នត់ (\(k\)-fold Cross-Validation)</strong>: វិធីសាស្ត្របែងចែកទិន្នន័យជា \(k\) ផ្នត់ ដើម្បីវាយតម្លៃ Hyperparameter ដោយមិនធ្វើឱ្យធ្លាយទិន្នន័យតេស្ត។</li>
+        <li><strong>បាតុភូតចុះទ្វេដង (Double Descent)</strong>: បាតុភូតទំនើបដែលកំហុសតេស្តធ្លាក់ចុះជាលើកទីពីរ ហួសពីកម្រិតព្រំដែនអន្តរគ្រិត (\(d = n\))។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. ការបំបែកសមាសធាតុ Bias-Variance (Mathematical Derivation)</h2>
+      <p>ដំណើរការបង្កើតទិន្នន័យ៖ \(y = h^*(x) + \epsilon\) ដែល \(\mathbb{E}[\epsilon] = 0\) និង \(\text{Var}(\epsilon) = \sigma^2\)។</p>
+      <p>តម្លៃរំពឹងទុកនៃកំហុសតេស្តអាចបំបែកជា ៣ សមាសភាគឯករាជ្យពីគ្នា៖</p>
+      \[\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \sigma^2 + \text{Bias}(h_S(x))^2 + \text{Var}(h_S(x))\]
+      <ul>
+        <li><strong>Unavoidable Noise</strong>: \(\sigma^2 = \mathbb{E}[\epsilon^2]\)</li>
+        <li><strong>Bias Squared</strong>: \(\text{Bias}(h_S(x))^2 = (\bar{h}(x) - h^*(x))^2\)</li>
+        <li><strong>Variance</strong>: \(\text{Var}(h_S(x)) = \mathbb{E}_S \left[ (h_S(x) - \bar{h}(x))^2 \right]\)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៤. Ridge Regression &amp; ក្រាហ្វិកអន្តរកម្ម</h2>
+      <p>អនុគមន៍គោលដៅ Ridge Regression (\(L_2\) Regularization)៖</p>
+      \[J(\theta) = \frac{1}{2} \|X\theta - y\|_2^2 + \frac{\rho}{2} \|\theta\|_2^2\]
+      <p>រូបមន្តប៉ារ៉ាម៉ែត្រទម្រង់បិទជិត៖</p>
+      \[\theta_{\text{ridge}} = (X^T X + \rho I)^{-1} X^T y\]
+      <p>
+        ការបូកបន្ថែម \(\rho I\) ជួយរំកិលតម្លៃផ្ទាល់ \(\lambda_i \to \lambda_i + \rho\) ធានាថាម៉ាទ្រីសតែងតែមានច្រាស (\(\lambda_{\min} \ge \rho > 0\)) និងទប់ស្កាត់ការប្រែប្រួលវ៉ារ្យ៉ង់ជ្រុល។
+      </p>
+
+      <div id="plotly-bias-variance" class="plotly-chart" aria-label="Interactive Plotly chart: bias-variance trade-off curves with training error, test error, bias squared, and variance"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ការប្តូរផលប្រយោជន៍រវាង Bias និង Variance ក្នុងស្ថិតិបុរាណ។</em></p>
+
+      <div id="plotly-double-descent" class="plotly-chart" aria-label="Interactive Plotly chart: the double descent test-error curve around the interpolation threshold"></div>
+      <p class="chart-caption"><em>រូបភាព៖ បាតុភូតចុះទ្វេដង (Double Descent) ក្នុងយុគសម័យ Deep Learning ទំនើប។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៥. ក្បួនដោះស្រាយ Hyperband (Successive Halving)</h2>
+      <pre><code class="language-plaintext">Hyperband Pseudocode (Simplified Successive Halving Round):
+------------------------------------------------------------
+ធាតុចូល: M (សំណុំនៃការកំណត់ Hyperparameter ចៃដន្យ ឧទាហរណ៍៖ តម្លៃនៃ rho)
+        R (កញ្ចប់ថវិកាគណនាដំបូង ឧទាហរណ៍៖ 5 epochs សម្រាប់ការកំណត់នីមួយៗ)
+
+ដរាបណា size(M) > 1:
+    ១. ដំណើរការបង្វឹកគ្រប់ការកំណត់ទាំងអស់ក្នុង M ចំនួន R ជំហាន
+    ២. វាយតម្លៃការកំណត់នីមួយៗលើសំណុំ Dev / Validation
+    ៣. តម្រៀបការកំណត់ទាំងអស់តាមលំដាប់ពិន្ទុ Dev loss
+    ៤. កាត់ចោល 50% ផ្នែកខាងក្រោម (ការកំណត់ដែលខ្សោយជាងគេ)
+    ៥. បង្កើនទ្វេដងនូវជំហានបង្វឹកសម្រាប់បេក្ខជនដែលនៅសល់៖ R := 2 * R
+    ៦. M := បេក្ខជនដែលនៅសល់ (50% ផ្នែកខាងលើ)
+
+ត្រឡប់មកវិញនូវការកំណត់ដ៏ឆ្នើមតែមួយគត់ដែលនៅសេសសល់ចុងក្រោយ</code></pre>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-5.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ៥: Gaussian Discriminant Analysis">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ៥: Gaussian Discriminant Analysis</span>
+        </span>
+      </a>
+      <a href="lecture-7.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ៧: បណ្តាញញាណសិប្បនិម្មិត ១ (Neural Networks 1)">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ៧: បណ្តាញញាណសិប្បនិម្មិត ១ (Neural Networks 1)</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture6-charts.js"></script>
+</body>
+
+</html>

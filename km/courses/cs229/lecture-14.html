@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ១៤: Transformers &amp; In-Context Learning — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ១៤ សម្រាប់ Stanford CS229 ML៖ Tokenization, Autoregressive Language Modeling, Next-Token Loss, Causal Self-Attention, Multi-Head Attention, និង FlashAttention ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពីយើង</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-14-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ១៤: ស្ថាបត្យកម្ម Transformers និងការរៀនក្នុងបរិបទ (Transformers &amp; In-Context Learning)</h1>
+      <p class="subtitle">Stanford CS229 — ស្ថាបត្យកម្មម៉ូដែលភាសាធំៗ (LLMs), Self-Attention និងការគណនាលើផ្នែករឹង</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ១៤
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <!-- Fallback Content for Non-JS / Direct Readers -->
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះបង្ហាញអំពីស្ថាបត្យកម្ម និងគំរូនីតិវិធីប្រូបាប៊ីលីតេដែលទ្រទ្រង់ដល់ <strong>ម៉ូដែលភាសាធំៗ (LLMs)</strong> ទំនើប។ ដោយចាប់ផ្តើមពី <strong>Tokenization (BPE)</strong> និងការបញ្ជូនទៅកាន់លំហ Embeddings មេរៀនបានបង្កើតជាផ្លូវការនូវគំរូទស្សន៍ទាយពាក្យបន្ទាប់តាមរយៈ <strong>Negative Log-Likelihood / Cross-Entropy Loss</strong>។
+      </p>
+      <p>
+        មេរៀនពិនិត្យលម្អិតលើយន្តការ <strong>Self-Attention</strong> និងទម្រង់ម៉ាទ្រីសរបស់វា, ការប្រើប្រាស់ <strong>Causal Masking (\(-\infty\))</strong> ដើម្បីទប់ស្កាត់ការលេចធ្លាយព័ត៌មានអនាគត, <strong>Multi-Head Attention (MHA)</strong> និងមូលហេតុដែលការឆ្លាស់គ្នារវាង Attention និង MLPs ផ្តល់នូវ Inductive Bias ដ៏ល្អបំផុត។ នៅចុងបញ្ចប់ មេរៀនបានវិភាគលើឧបសគ្គស្ទះនៃការគណនា \(O(T^2)\) និងដំណោះស្រាយបំបែកប្លុកលើ SRAM តាមរយៈ <strong>FlashAttention</strong>។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>Autoregressive Modeling</strong>: ការបង្កើតគំរូភាសាដោយទស្សន៍ទាយម្តងមួយ Token តាមលំដាប់ផ្អែកលើប្រវត្តិនៃ Token មុនៗ។</li>
+        <li><strong>Subword Tokenization (BPE)</strong>: ការបំបែកពាក្យទៅជាចំណែក Subwords ដើម្បីបញ្ចៀសបញ្ហាពាក្យក្រៅវាក្យសព្ទ (OOV) និងកាត់បន្ថយប្រវែងលំដាប់។</li>
+        <li><strong>Logits &amp; Softmax</strong>: តម្លៃទិន្នផលដើម \(U_t\) ត្រូវបានបម្លែងទៅជាការបែងចែកប្រូបាប៊ីលីតេត្រឹមត្រូវតាមរយៈអនុគមន៍ Softmax។</li>
+        <li><strong>Causal Masking</strong>: ម៉ាទ្រីសត្រីកោណខាងលើដែលដាក់តម្លៃ \(-\infty\) លើទីតាំង \(j > t\) ដើម្បីធានាថា \(P_{t, j} = 0\) សម្រាប់ Token អនាគត។</li>
+        <li><strong>FlashAttention</strong>: ក្បួនដោះស្រាយ Hardware-Aware Tiling ដែលគណនា Attention លើ GPU SRAM ដោយកាត់បន្ថយការអាន/សរសេរ HBM ពី \(O(T^2)\) មកត្រឹម \(O(T)\)។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យានៃ Causal Self-Attention</h2>
+      <p>ការគណនាក្នុងទម្រង់ម៉ាទ្រីស៖</p>
+      \[H^{\text{out}} = \text{softmax}\left( \frac{Q K^T}{\sqrt{d_h}} + M \right) V\]
+      <p>ដែល \(M\) គឺជាម៉ាទ្រីស Causal Mask៖</p>
+      \[M_{i, j} = \begin{cases} 0 & j \le i \\ -\infty & j > i \end{cases}\]
+
+      <div id="plotly-14-causal-attention" class="plotly-chart" aria-label="Interactive Plotly chart: Causal attention probability heatmap"></div>
+      <p><em>រូបភាព៖ កម្តៅប្រូបាប៊ីលីតេនៃ Causal Attention ដែលបិទខ្ទប់ព័ត៌មានអនាគត។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៤. ភាពស្មុគស្មាញ និងដំណោះស្រាយ FlashAttention</h2>
+      <p>
+        ភាពស្មុគស្មាញនៃការគណនា និងទំហំផ្ទុកនៃស្តង់ដារ Attention គឺ \(O(T^2)\) ដែលក្លាយជាឧបសគ្គធ្ងន់ធ្ងរនៅពេលប្រវែង Context \(T\) កើនឡើងដល់រាប់ម៉ឺន ឬរាប់លាន Tokens។
+      </p>
+      <p>
+        FlashAttention ប្រើប្រាស់ GPU SRAM ដែលជា On-Chip Memory ល្បឿនលឿន ដើម្បីគណនា Online Softmax ដោយកាត់បន្ថយការផ្ទេរទិន្នន័យលើ GPU HBM មកត្រឹមលីនេអ៊ែរ \(O(T)\)។
+      </p>
+
+      <div id="plotly-14-attention-scaling" class="plotly-chart" aria-label="Interactive Plotly chart: Attention memory scaling versus FlashAttention"></div>
+      <p><em>រូបភាព៖ មាត្រដ្ឋានអង្គចងចាំនៃស្តង់ដារ Attention ធៀបនឹង FlashAttention។</em></p>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-13.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ១៣: Contrastive Learning &amp; RAG">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ១៣: Contrastive Learning &amp; RAG</span>
+        </span>
+      </a>
+      <a href="index.html" class="pagination-btn next" aria-label="ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា: ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា &amp; មាតិកាមេរៀន">
+        <span class="pagination-label">
+          <span class="pagination-sub">ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា</span>
+          <span class="pagination-title">ទិដ្ឋភាពទូទៅនៃវគ្គសិក្សា &amp; មាតិកាមេរៀន</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture14-charts.js"></script>
+</body>
+
+</html>

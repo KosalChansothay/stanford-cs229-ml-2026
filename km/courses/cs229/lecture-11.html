@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ១១: Diffusion Models — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ១១ សម្រាប់ Stanford CS229 ML៖ ម៉ូដែលឌីភ្យូសិន (Diffusion Models), ដំណើរការបន្ថែមសំឡេងរំខាន, ដំណើរការបន្សុទ្ធសំឡេងរំខាន, ការទាញរក ELBO, Mean-Matching Loss និង Score-based SDEs ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-11.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-11-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ១១: ម៉ូដែលឌីភ្យូសិន (Diffusion Models)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ១១
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះណែនាំអំពី <strong>ម៉ូដែលឌីភ្យូសិន (Diffusion Models)</strong> ដែលជាបច្ចេកវិទ្យាឈានមុខគេបំផុតក្នុងវិស័យ Generative AI នាពេលបច្ចុប្បន្ន។ Diffusion បំបែកដំណើរការជាពីរគឺ៖ <strong>ដំណើរការបន្ថែមសំឡេងរំខាន (Forward Process, \(q\))</strong> ដែលបន្ថែមសំឡេងរំខានហ្គោសបន្តិចម្តងៗទៅលើទិន្នន័យស្អាត \(x_0\) រហូតដល់ក្លាយជាសំឡេងរំខានសសុទ្ធ \(x_T \sim \mathcal{N}(0, I)\) និង <strong>ដំណើរការបន្សុទ្ធសំឡេងរំខាន (Reverse Process, \(p_\theta\))</strong> ដែលរៀនដកសំឡេងរំខានចេញមួយជំហានម្តងៗដោយប្រើប្រាស់បណ្តាញញាណជ្រៅ។
+      </p>
+      <p>
+        តាមរយៈការទាញរក <strong>ព្រំដែនក្រោមនៃភស្តុតាង (ELBO)</strong> និងការប្រើប្រាស់វិធានច្រវាក់នៃ KL Divergence ការបង្វឹក Diffusion ត្រូវបានសម្រួលមកត្រឹមការដោះស្រាយបញ្ហា <strong>Weighted Least-Squares Mean-Matching Loss</strong>។ មេរៀនបញ្ចប់ដោយការបង្ហាញពីទស្សនវិស័យ <strong>សមីការឌីផេរ៉ង់ស្យែលស្តូកាស្ទីក (SDEs)</strong> និងតួនាទីនៃ <strong>អនុគមន៍ពិន្ទុ (Score Function, \(\nabla_x \log p_t(x)\))</strong> ក្នុងការតម្រង់ទិសទិន្នន័យឱ្យវិលត្រឡប់ទៅកាន់ទម្រង់ពិតប្រាកដ។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ដំណើរការផ្សាយទៅមុខ (\(q\))</strong>: ច្រវាក់ម៉ាកូវថេរដែលបន្ថែមសំឡេងរំខានហ្គោសជាបន្តបន្ទាប់លើទិន្នន័យ \(x_0\)。</li>
+        <li><strong>ដំណើរការផ្សាយបញ្ច្រាស (\(p_\theta\))</strong>: ច្រវាក់ម៉ាកូវរៀនដែលចាប់ផ្តើមពី \(x_T \sim \mathcal{N}(0, I)\) ហើយទស្សន៍ទាយបន្សុទ្ធទិន្នន័យស្អាតឡើងវិញ។</li>
+        <li><strong>កាលវិភាគវ៉ារ្យ៉ង់ (\(\beta_t\))</strong>: កាលវិភាគគ្រប់គ្រងទំហំសំឡេងរំខានដែលបន្ថែមនៅជំហាននីមួយៗ។</li>
+        <li><strong>បន្សំប៉ោង (Convex Combination)</strong>: ការធ្វើមាត្រដ្ឋាន \(\sqrt{1-\beta_t}\) ដើម្បីរក្សាស្ថិរភាពវ៉ារ្យ៉ង់កុំឱ្យផ្ទុះឡើងកំឡុងពេលផ្សាយទៅមុខ។</li>
+        <li><strong>អនុគមន៍ពិន្ទុ (Score Function)</strong>: ជម្រាលនៃលោការីតដង់ស៊ីតេ \(\nabla_x \log p_t(x)\) ដែលដើរតួជាវ៉ិចទ័រនាំផ្លូវក្នុង Reverse SDE។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា &amp; ការធ្វើ Marginalization ដោយផ្ទាល់</h2>
+      <p>ដំណើរការបន្ថែមសំឡេងរំខានមួយជំហាន៖</p>
+      \[x_t = \sqrt{1 - \beta_t} x_{t-1} + \sqrt{\beta_t} \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, I)\]
+
+      <p>រូបមន្តបិទជិតដោយផ្ទាល់ពី \(x_0\) (ដែល \(\alpha_t = 1 - \beta_t\) និង \(\bar{\alpha}_t = \prod_{s=1}^t \alpha_s\))៖</p>
+      \[x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \bar{\epsilon}, \quad q(x_t \mid x_0) = \mathcal{N}\left(x_t; \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t)I\right)\]
+
+      <div id="plotly-11-variance-schedule" class="plotly-chart" aria-label="Interactive Plotly chart: Variance stability of the noising schedule"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ស្ថិរភាពវ៉ារ្យ៉ង់នៃកាលវិភាគសំឡេងរំខាន — ការរក្សាឱ្យវ៉ារ្យ៉ង់រួមចំណុះទៅកាន់ ១។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៤. ការបំបែក ELBO &amp; Mean-Matching Loss</h2>
+      <p>
+        ក្រោមលក្ខខណ្ឌនៃរូបភាពស្អាតដើម \(x_0\) បំណែងចែកក្រោយទៅមុខ \(q(x_{t-1} \mid x_t, x_0)\) ក្លាយជាបំណែងចែកហ្គោសដែលអាចគណនាបានយ៉ាងងាយ៖
+      </p>
+      \[q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\left(x_{t-1}; \tilde{\mu}_t(x_t, x_0), \tilde{\beta}_t I\right)\]
+      <p>ដែលមធ្យមពិតគឺ៖</p>
+      \[\tilde{\mu}_t(x_t, x_0) = \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0\]
+      <p>អនុគមន៍កំហុសបង្វឹកសម្រួលមកត្រឹម Weighted Least-Squares Regression៖</p>
+      \[\mathcal{L}_{t-1}(\theta) = \frac{1}{2\tilde{\beta}_t} \| \mu_\theta(x_t, t) - \tilde{\mu}_t(x_t, x_0) \|^2\]
+
+      <div id="plotly-11-diffusion-trajectory" class="plotly-chart" aria-label="Interactive Plotly chart: Forward noising paths and the reverse posterior mean alignment"></div>
+      <p class="chart-caption"><em>រូបភាព៖ គន្លងបន្ថែមសំឡេងរំខានទៅមុខ និងការតម្រឹមមធ្យមបន្សុទ្ធសំឡេងរំខានបញ្ច្រាស។</em></p>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-10.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ១០: GMM (EM) និង PCA">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ១០: GMM (EM) និង PCA</span>
+        </span>
+      </a>
+      <a href="lecture-12.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ១២: ការរៀនទម្រង់តំណាង (Representation Learning)">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ១២: ការរៀនទម្រង់តំណាង (Representation Learning)</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture11-charts.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ១២: Representation Learning &amp; Foundation Models — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ១២ សម្រាប់ Stanford CS229 ML៖ ម៉ូដែលគ្រឹះ (Foundation Models), ការរៀនទម្រង់តំណាង (Representation Learning), Linear Probing, Fine-Tuning, LP-FT និង Low-Rank Adaptation (LoRA) ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពីយើង</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-12-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ១២: ការរៀនទម្រង់តំណាង និងម៉ូដែលគ្រឹះ (Representation Learning &amp; Foundation Models)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងគំរូនីតិវិធីនៃការរៀនម៉ាស៊ីន (Machine Learning)</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ១២
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <!-- Fallback Content for Non-JS / Direct Readers -->
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះបង្ហាញពីការផ្លាស់ប្តូរមូលដ្ឋានគ្រឹះក្នុងវិស័យ Machine Learning ពីការបណ្តុះបណ្តាលម៉ូដែលដាច់ដោយឡែកសម្រាប់កិច្ចការនីមួយៗ ទៅកាន់ការបណ្តុះបណ្តាលជាមុននូវ <strong>ម៉ូដែលគ្រឹះ (Foundation Models)</strong> ទូទៅលើសំណុំទិន្នន័យគ្មានស្លាកដ៏ធំសម្បើម។
+      </p>
+      <p>
+        តាមរយៈ <strong>ការរៀនទម្រង់តំណាង (Representation Learning)</strong> ម៉ូដែលរៀនបង្កប់ធាតុចូលទៅក្នុងលំហវ៉ិចទ័រសេម៉ង់ទិកដែលមានរចនាសម្ព័ន្ធខ្ពស់។ មេរៀនពិនិត្យលើមាគ៌ាសម្របខ្លួនជាច្រើនរួមមាន <strong>Linear Probing (LP)</strong>, <strong>Fine-Tuning (FT)</strong>, វិធីសាស្ត្រពីរដំណាក់កាល <strong>LP-FT</strong> និងការសម្របតាមលំដាប់ទាប <strong>Low-Rank Adaptation (LoRA)</strong> ដែលកាត់បន្ថយតម្រូវការអង្គចងចាំ និងដោះស្រាយបញ្ហាស្ទះសេវាពហុអ្នកប្រើប្រាស់ (Multi-Tenancy Bottleneck)។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ម៉ូដែលគ្រឹះ (Foundation Model)</strong>: ម៉ូដែលទូទៅដែលបានបណ្តុះបណ្តាលជាមុនលើទិន្នន័យគ្មានស្លាកដ៏ធំសម្បើម និងអាចសម្របទៅកាន់កិច្ចការចុងក្រោយរាប់មិនអស់។</li>
+        <li><strong>ទម្រង់តំណាង (\(\phi_\theta(x)\))</strong>: វ៉ិចទ័រលក្ខណៈពិសេស (Embedding) ក្នុងលំហវិមាត្រ \(m\) ដែលបង្កើតចេញពីបណ្តាញណឺរ៉ូន។</li>
+        <li><strong>ការស្ទង់លីនេអ៊ែរ (Linear Probing - LP)</strong>: ការបង្កកប៉ារ៉ាម៉ែត្រតំណាង \(\theta\) ហើយបង្វឹកតែ Linear Head ខាងចុង។</li>
+        <li><strong>ការលៃតម្រូវកម្រិតល្អិត (Fine-Tuning - FT)</strong>: ការធ្វើសុទិដ្ឋិកម្មរួមគ្នាលើទាំងប៉ារ៉ាម៉ែត្រតំណាង \(\theta\) និង Head ខាងចុង។</li>
+        <li><strong>LP-FT</strong>: ការធ្វើ Linear Probing ជាមុនដើម្បីតម្រឹម Head រួចទើបបន្តធ្វើ Fine-Tuning ជួយបញ្ចៀសការបំផ្លាញទម្រង់តំណាងដើម។</li>
+        <li><strong>LoRA (Low-Rank Adaptation)</strong>: ការបង្កកម៉ូដែលគោល \(W_0\) ហើយតំណាងការធ្វើបច្ចុប្បន្នភាពជាផលគុណម៉ាទ្រីសលំដាប់ទាប \(\Delta W = AB\) ដែល \(r \ll d\)។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យានៃ LoRA</h2>
+      <p>ការគណនា Forward Pass នៃស្រទាប់ LoRA៖</p>
+      \[h_{\text{out}} = W_0 h_{\text{in}} + \Delta W h_{\text{in}} = W_0 h_{\text{in}} + A B h_{\text{in}}\]
+      <p>ដែល \(W_0 \in \mathbb{R}^{d \times d}\) ត្រូវបានបង្កក (Frozen) ហើយ \(A \in \mathbb{R}^{d \times r}\) និង \(B \in \mathbb{R}^{r \times d}\) ជាប៉ារ៉ាម៉ែត្រដែលអាចបង្វឹកបាន (\(r \ll d\))។</p>
+      <p>ការចាប់ផ្តើមតម្លៃដើម្បីធានាអត្តសញ្ញាណនៅជំហានសូន្យ៖</p>
+      \[A = 0, \quad B \sim \mathcal{N}(0, \sigma_B^2 I) \implies \Delta W = 0 \cdot B = 0\]
+
+      <div id="plotly-12-lora-diagram" class="plotly-chart" aria-label="Interactive Plotly chart: LoRA forward pass with frozen base and low-rank adapter branch"></div>
+      <p><em>រូបភាព៖ ដំណើរការបញ្ជូនទៅមុខនៃ LoRA ជាមួយម៉ូដែលគោលបង្កក និងផ្លូវសម្របលំដាប់ទាប។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៤. ការវិភាគប្រព័ន្ធ និងការសន្សំសំចៃអង្គចងចាំ (Systems &amp; Memory Analysis)</h2>
+      <p>សម្រាប់ស្រទាប់ទម្ងន់ទំហំ \(d = 4096\) និងលំដាប់ \(r = 8\)៖</p>
+      <ul>
+        <li><strong>Full Fine-Tuning</strong>: \(d^2 = 4096^2 \approx 16.78 \text{ លានប៉ារ៉ាម៉ែត្រ}\)</li>
+        <li><strong>LoRA</strong>: \(2 \times d \times r = 2 \times 4096 \times 8 = 65,536 \text{ ប៉ារ៉ាម៉ែត្រ}\) (កាត់បន្ថយបាន <strong>99.6%</strong>)</li>
+      </ul>
+      <p>
+        ស្ថានភាពរបស់ Optimizer (ជាពិសេស Adam ដែលប្រើ 8 bytes ក្នុងមួយប៉ារ៉ាម៉ែត្រ) ត្រូវបានកាត់បន្ថយយ៉ាងសម្បើម ដោយសារម៉ូដែលគោល \(W_0\) ត្រូវបានបង្កក ធ្វើឱ្យមិនចាំបាច់រក្សាទុកស្ថានភាព Adam ណាមួយសម្រាប់វាឡើយ។
+      </p>
+
+      <div id="plotly-12-param-comparison" class="plotly-chart" aria-label="Interactive Plotly chart: Parameter count comparison between full fine-tuning and LoRA"></div>
+      <p><em>រូបភាព៖ ការប្រៀបធៀបចំនួនប៉ារ៉ាម៉ែត្រដែលអាចបង្វឹកបានរវាង Full Fine-Tuning និង LoRA តាមលំដាប់ \(r\) ផ្សេងៗគ្នា។</em></p>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-11.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ១១: Diffusion Models">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ១១: Diffusion Models</span>
+        </span>
+      </a>
+      <a href="lecture-13.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ១៣: Contrastive Learning & RAG">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ១៣: Contrastive Learning & RAG</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture12-charts.js"></script>
+</body>
+
+</html>

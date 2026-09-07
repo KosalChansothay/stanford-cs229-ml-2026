@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ៩: K-Means and GMM (non-EM) — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ៩ សម្រាប់ Stanford CS229 ML៖ ការរៀនគ្មានការត្រួតពិនិត្យ (Unsupervised Learning), ការប្រមូលចង្កោម K-Means, ម៉ូដែលល្បាយហ្គោស (GMMs) និងវិសមភាពហ្សង់សែន (Jensen's Inequality) ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-9.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-9-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ៩: K-Means និង GMM (K-Means &amp; Gaussian Mixture Models)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ៩
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះណែនាំអំពីបទដ្ឋាននៃ <strong>ការរៀនគ្មានការត្រួតពិនិត្យ (Unsupervised Learning)</strong> សម្រាប់ការស្វែងរកទម្រង់ រចនាសម្ព័ន្ធ និងលំនាំលាក់កំបាំងនៅក្នុងទិន្នន័យដែលគ្មានស្លាក។ មេរៀនបានគ្របដណ្តប់លើក្បួនដោះស្រាយដ៏មានសារៈសំខាន់ពីរគឺ <strong>K-Means Clustering</strong> (ការបែងចែកចង្កោមដាច់ណាត់តាមរយៈ Coordinate Descent) និង <strong>Gaussian Mixture Models (GMMs)</strong> (ការបែងចែកចង្កោមតាមប្រូបាប៊ីលីតេជាមួយអថេរលាក់កំបាំង Latent Variable)។
+      </p>
+      <p>
+        ដើម្បីដោះស្រាយបញ្ហានៃការធ្វើអតិបរមាកម្មលើ Marginal Log-Likelihood ដែលមានផលបូកនៅខាងក្នុងអនុគមន៍ \(\log\) មេរៀនបានណែនាំអំពី <strong>វិសមភាពហ្សង់សែន (Jensen's Inequality)</strong> សម្រាប់អនុគមន៍ផត ដែលជាគ្រឹះគណិតវិទ្យាដ៏រឹងមាំក្នុងការកសាងព្រំដែនក្រោម (Surrogate Lower Bound) សម្រាប់ក្បួនដោះស្រាយ <strong>Expectation-Maximization (EM)</strong>។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ការរៀនគ្មានការត្រួតពិនិត្យ (Unsupervised Learning)</strong>: ការរៀនលើទិន្នន័យដែលគ្មានស្លាកដើម្បីស្វែងរករចនាសម្ព័ន្ធលាក់កំបាំង។</li>
+        <li><strong>Hard Clustering (K-Means)</strong>: ចំណុចទិន្នន័យនីមួយៗត្រូវបានផ្គូផ្គងយ៉ាងតឹងរ៉ឹងទៅកាន់ចង្កោមតែមួយគត់។</li>
+        <li><strong>Soft Clustering (GMMs)</strong>: ចំណុចទិន្នន័យនីមួយៗមានសមាជិកភាពជាប្រូបាប៊ីលីតេក្រោយ \(w_j^{(i)}\) ឆ្លងកាត់គ្រប់សមាសភាគទាំងអស់។</li>
+        <li><strong>អនុគមន៍បំភ្លៃ (Distortion Function)</strong>: ផលបូកនៃចម្ងាយការ៉េរវាងចំណុចទិន្នន័យ និងសង់ត្រូអ៊ីតដែលចាត់តាំងឱ្យវា។</li>
+        <li><strong>អថេរលាក់កំបាំង (\(z\) - Latent Variable)</strong>: អថេរដែលមិនត្រូវបានសង្កេតឃើញដោយផ្ទាល់ ប៉ុន្តែជួយពន្យល់ពីដំណើរការបង្កើតទិន្នន័យ។</li>
+        <li><strong>វិសមភាពហ្សង់សែន (Jensen's Inequality)</strong>: សម្រាប់អនុគមន៍ផត \(g\) នោះ \(g(\mathbb{E}[t]) \ge \mathbb{E}[g(t)]\)។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា &amp; ដំណើរការ GMM</h2>
+      <p><strong>អនុគមន៍បំភ្លៃ K-Means៖</strong></p>
+      \[J(c, \mu) = \sum_{i=1}^n \|x^{(i)} - \mu_{c^{(i)}}\|^2\]
+
+      <p><strong>ប្រូបាប៊ីលីតេក្រោយនៃសមាជិកភាពចង្កោម (Soft Weights)៖</strong></p>
+      \[w_j^{(i)} = P(z^{(i)} = j \mid x^{(i)}; \phi, \mu, \Sigma) = \frac{\phi_j \cdot \mathcal{N}(x^{(i)}; \mu_j, \Sigma_j)}{\sum_{l=1}^k \phi_l \cdot \mathcal{N}(x^{(i)}; \mu_l, \Sigma_l)}\]
+    </div>
+
+    <div class="card">
+      <h2>៤. ក្បួនដោះស្រាយ K-Means &amp; ក្រាហ្វិកអន្តរកម្ម</h2>
+      <p>ដំណើរការឆ្លាស់គ្នានៃ K-Means៖</p>
+      <ol>
+        <li><strong>ជំហានចាត់តាំង</strong>: \(c^{(i)} := \arg\min_j \|x^{(i)} - \mu_j\|^2\)</li>
+        <li><strong>ជំហានធ្វើបច្ចុប្បន្នភាព</strong>: \(\mu_j := \frac{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\} x^{(i)}}{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\}}\)</li>
+      </ol>
+
+      <div id="plotly-kmeans-steps" class="plotly-chart" aria-label="Interactive Plotly chart: K-Means iteration steps with a slider to advance assignment and centroid-update phases"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ជំហាននៃការធ្វើសារឡើងវិញរបស់ K-Means — អូស Slider ដើម្បីតាមដានដំណើរការចាត់តាំងចំណុច និងការរំកិលសង់ត្រូអ៊ីត។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៥. វិសមភាពហ្សង់សែន &amp; ព្រំដែនក្រោម EM</h2>
+      <p>
+        តាមរយៈវិសមភាពហ្សង់សែនសម្រាប់អនុគមន៍ផត \(\log\) យើងទាញបានព្រំដែនក្រោមសម្រាប់ Marginal Log-Likelihood៖
+      </p>
+      \[\ell(\theta) \ge \sum_{i=1}^n \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}\]
+
+      <div id="plotly-em-bound" class="plotly-chart" aria-label="Interactive Plotly chart: the EM lower bound touching the log-likelihood tangentially, with a slider to advance EM iterations"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ព្រំដែនក្រោម EM — ខ្សែកោងក្រហមជាព្រំដែនក្រោមហ្សង់សែនដែលប៉ះនឹងផ្ទៃលទ្ធភាពពិត (ខៀវ)។ អូស Slider ដើម្បីមើលការឡើងលើផ្ទៃលទ្ធភាព។</em></p>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-8.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ៨: ការផ្សាយបញ្ច្រាស (Backpropagation)">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ៨: ការផ្សាយបញ្ច្រាស (Backpropagation)</span>
+        </span>
+      </a>
+      <a href="lecture-10.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ១០: GMM (EM) និង PCA">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ១០: GMM (EM) និង PCA</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture9-charts.js"></script>
+</body>
+
+</html>

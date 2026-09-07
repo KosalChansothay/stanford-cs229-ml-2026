@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>មេរៀនទី ៥: Gaussian Discriminant Analysis — CS229 ML កំណត់ចំណាំមេរៀន</title>
+  <meta name="description"
+    content="កំណត់ចំណាំមេរៀនទី ៥ សម្រាប់ Stanford CS229 ML៖ ក្បួនដោះស្រាយការរៀនបែបបង្កើត (Generative Learning Algorithms), ការវិភាគវិនិច្ឆ័យហ្គោស (GDA), Naive Bayes និង Laplace Smoothing ជាភាសាខ្មែរ។">
+  <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
+  <meta name="author" content="Kosal Chansothay">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
+    <div class="sidebar-profile">
+      <img class="sidebar-avatar" src="../../../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
+      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-label">គេហទំព័រ</li>
+      <li><a href="../../index.html">ទំព័រដើម</a></li>
+      <li><a href="../../about.html">អំពី</a></li>
+      <li><a href="../../notes.html">កំណត់ចំណាំមេរៀន</a></li>
+      <li><a href="../index.html">វគ្គសិក្សាទាំងអស់</a></li>
+    </ul>
+    <div class="sidebar-social">
+      <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
+        rel="noopener">&#x1F9EC;</a>
+      <a href="https://www.linkedin.com/in/chansothay-kosal-404870282/" title="LinkedIn" target="_blank"
+        rel="noopener">&#x1F4BC;</a>
+      <a href="https://t.me/Kosal_Chansothay" title="Telegram" target="_blank" rel="noopener">&#x2708;&#xFE0F;</a>
+      <a href="../../../courses/cs229/lecture-5.html" title="English Version" class="lang-switch-btn" aria-label="Switch to English Version">&#x1F310; EN</a>
+    </div>
+    <div class="sidebar-footer">
+      បង្កើតឡើងដោយ static HTML/CSS/JS<br>
+      &copy; ២០២៦
+    </div>
+  </nav>
+
+  <main class="main lecture-document" role="main" data-markdown="../../../notes/cs229/cs229-lecture-5-study-notes.km.md">
+    <header class="page-header">
+      <h1>មេរៀនទី ៥: ការវិភាគវិនិច្ឆ័យហ្គោស (Gaussian Discriminant Analysis)</h1>
+      <p class="subtitle">Stanford CS229 — មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</p>
+    </header>
+
+    <div class="breadcrumb">
+      <a href="../../index.html">ទំព័រដើម</a> <span>/</span> <a href="../index.html">វគ្គសិក្សា</a> <span>/</span> <a
+        href="index.html">CS229</a> <span>/</span> មេរៀនទី ៥
+    </div>
+
+    <div class="markdown-body" data-markdown-content aria-live="polite"></div>
+
+    <div class="card">
+      <h2>១. សេចក្តីសង្ខេបនៃគំនិតចម្បងៗ</h2>
+      <p>
+        មេរៀននេះណែនាំអំពីគោលគំនិតនៃ <strong>ក្បួនដោះស្រាយការរៀនបែបបង្កើត / ពូជ (Generative Learning Algorithms)</strong> ដែលជាការផ្លាស់ប្តូរបទដ្ឋានគំនិត (Paradigm Shift) ដ៏សំខាន់ខុសប្លែកពីក្បួនចាត់ថ្នាក់បែបវិនិច្ឆ័យ (Discriminative Classifiers)។ ខណៈដែលក្បួនដោះស្រាយបែបវិនិច្ឆ័យ ដូចជា Linear Regression និង Logistic Regression ធ្វើការប៉ាន់ស្មានដោយផ្ទាល់ទៅលើប្រូបាប៊ីលីតេក្រោយ \(P(y|x)\) ក្បួនដោះស្រាយបែបបង្កើតផ្តោតលើការកសាងម៉ូដែលប្រូបាប៊ីលីតេរួម \(P(x, y)\) តាមរយៈការរៀនបំណែងចែកលក្ខណៈទិន្នន័យតាមលក្ខខណ្ឌថ្នាក់ \(P(x|y)\) និងប្រូបាប៊ីលីតេមុន \(P(y)\)។
+      </p>
+      <p>
+        សាស្ត្រាចារ្យ Chris Ré បានលើកយក <strong>ការវិភាគវិនិច្ឆ័យហ្គោស (Gaussian Discriminant Analysis - GDA)</strong> សម្រាប់ទិន្នន័យបន្តបន្ទាប់ និង <strong>ក្បួនចាត់ថ្នាក់ណៃវបាយេស (Naive Bayes Classifier)</strong> សម្រាប់ទិន្នន័យអត្ថបទដាច់ៗពីគ្នា។ ចំណុចខ្លាំងដ៏ពិសេសនៃម៉ូដែលបែបបង្កើតគឺ សមត្ថភាពក្នុងការគណនាប៉ារ៉ាម៉ែត្រក្នុងទម្រង់បិទជិត (Closed-form Joint MLE) ដោយពុំចាំបាច់ធ្វើការបង្ශើលជម្រាលដដែលៗ (Gradient Descent) ឡើយ។ មេរៀនបញ្ចប់ដោយការបង្ហាញពីទំនាក់ទំនងទ្រឹស្តីរវាង GDA និង Logistic Regression ព្រមទាំងការផ្សារភ្ជាប់ទៅកាន់បច្ចេកវិទ្យា Generative AI ទំនើបៗដូចជា Diffusion Models និង LLMs។
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>២. គោលគំនិតសំខាន់ៗ &amp; និយមន័យ</h2>
+      <ul>
+        <li><strong>ក្បួនដោះស្រាយបែបវិនិច្ឆ័យ (Discriminative Algorithms)</strong>: ក្បួនចាត់ថ្នាក់ដែលរៀនស្វែងរកព្រំដែនសម្រេចចិត្តដោយផ្ទាល់ ដើម្បីប៉ាន់ស្មាន \(P(y|x)\)។</li>
+        <li><strong>ក្បួនដោះស្រាយបែបបង្កើត (Generative Algorithms)</strong>: ក្បួនចាត់ថ្នាក់ដែលកសាងម៉ូដែល \(P(x|y)\) និង \(P(y)\) រួចប្រើប្រាស់វិធានបាយេស (Bayes' Rule) ដើម្បីទស្សន៍ទាយ \(P(y|x) = \frac{P(x|y)P(y)}{P(x)}\)។</li>
+        <li><strong>បំណែងចែកហ្គោសពហុវិមាត្រ (Multivariate Gaussian Distribution)</strong>: បំណែងចែកប្រក្រតីសម្រាប់វ៉ិចទ័រ \(x \in \mathbb{R}^d\) ដែលកំណត់ដោយវ៉ិចទ័រមធ្យម \(\mu \in \mathbb{R}^d\) និងម៉ាទ្រីសកូវ៉ារ្យ៉ង់ស៊ីមេទ្រី កំណត់វិជ្ជមាន \(\Sigma \in \mathbb{R}^{d \times d}\)។</li>
+        <li><strong>ម៉ាទ្រីសកូវ៉ារ្យ៉ង់ (\(\Sigma\) - Covariance Matrix)</strong>: ម៉ាទ្រីសដែលកំណត់ទំហំ ទម្រង់ពងក្រពើ និងទិសដៅនៃខ្សែវណ្ឌប្រូបាប៊ីលីតេ។</li>
+        <li><strong>ម៉ាទ្រីសភាពជាក់លាក់ (\(\Sigma^{-1}\) - Precision Matrix)</strong>: ច្រាសនៃម៉ាទ្រីសកូវ៉ារ្យ៉ង់ ដែលតម្លៃសូន្យ (\(\Sigma^{-1}_{ij} = 0\)) បញ្ជាក់ពីភាពឯករាជ្យតាមលក្ខខណ្ឌរវាងលក្ខណៈទិន្នន័យទី \(i\) និង \(j\)។</li>
+        <li><strong>ការវិភាគវិនិច្ឆ័យហ្គោស (GDA)</strong>: ម៉ូដែលបែបបង្កើតសម្រាប់ទិន្នន័យបន្តបន្ទាប់ ដែលសន្មតថា \(P(x|y)\) ជាបំណែងចែកហ្គោសពហុវិមាត្រដោយចែករំលែកម៉ាទ្រីសកូវ៉ារ្យ៉ង់រួម \(\Sigma\) តែមួយ ប៉ុន្តែមានមធ្យមរៀងៗខ្លួន \(\mu_0, \mu_1\)។</li>
+        <li><strong>ការវិភាគវិនិច្ឆ័យការ៉េ (QDA)</strong>: ទម្រង់ទូទៅនៃ GDA ដែលអនុញ្ញាតឱ្យថ្នាក់នីមួយៗមានម៉ាទ្រីសកូវ៉ារ្យ៉ង់ផ្ទាល់ខ្លួន (\(\Sigma_0 \neq \Sigma_1\)) បង្កើតបានជាព្រំដែនសម្រេចចិត្តរាងខ្សែកោងការ៉េ។</li>
+        <li><strong>ក្បួនចាត់ថ្នាក់ណៃវបាយេស (Naive Bayes)</strong>: ម៉ូដែលបែបបង្កើតសម្រាប់ទិន្នន័យដាច់ៗពីគ្នា ដែលសន្មតថាលក្ខណៈទិន្នន័យនីមួយៗឯករាជ្យតាមលក្ខខណ្ឌពីគ្នាទៅវិញទៅមក នៅពេលដឹងស្លាកថ្នាក់ \(y\)។</li>
+        <li><strong>ការធ្វើឱ្យរលូនបែបឡាផ្លាស (Laplace Smoothing)</strong>: បច្ចេកទេសបន្ថែមចំនួនរាប់សិប្បនិម្មិត \(+1\) ដើម្បីការពារកុំឱ្យកើតមានប្រូបាប៊ីលីតេសូន្យចំពោះពាក្យដែលមិនធ្លាប់ជួបក្នុងទិន្នន័យបង្វឹក។</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៣. រូបមន្តគណិតវិទ្យា &amp; ការប៉ាន់ស្មានប៉ារ៉ាម៉ែត្រ GDA</h2>
+      <p><strong>អនុគមន៍ដង់ស៊ីតេប្រូបាប៊ីលីតេហ្គោសពហុវិមាត្រ៖</strong></p>
+      \[p(x; \mu, \Sigma) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu)^T \Sigma^{-1} (x - \mu) \right)\]
+      
+      <p><strong>ការប៉ាន់ស្មានប៉ារ៉ាម៉ែត្រទម្រង់បិទជិត (Closed-Form Joint MLE)៖</strong></p>
+      <ul>
+        <li>\(\phi = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)\)</li>
+        <li>\(\mu_0 = \frac{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0) x^{(i)}}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0)}\)</li>
+        <li>\(\mu_1 = \frac{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1) x^{(i)}}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)}\)</li>
+        <li>\(\Sigma = \frac{1}{n} \sum_{i=1}^n (x^{(i)} - \mu_{y^{(i)}}) (x^{(i)} - \mu_{y^{(i)}})^T\)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>៤. ព្រំដែនសម្រេចចិត្តលីនេអ៊ែរ និងក្រាហ្វិកអន្តរកម្ម</h2>
+      <p>
+        ដោយសារតែម៉ាទ្រីសកូវ៉ារ្យ៉ង់ \(\Sigma\) ត្រូវបានចែករំលែករួមគ្នារវាងថ្នាក់ទាំងពីរ តួការ៉េ \(x^T \Sigma^{-1} x\) ត្រូវបានសម្រួលកាត់ចោលអស់ នាំឱ្យព្រំដែនសម្រេចចិត្តមានទម្រង់លីនេអ៊ែរអាហ្វីន៖
+      </p>
+      \[\theta^T x + \theta_0 = 0\]
+      <p>ដែល \(\theta = \Sigma^{-1} (\mu_1 - \mu_0)\) និង \(\theta_0 = -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_0^T \Sigma^{-1} \mu_0 + \ln \frac{\phi}{1-\phi}\)។</p>
+
+      <div id="plotly-gda-vs-qda" class="plotly-chart" aria-label="Interactive Plotly chart: GDA versus QDA decision boundaries with Gaussian class contours"></div>
+      <p class="chart-caption"><em>រូបភាព៖ ការប្រៀបធៀបព្រំដែនសម្រេចចិត្តរវាង GDA (បន្ទាត់ត្រង់លីនេអ៊ែរ) និង QDA (ខ្សែកោងការ៉េ) លើបំណែងចែកហ្គោស។</em></p>
+    </div>
+
+    <div class="card">
+      <h2>៥. ការប្រៀបធៀបរវាង GDA និង Logistic Regression</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>លក្ខណៈវិនិច្ឆ័យ</th>
+              <th>ការវិភាគវិនិច្ឆ័យហ្គោស (GDA)</th>
+              <th>ការវិភាគតម្រែតម្រង់ឡូជីស្ទីក (Logistic Regression)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ទម្រង់ម៉ូដែល</strong></td>
+              <td>បែបបង្កើត (Generative: \(P(x, y)\))</td>
+              <td>បែបវិនិច្ឆ័យ (Discriminative: \(P(y|x)\))</td>
+            </tr>
+            <tr>
+              <td><strong>កម្រិតសន្មត</strong></td>
+              <td><strong>ខ្លាំង</strong> (សន្មតថាទិន្នន័យជា Multivariate Gaussian)</td>
+              <td><strong>ខ្សោយ</strong> (សន្មតត្រឹមតែថា Log-odds មានទម្រង់លីនេអ៊ែរ)</td>
+            </tr>
+            <tr>
+              <td><strong>ប្រសិទ្ធភាពទិន្នន័យ</strong></td>
+              <td><strong>ខ្ពស់</strong> (ត្រូវការទិន្នន័យតិចបើការសន្មតត្រឹមត្រូវ)</td>
+              <td><strong>ទាបជាង</strong> (ត្រូវការទិន្នន័យច្រើនដើម្បីរៀនប៉ារ៉ាម៉ែត្រ)</td>
+            </tr>
+            <tr>
+              <td><strong>ភាពធន់នឹងគម្លាតទិន្នន័យ</strong></td>
+              <td><strong>ងាយរងគ្រោះ</strong> (ធ្លាក់ចុះគុណភាពខ្លាំងបើមិនមែន Gaussian)</td>
+              <td><strong>រឹងមាំខ្លាំង</strong> (ធន់នឹងទិន្នន័យលម្អៀង ឬខុសប្លែក)</td>
+            </tr>
+            <tr>
+              <td><strong>វិធីសាស្ត្រគណនា</strong></td>
+              <td>រូបមន្តបិទជិត (គណនាភ្លាមៗ គ្មាន Iteration)</td>
+              <td>វិធីសាស្ត្របង្ශើលជម្រាលដដែលៗ (SGD)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <nav class="lecture-pagination" aria-label="ការរុករកមេរៀន">
+      <a href="lecture-4.html" class="pagination-btn prev" aria-label="មេរៀនមុន: មេរៀនទី ៤: Exponential Family &amp; GLMs">
+        <span class="pagination-arrow" aria-hidden="true">&larr;</span>
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនមុន</span>
+          <span class="pagination-title">មេរៀនទី ៤: Exponential Family &amp; GLMs</span>
+        </span>
+      </a>
+      <a href="lecture-6.html" class="pagination-btn next" aria-label="មេរៀនបន្ទាប់: មេរៀនទី ៦: ការបែងចែកទិន្នន័យ &amp; ដំបូន្មាន ML">
+        <span class="pagination-label">
+          <span class="pagination-sub">មេរៀនបន្ទាប់</span>
+          <span class="pagination-title">មេរៀនទី ៦: ការបែងចែកទិន្នន័យ &amp; ដំបូន្មាន ML</span>
+        </span>
+        <span class="pagination-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+
+    <footer class="site-footer">
+      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="../../../js/script.js"></script>
+  <script src="../../../js/cs229/cs229-lecture5-charts.js"></script>
+</body>
+
+</html>
