@@ -151,7 +151,7 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
       </div>
     </div>
 
-    <!-- Right Column: Floating Cybernetic Artwork Showcase -->
+    <!-- Bottom Showcase: Floating Cybernetic Artwork Showcase -->
     <div class="hero-visual-col">
       <div class="visual-dock">
         <div class="visual-glow-halo" aria-hidden="true"></div>
@@ -205,13 +205,12 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
 </BaseLayout>
 
 <style>
-  /* Open Modern Edge-to-Edge Hero Section */
+  /* Open Modern Edge-to-Edge Hero Section (Stacked: Info on Top, Visual Showcase Below) */
   .course-hero {
     position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(360px, 480px);
-    gap: 3.5rem;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2.75rem;
     padding: 1rem 0 3.5rem;
     margin-bottom: 3.5rem;
     border-bottom: 1px solid var(--border-subtle);
@@ -220,20 +219,21 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
   /* Atmospheric Radial Back-Glow */
   .hero-ambient-aura {
     position: absolute;
-    top: 5%;
-    right: 5%;
-    width: 520px;
-    height: 400px;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 720px;
+    height: 480px;
     border-radius: 50%;
     background: radial-gradient(circle, var(--ambient-glow) 0%, transparent 70%);
     pointer-events: none;
-    filter: blur(60px);
-    opacity: 0.6;
+    filter: blur(80px);
+    opacity: 0.55;
     z-index: 0;
   }
 
   :global([data-theme="dark"]) .hero-ambient-aura {
-    opacity: 0.85;
+    opacity: 0.8;
   }
 
   .hero-content {
@@ -241,6 +241,7 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
     z-index: 1;
     display: flex;
     flex-direction: column;
+    width: 100%;
     min-width: 0;
   }
 
@@ -303,7 +304,7 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
   }
 
   .hero-title {
-    font-size: clamp(2.2rem, 3.6vw, 3rem);
+    font-size: clamp(2.3rem, 4vw, 3.25rem);
     font-weight: 850;
     color: var(--text-primary);
     line-height: 1.15;
@@ -312,7 +313,7 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
   }
 
   .hero-subtitle {
-    font-size: 1.12rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--accent-color, var(--brand-accent));
     margin: 0 0 1.25rem;
@@ -320,20 +321,21 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
   }
 
   .hero-summary {
-    font-size: 1.02rem;
+    font-size: 1.05rem;
     line-height: 1.7;
     color: var(--text-secondary);
     border-left: 2px solid var(--accent-color, var(--brand-accent));
-    padding-left: 1.15rem;
-    margin: 0 0 1.5rem;
-    max-width: 680px;
+    padding-left: 1.25rem;
+    margin: 0 0 1.75rem;
+    max-width: 860px;
   }
 
   /* Sleek Integrated Specs Ribbon */
   .hero-specs-ribbon {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.85rem;
+    align-items: center;
     margin-bottom: 1.5rem;
   }
 
@@ -341,7 +343,7 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
     display: inline-flex;
     align-items: center;
     gap: 0.65rem;
-    padding: 0.45rem 0.95rem;
+    padding: 0.48rem 1rem;
     border-radius: 12px;
     background: var(--card-surface);
     border: 1px solid var(--border-subtle);
@@ -461,59 +463,62 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
     color: var(--text-primary);
   }
 
-  /* Right Column: Floating Cybernetic Artwork Showcase */
+  /* Bottom Showcase: Floating Cybernetic Artwork Showcase */
   .hero-visual-col {
     position: relative;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    margin-top: 0.5rem;
   }
 
   .visual-dock {
     position: relative;
     width: 100%;
-    max-width: 480px;
+    max-width: 860px;
   }
 
   .visual-glow-halo {
     position: absolute;
-    inset: -15px;
-    border-radius: 28px;
+    inset: -20px;
+    border-radius: 32px;
     background: radial-gradient(circle, var(--ambient-glow) 0%, transparent 70%);
-    filter: blur(28px);
-    opacity: 0.5;
+    filter: blur(36px);
+    opacity: 0.55;
     pointer-events: none;
     z-index: 0;
   }
 
   :global([data-theme="dark"]) .visual-glow-halo {
-    opacity: 0.8;
+    opacity: 0.85;
   }
 
   .visual-frame {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 10;
-    border-radius: 18px;
+    max-height: 520px;
+    border-radius: 20px;
     overflow: hidden;
     background: #080D1A;
-    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.38), 0 0 0 1px var(--border-subtle);
+    box-shadow: 0 24px 56px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border-subtle);
     z-index: 1;
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
   }
 
   :global([data-theme="dark"]) .visual-frame {
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 28px 70px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
   .visual-dock:hover .visual-frame {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 30px 68px -12px rgba(0, 0, 0, 0.48), 0 0 0 1.5px var(--accent-color, var(--brand-accent));
+    transform: translateY(-4px) scale(1.008);
+    box-shadow: 0 32px 76px -12px rgba(0, 0, 0, 0.5), 0 0 0 1.5px var(--accent-color, var(--brand-accent));
   }
 
   :global([data-theme="dark"]) .visual-dock:hover .visual-frame {
-    box-shadow: 0 35px 80px -12px rgba(0, 0, 0, 0.8), 0 0 0 1.5px var(--accent-color, var(--brand-accent));
+    box-shadow: 0 38px 88px -12px rgba(0, 0, 0, 0.85), 0 0 0 1.5px var(--accent-color, var(--brand-accent));
   }
 
   .visual-image {
@@ -526,7 +531,7 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
   }
 
   .visual-dock:hover .visual-image {
-    transform: scale(1.03);
+    transform: scale(1.02);
   }
 
   .visual-live-badge {
@@ -547,24 +552,15 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
   }
 
   /* Responsive */
-  @media (max-width: 1100px) {
-    .course-hero {
-      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px);
-      gap: 2.5rem;
-    }
-  }
-
   @media (max-width: 960px) {
     .course-hero {
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 2.5rem;
-      padding: 1rem 0 2.5rem;
+      gap: 2rem;
+      padding: 0.5rem 0 2.5rem;
       margin-bottom: 2.5rem;
     }
 
     .visual-dock {
-      max-width: 520px;
+      max-width: 100%;
     }
   }
 
@@ -573,12 +569,23 @@ const theme = courseThemes[course.code] || courseThemes.cs229;
       font-size: 2rem;
     }
 
+    .hero-summary {
+      font-size: 0.98rem;
+    }
+
     .hero-specs-ribbon {
-      flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.65rem;
     }
 
     .spec-pill {
+      flex: 1 1 calc(50% - 0.65rem);
+      min-width: 180px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .spec-pill {
+      flex: 1 1 100%;
       width: 100%;
     }
   }
