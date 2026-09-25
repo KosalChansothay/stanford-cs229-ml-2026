@@ -17,22 +17,26 @@
 ### Jaccard Similarity
 For two document token sets $A, B$, Jaccard Similarity measures overlap as:
 
-$$J(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
-
+$$
+J(A, B) = \frac{|A \cap B|}{|A \cup B|}
+$$
 ### MinHash Collision Theorem
 Given a random permutation hash function $\pi$, the probability of a MinHash collision is exactly the Jaccard similarity:
 
-$$P(\min(\pi(A)) = \min(\pi(B))) = J(A, B)$$
-
+$$
+P(\min(\pi(A)) = \min(\pi(B))) = J(A, B)
+$$
 ### LSH S-Curve Formulation
 For $b$ bands of $r$ rows, the probability of document collision under LSH is derived as:
 
-$$P\_{\text{collision}}(s) = 1 - (1 - s^r)^b$$
-
+$$
+P_{\text{collision}}(s) = 1 - (1 - s^r)^b
+$$
 Where $s = J(A, B)$. This results in a sharp step-function transition at the threshold:
 
-$$s\_{\text{threshold}} \approx \left(\frac{1}{b}\right)^{1/r}$$
-
+$$
+s_{\text{threshold}} \approx \left(\frac{1}{b}\right)^{1/r}
+$$
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### MinHash LSH Deduplication Loop

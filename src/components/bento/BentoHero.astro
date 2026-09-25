@@ -1,0 +1,151 @@
+---
+// Minimalist Bento Hero Section (Strict Zero-Emoji)
+interface Props {
+  lang?: 'en' | 'km';
+}
+
+const { lang = 'en' } = Astro.props;
+---
+
+<section class="bento-hero">
+  <div class="hero-capsule-badge">
+    <span class="pulse-indicator"></span>
+    <span class="badge-text">SPRING 2026 REPOSITORY • STANFORD • MIT • TOP CURRICULA</span>
+  </div>
+
+  <h1 class="hero-headline">
+    Rigorous Foundations &amp; Frontier AI Architectures
+  </h1>
+
+  <p class="hero-subtext">
+    A comprehensive, mathematically verified lecture series covering canonical machine learning theory, large language models built from scratch, and 3D computer vision perception.
+  </p>
+
+  <!-- Capsule Metric Highlights -->
+  <div class="hero-metrics-grid">
+    <div class="metric-capsule">
+      <svg class="metric-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+      <div class="metric-info">
+        <span class="metric-num">3</span>
+        <span class="metric-label">Flagship Tracks</span>
+      </div>
+    </div>
+
+    <div class="metric-capsule">
+      <svg class="metric-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+      <div class="metric-info">
+        <span class="metric-num">50+</span>
+        <span class="metric-label">Lecture Notes</span>
+      </div>
+    </div>
+
+    <div class="metric-capsule">
+      <svg class="metric-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+      </svg>
+      <div class="metric-info">
+        <span class="metric-num">100%</span>
+        <span class="metric-label">Open Source</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bento-hero {
+    padding: 1.5rem 0 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-capsule-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
+
+  .pulse-indicator {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+  }
+
+  .hero-headline {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    max-width: 820px;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtext {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 720px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-metrics-grid {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .metric-capsule {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1.1rem;
+    background: var(--card-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-subtle);
+  }
+
+  .metric-icon {
+    stroke: var(--brand-accent);
+  }
+
+  .metric-info {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+
+  .metric-num {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  .metric-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+</style>

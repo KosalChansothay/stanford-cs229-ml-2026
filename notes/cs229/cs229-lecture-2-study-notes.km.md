@@ -41,26 +41,30 @@
 ### អនុគមន៍សម្មតិកម្មលីនេអ៊ែរ (The Linear Hypothesis)
 
 អនុគមន៍សម្មតិកម្មលីនេអ៊ែរត្រូវបានកំណត់ដោយ៖
-$$h_\theta(x) = \theta_0 + \theta_1 x_1 + \dots + \theta_d x_d = \sum_{j=0}^d \theta_j x_j = \theta^T x$$
-
+$$
+h_\theta(x) = \theta_0 + \theta_1 x_1 + \dots + \theta_d x_d = \sum_{j=0}^d \theta_j x_j = \theta^T x
+$$
 ដែលក្នុងនោះ $\theta$ តំណាងឱ្យវ៉ិចទ័រប៉ារ៉ាម៉ែត្រ (Weights/ទម្ងន់) ហើយ $x_0 = 1$ គឺជាតួ Intercept (Bias)។
 
 ### មុខងារថ្លៃដើមការេនៃគម្លាតលំអៀងតូចបំផុត (Least Squares Cost Function)
 
 ដើម្បីវាស់វែងថាតើសម្មតិកម្ម $h_\theta(x)$ សមស្របទៅនឹងទិន្នន័យហ្វឹកហាត់កម្រិតណា យើងកំណត់មុខងារថ្លៃដើមការេនៃគម្លាតលំអៀងតូចបំផុត $J(\theta)$៖
-$$J(\theta) = \frac{1}{2} \sum_{i=1}^n \left(h_\theta(x^{(i)}) - y^{(i)}\right)^2$$
-
+$$
+J(\theta) = \frac{1}{2} \sum_{i=1}^n \left(h_\theta(x^{(i)}) - y^{(i)}\right)^2
+$$
 * **ហេតុអ្វីបានជាលើកជាការេ (Why Square?)**៖ ការលើកជាការេធានាថាកំហុសលំអៀងទាំងអស់ក្លាយជាចំនួនវិជ្ជមាន ផ្តល់ទណ្ឌកម្មទម្ងន់ធ្ងន់លើចំណុចទិន្នន័យខុសប្លែកខ្លាំង (Outliers) និងបង្កើតបាននូវអនុគមន៍ដឺក្រេទីពីរដែលមានរាងប៉ោងរលូន និងអាចធ្វើដេរីវេបាន (Smooth, differentiable quadratic bowl shape)។
 * **ហេតុអ្វីមានមេគុណ $\frac{1}{2}$ (Why $\frac{1}{2}$?)**៖ មេគុណថេរ $\frac{1}{2}$ ត្រូវបានបន្ថែមតាមអនុសញ្ញា ដើម្បីឱ្យពេលធ្វើដេរីវេលើស្វ័យគុណ ២ តួ ២ និង $\frac{1}{2}$ នឹងសម្រួលគ្នាដាច់ បង្កើនភាពងាយស្រួលដល់រូបមន្តធ្វើបច្ចុប្បន្នភាពជម្រាល (Gradient update rule)។
 
 ### ការទាញដេរីវេជម្រាលតាមបែបវិភាគ (Analytical Derivation of the Gradient)
 
 សម្រាប់ឧទាហរណ៍ហ្វឹកហាត់តែមួយ $(x, y)$ ដេរីវេដោយផ្នែកនៃ $J(\theta)$ ធៀបនឹងប៉ារ៉ាម៉ែត្រ $\theta_j$ ណាមួយ អាចទាញបានដោយប្រើវិធានច្រវាក់ (Chain Rule)៖
-$$\frac{\partial}{\partial \theta_j} \left( \frac{1}{2} (h_\theta(x) - y)^2 \right) = (h_\theta(x) - y) \cdot \frac{\partial}{\partial \theta_j} (h_\theta(x) - y)$$
-
+$$
+\frac{\partial}{\partial \theta_j} \left( \frac{1}{2} (h_\theta(x) - y)^2 \right) = (h_\theta(x) - y) \cdot \frac{\partial}{\partial \theta_j} (h_\theta(x) - y)
+$$
 ដោយសារ $h_\theta(x) = \sum_{k=0}^d \theta_k x_k$ នោះយើងទទួលបាន $\frac{\partial}{\partial \theta_j} h_\theta(x) = x_j$។ ដូច្នេះ៖
-$$\frac{\partial}{\partial \theta_j} J(\theta) = (h_\theta(x) - y)x_j$$
-
+$$
+\frac{\partial}{\partial \theta_j} J(\theta) = (h_\theta(x) - y)x_j
+$$
 ---
 
 ## ៤. ក្បួនដោះស្រាយបង្កើនប្រសិទ្ធភាពជាជំហានៗ (Step-by-Step Optimization Algorithms)
@@ -72,7 +76,9 @@ Batch Gradient Descent គណនាជម្រាល (Gradient) លើសំណ
 1. **កំណត់តម្លៃដំបូង (Initialize)**៖ កំណត់ប៉ារ៉ាម៉ែត្រ $\theta$ ដោយចៃដន្យ ឬស្មើ ០ ទាំងអស់ ($\theta = \vec{0}$)។
 2. **រង្វិលជុំរហូតដល់រួមគ្នា (Loop until convergence)**៖
    សម្រាប់គ្រប់ប៉ារ៉ាម៉ែត្រ $j \in \{0, \dots, d\}$ ធ្វើបច្ចុប្បន្នភាព៖
-   $$\theta_j := \theta_j - \alpha \sum_{i=1}^n \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_j^{(i)}$$
+   $$
+   \theta_j := \theta_j - \alpha \sum_{i=1}^n \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_j^{(i)}
+   $$
    ដែល $\alpha$ គឺជាអត្រារៀន ឬទំហំជំហាន (Learning Rate / Step Size)។
 3. **លក្ខណៈសម្បត្តិ (Properties)**៖ ធានាតាមបែបគណិតវិទ្យាថានឹងរួមគ្នាមកកាន់ចំណុចអប្បបរមាសកល (Global Minimum) សម្រាប់អនុគមន៍ប៉ោងដូចជា Least Squares។ ប៉ុន្តែ វាទាមទារការគណនាធ្ងន់ធ្ងរខ្លាំងសម្រាប់សំណុំទិន្នន័យធំៗ (ឧ. ការស្កេនទិន្នន័យទូទាំងអ៊ីនធឺណិត) ពីព្រោះគ្រប់ជំហាននីមួយៗត្រូវធ្វើផលបូកកាត់តាមទិន្នន័យ $n$ ទាំងអស់។
 
@@ -80,8 +86,9 @@ Batch Gradient Descent គណនាជម្រាល (Gradient) លើសំណ
 
 ការធ្វើបច្ចុប្បន្នភាព $\theta_{t+1} = \theta_t - \alpha \nabla J(\theta_t)$ នឹងរួមគ្នា (Converge) លុះត្រាតែទំហំជំហាន $\alpha$ មានទំហំតូចល្មមធៀបនឹងកម្រិតកោង (Curvature) នៃ $J$។ សម្រាប់ Least Squares កម្រិតកោងត្រូវបានគ្រប់គ្រងដោយតម្លៃ Eigenvalues នៃម៉ាទ្រីស $X^T X$៖
 
-$$0 < \alpha < \frac{2}{\lambda_{\max}(X^T X)}$$
-
+$$
+0 < \alpha < \frac{2}{\lambda_{\max}(X^T X)}
+$$
 ដែល $\lambda_{\max}$ គឺជាតម្លៃ Eigenvalue ធំបំផុតនៃ $X^T X$។ ប្រសិនបើ $\alpha$ ធំជាងកម្រិតនេះ ការធ្វើបច្ចុប្បន្នភាពនីមួយៗនឹងលោតរំលងហួសចំណុចអប្បបរមា ហើយតម្លៃប៉ារ៉ាម៉ែត្រនឹងបែកចេញ (Diverge) — នៅលើខ្សែកោងថ្លៃដើម $J(\theta)$ វានឹងយោលចុះឡើងដោយទំហំកើនឡើងជាលំដាប់ ជំនួសឱ្យការធ្លាក់ចុះទៅបាតចាន។ ហេតុនេះហើយបានជាក្នុងការអនុវត្តជាក់ស្តែង គេតែងប្រើកាលវិភាគកែសម្រួលទំហំជំហាន (Step-size schedules ដូចជា Decay ឬ Cosine schedules) ជាជាងប្រើ $\alpha$ ថេរ។
 
 ### ខ. Stochastic Gradient Descent (SGD)
@@ -92,7 +99,9 @@ $$0 < \alpha < \frac{2}{\lambda_{\max}(X^T X)}$$
 2. **រង្វិលជុំកាត់តាមសំណុំទិន្នន័យ (Loop through the training set)**៖
    សម្រាប់ឧទាហរណ៍ហ្វឹកហាត់នីមួយៗ $i \in \{1, \dots, n\}$៖
    សម្រាប់គ្រប់ប៉ារ៉ាម៉ែត្រ $j \in \{0, \dots, d\}$ ធ្វើបច្ចុប្បន្នភាព៖
-   $$\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}$$
+   $$
+   \theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}
+   $$
    ដែល $\theta^{(t)}$ គឺជាវ៉ិចទ័រប៉ារ៉ាម៉ែត្រពីជំហានមុន។
 3. **លក្ខណៈសម្បត្តិ (Properties)**៖ ចាប់ផ្តើមបោះជំហានរីកចម្រើនបានលឿនជាងមុនឆ្ងាយណាស់។ ជំនួសឱ្យការដើរតាមគន្លងត្រង់ឆ្ពោះទៅចំណុចអប្បបរមា វាដើររេចុះរេឡើងដូច "មនុស្សស្រវឹង" (Drunkenly stumbles)។ នៅពេលខិតជិតចំណុចល្អបំផុត វានឹងលោតចុះឡើងៗជុំវិញនោះក្នុងរង្វង់វិមាត្រខ្ពស់ដែលសមាមាត្រទៅនឹងទំហំជំហាន $\alpha$។
 
@@ -102,7 +111,9 @@ Minibatch Gradient Descent គឺជាកម្លាំងស្នូលដ�
 
 1. **ជ្រើសរើស Batch ដោយចៃដន្យ** $\mathcal{B}$ ដែលមានទំហំ $B$ ពីសំណុំទិន្នន័យហ្វឹកហាត់។
 2. **វិធានធ្វើបច្ចុប្បន្នភាព (Update rule)**៖
-   $$\theta := \theta - \alpha_{\mathcal{B}} \frac{1}{B} \sum_{i \in \mathcal{B}} \left( h_\theta(x^{(i)}) - y^{(i)} \right) x^{(i)}$$
+   $$
+   \theta := \theta - \alpha_{\mathcal{B}} \frac{1}{B} \sum_{i \in \mathcal{B}} \left( h_\theta(x^{(i)}) - y^{(i)} \right) x^{(i)}
+   $$
    ដែល $\alpha_{\mathcal{B}}$ គឺជាអត្រារៀនដែលបានសម្រួលសមាមាត្រទៅតាមទំហំ Batch Size។
 
 <div id="plotly-bgd-vs-sgd" class="plotly-chart" aria-label="Interactive Plotly chart: Batch Gradient Descent versus Stochastic Gradient Descent optimization trajectories on elliptical cost contours"></div>
@@ -116,49 +127,62 @@ Minibatch Gradient Descent គឺជាកម្លាំងស្នូលដ�
 ### ការរៀបចំទម្រង់ម៉ាទ្រីស (Matrix Setup)
 
 តាង **ម៉ាទ្រីសរចនា (Design Matrix)** $X \in \mathbb{R}^{n \times (d+1)}$ ដែលផ្ទុកនូវទិន្នន័យនាំចូលហ្វឹកហាត់ទាំងអស់តម្រៀបតាមជួរដេក និង $y \in \mathbb{R}^n$ ជាវ៉ិចទ័រលទ្ធផលគោលដៅ៖
-$$X = \begin{bmatrix} (x^{(1)})^T \\ (x^{(2)})^T \\ \vdots \\ (x^{(n)})^T \end{bmatrix} = \begin{bmatrix} 1 & x_1^{(1)} & \dots & x_d^{(1)} \\ 1 & x_1^{(2)} & \dots & x_d^{(2)} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & x_1^{(n)} & \dots & x_d^{(n)} \end{bmatrix}, \quad y = \begin{bmatrix} y^{(1)} \\ y^{(2)} \\ \vdots \\ y^{(n)} \end{bmatrix}$$
-
+$$
+X = \begin{bmatrix} (x^{(1)})^T \\ (x^{(2)})^T \\ \vdots \\ (x^{(n)})^T \end{bmatrix} = \begin{bmatrix} 1 & x_1^{(1)} & \dots & x_d^{(1)} \\ 1 & x_1^{(2)} & \dots & x_d^{(2)} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & x_1^{(n)} & \dots & x_d^{(n)} \end{bmatrix}, \quad y = \begin{bmatrix} y^{(1)} \\ y^{(2)} \\ \vdots \\ y^{(n)} \end{bmatrix}
+$$
 ### ការទាញរូបមន្តតាមបែបម៉ាទ្រីស (Matrix Derivation)
 
 យើងអាចសរសេរមុខងារថ្លៃដើម Least Squares ឡើងវិញក្នុងទម្រង់វ៉ិចទ័រ-ម៉ាទ្រីស ដោយប្រើប្រាស់ផលគុណក្នុង (Inner Product) នៃ $L_2$ norm៖
-$$J(\theta) = \frac{1}{2} (X\theta - y)^T (X\theta - y)$$
-
+$$
+J(\theta) = \frac{1}{2} (X\theta - y)^T (X\theta - y)
+$$
 ពន្លាតកន្សោមខាងលើ៖
-$$J(\theta) = \frac{1}{2} \left( (X\theta)^T X\theta - (X\theta)^T y - y^T X\theta + y^T y \right)$$
-
+$$
+J(\theta) = \frac{1}{2} \left( (X\theta)^T X\theta - (X\theta)^T y - y^T X\theta + y^T y \right)
+$$
 ដោយសារ $(X\theta)^T y$ គឺជាចំនួនស្កាលែ (Scalar) វានឹងស្មើទៅនឹងត្រង់ស្ប៉ូសរបស់វា $y^T X\theta$ ដូច្នេះ៖
-$$J(\theta) = \frac{1}{2} \left( \theta^T X^T X \theta - 2\theta^T X^T y + y^T y \right)$$
-
+$$
+J(\theta) = \frac{1}{2} \left( \theta^T X^T X \theta - 2\theta^T X^T y + y^T y \right)
+$$
 រកជម្រាលធៀបនឹងវ៉ិចទ័រ $\theta$ ហើយកំណត់ឱ្យស្មើ ០ ដើម្បីស្វែងរកចំណុចអប្បបរមា៖
-$$\nabla_\theta J(\theta) = \frac{1}{2} \left( 2 X^T X \theta - 2 X^T y \right) = 0$$
-$$X^T X \theta = X^T y$$
-
+$$
+\nabla_\theta J(\theta) = \frac{1}{2} \left( 2 X^T X \theta - 2 X^T y \right) = 0
+$$
+$$
+X^T X \theta = X^T y
+$$
 ប្រព័ន្ធសមីការនេះត្រូវបានគេស្គាល់ថាជា **សមីការធម្មតា (The Normal Equations)**។
 
 ដោះស្រាយរក $\theta$ នាំឱ្យយើងទទួលបានរូបមន្តប៉ាន់ស្មានទម្រង់បិទនៃ Least Squares៖
-$$\theta = (X^T X)^{-1} X^T y$$
-
+$$
+\theta = (X^T X)^{-1} X^T y
+$$
 ### ឧទាហរណ៍គំរូតូចជាក់ស្តែង (Worked Micro-Example)
 
 ឧបមាថាយើងមានចំណុចទិន្នន័យហ្វឹកហាត់ចំនួនពីរ៖ $(x^{(1)}, y^{(1)}) = (0, 1)$ និង $(x^{(2)}, y^{(2)}) = (1, 3)$ ដោយយកអនុសញ្ញា $x_0 = 1$៖
 
-$$X = \begin{bmatrix} 1 & 0 \\ 1 & 1 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 3 \end{bmatrix}$$
-
+$$
+X = \begin{bmatrix} 1 & 0 \\ 1 & 1 \end{bmatrix}, \quad y = \begin{bmatrix} 1 \\ 3 \end{bmatrix}
+$$
 **ការគណនាតាមសមីការធម្មតា (Normal Equations path):**
-$$X^T X = \begin{bmatrix} 2 & 1 \\ 1 & 1 \end{bmatrix}, \quad X^T y = \begin{bmatrix} 4 \\ 3 \end{bmatrix} \implies \theta = (X^T X)^{-1} X^T y = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$$
-
+$$
+X^T X = \begin{bmatrix} 2 & 1 \\ 1 & 1 \end{bmatrix}, \quad X^T y = \begin{bmatrix} 4 \\ 3 \end{bmatrix} \implies \theta = (X^T X)^{-1} X^T y = \begin{bmatrix} 1 \\ 2 \end{bmatrix}
+$$
 ដូច្នេះ $h_\theta(x) = 1 + 2x$ ដែលខ្សែកោងនេះកាត់ចំចំណុចទាំងពីរយ៉ាងល្អឥតខ្ចោះ (កំហុសហ្វឹកហាត់ស្មើ ០)។
 
 **ការគណនាតាម Gradient Descent (Gradient Descent path):**
 ប្រសិនបើចាប់ផ្តើមពី $\theta = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$ ជាមួយ $\alpha = 0.1$, ជំហានទី ១ ផ្តល់សំណល់ $(1, 3)$ នាំឱ្យ៖
-$$\theta_1 = \begin{bmatrix} 0 \\ 0 \end{bmatrix} - 0.1 \begin{bmatrix} 4 \\ 3 \end{bmatrix} = \begin{bmatrix} -0.4 \\ -0.3 \end{bmatrix}$$
+$$
+\theta_1 = \begin{bmatrix} 0 \\ 0 \end{bmatrix} - 0.1 \begin{bmatrix} 4 \\ 3 \end{bmatrix} = \begin{bmatrix} -0.4 \\ -0.3 \end{bmatrix}
+$$
 ការធ្វើរង្វិលជុំដដែលៗជាបន្តបន្ទាប់នឹងរួមគ្នាមកកាន់ $\begin{bmatrix} 1 \\ 2 \end{bmatrix}$ — ដែលជាចម្លើយដូចគ្នាទៅនឹងសមីការធម្មតាដោះស្រាយបានក្នុងមួយជំហាន។ ឧទាហរណ៍នេះឆ្លុះបញ្ចាំងពីតុល្យភាព៖ វិធីសាស្ត្ររង្វិលជុំ (Iterative methods) អាចពង្រីកមាត្រដ្ឋានលើទិន្នន័យធំៗកម្រិតមហាសាល $n$ និង $d$ បានយ៉ាងងាយស្រួល ខណៈដែលសមីការធម្មតាផ្តល់ចម្លើយសុក្រឹតភ្លាមៗ ប៉ុន្តែទាមទារការគណនាបញ្ច្រាសម៉ាទ្រីសកម្រិត $O(d^3)$។
 
 ### ការបកស្រាយតាមបែបប្រូបាប៊ីលីតេ (Probabilistic Interpretation)
 
 Least Squares មិនមែនជាជម្រើសដែលកើតឡើងដោយចៃដន្យឡើយ៖ វាគឺជា **ឧបករណ៍ប៉ាន់ស្មានលទ្ធភាពអតិបរមា (Maximum Likelihood Estimator - MLE)** ក្រោមការសន្មតថាតម្លៃគោលដៅមានលក្ខណៈលីនេអ៊ែរបូកនឹងកំហុសរំខាន Gaussian (Gaussian noise)៖
-$$y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \quad \epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)$$
-
+$$
+y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \quad \epsilon^{(i)} \sim \mathcal{N}(0, \sigma^2)
+$$
 ការធ្វើអតិបរមាកម្មលើ Gaussian Log-Likelihood $\sum_i \log p(y^{(i)} \mid x^{(i)}; \theta)$ នាំឱ្យយើងទទួលបានការកាត់បន្ថយ $J(\theta)$ យ៉ាងត្រឹមត្រូវបំផុត — ទាំងកត្តា $\frac{1}{2}$ និងកំហុសលើកជាការេ សុទ្ធតែធ្លាក់ចេញមកពីស្វ័យគុណនៃអនុគមន៍ Gaussian។ ចំណុចនេះផ្សារភ្ជាប់ Least Squares ទៅនឹងក្របខ័ណ្ឌ ERM កាន់តែទូលំទូលាយ និងជាស្ពានចម្លងទៅកាន់ Loss Functions ផ្សេងទៀត (ដូចជា Logistic Loss សម្រាប់ការធ្វើចំណាត់ថ្នាក់) ដែលទាញចេញពីការសន្មតបំណែងចែកប្រូបាប៊ីលីតេផ្សេងទៀត។
 
 ### ភាពអាចច្រាសបាន និងភាពច្រំដែលនៃលក្ខណៈពិសេស (Invertibility & Redundancy)

@@ -17,12 +17,16 @@
 ## ២. គោលគំនិតសំខាន់ៗ & និយមន័យ (Key Concepts & Definitions)
 
 * **អម្បូរបំណែងចែកអិចស្ប៉ូណង់ស្យែល (Exponential Family)**: ថ្នាក់នៃបំណែងចែកប្រូបាប៊ីលីតេ ដែលអនុគមន៍ដង់ស៊ីតេប្រូបាប៊ីលីតេ (PDF) ឬអនុគមន៍ម៉ាសប្រូបាប៊ីលីតេ (PMF) អាចសរសេរបានក្នុងទម្រង់កាណូនិច (Canonical Form)៖
-  $$p(y; \eta) = b(y) \exp\left(\eta^T T(y) - a(\eta)\right)$$
+  $$
+  p(y; \eta) = b(y) \exp\left(\eta^T T(y) - a(\eta)\right)
+  $$
 * **ប៉ារ៉ាម៉ែត្រធម្មជាតិ ($\eta$ - Natural Parameter)**: ប៉ារ៉ាម៉ែត្រកាណូនិច (ឬវ៉ិចទ័រនៃប៉ារ៉ាម៉ែត្រ) ដែលកំណត់លក្ខណៈនៃបំណែងចែក។
 * **ស្ថិតិគ្រប់គ្រាន់ ($T(y)$ - Sufficient Statistic)**: អនុគមន៍នៃទិន្នន័យ $y$ ដែលក្តោបក្តាប់រាល់ព័ត៌មានទាំងអស់ដែលទិន្នន័យមានអំពីប៉ារ៉ាម៉ែត្រ។ សម្រាប់ករណីភាគច្រើនក្នុងវគ្គសិក្សានេះ $T(y) = y$ (អនុគមន៍អត្តសញ្ញាណ)។
 * **រង្វាស់មូលដ្ឋាន ($b(y)$ - Base Measure)**: កត្តាធ្វើមាត្រដ្ឋាន ឬអនុគមន៍ស្កាលែដែលអាស្រ័យតែលើទិន្នន័យ $y$ ប៉ុណ្ណោះ និងមិនអាស្រ័យលើប៉ារ៉ាម៉ែត្រឡើយ។
 * **អនុគមន៍ Log Partition ($a(\eta)$ - Log Partition Function)**: កត្តាកំណត់ស្តង់ដារ (Normalization Constant) ដែលធានាថាផលបូក ឬអាំងតេក្រាលនៃប្រូបាប៊ីលីតេមានតម្លៃស្មើ ១ ជានិច្ច កំណត់ដោយ៖
-  $$a(\eta) = \log \int b(y) \exp\left(\eta^T T(y)\right) dy$$
+  $$
+  a(\eta) = \log \int b(y) \exp\left(\eta^T T(y)\right) dy
+  $$
 * **អនុគមន៍ភ្ជាប់ (Link Function, $g^{-1}$)**: អនុគមន៍ដែលផ្គូផ្គងតម្លៃរំពឹងទុកនៃបំណែងចែកគោលដៅ ទៅកាន់ប៉ារ៉ាម៉ែត្រធម្មជាតិ $\eta$។
 * **អនុគមន៍ឆ្លើយតបកាណូនិច (Canonical Response Function, $g$)**: អនុគមន៍ដែលផ្គូផ្គងប៉ារ៉ាម៉ែត្រធម្មជាតិ $\eta$ ទៅកាន់តម្លៃរំពឹងទុកនៃបំណែងចែកគោលដៅ $\mathbb{E}[T(y)]$។
 * **អនុគមន៍ Softmax (Softmax Function)**: ទម្រង់ទូទៅនៃអនុគមន៍ Sigmoid/Logistic ដែលបម្លែងវ៉ិចទ័រពិន្ទុតម្លៃពិតតាមអំពើចិត្ត (Logits) ទៅជាបំណែងចែកប្រូបាប៊ីលីតេលើ $k$ ថ្នាក់ដាច់ដោយឡែកពីគ្នា។
@@ -37,23 +41,34 @@
 អនុគមន៍ Log Partition $a(\eta)$ ដើរតួជា Cumulant Generating Function ដែលធានាថាដេរីវេរបស់វាផ្តល់នូវម៉ូម៉ង់ស្ថិតិ (Statistical Moments) នៃស្ថិតិគ្រប់គ្រាន់ $T(y)$ ដោយស្វ័យប្រវត្តិ៖
 
 1. **ដេរីវេទីមួយ (តម្លៃរំពឹងទុក - Expectation)**:
-   $$\frac{\partial}{\partial \eta} a(\eta) = \mathbb{E}[T(y)]$$
+   $$
+   \frac{\partial}{\partial \eta} a(\eta) = \mathbb{E}[T(y)]
+   $$
 2. **ដេរីវេទីពីរ (វ៉ារ្យ៉ង់ - Variance)**:
-   $$\frac{\partial^2}{\partial \eta^2} a(\eta) = \text{Var}(T(y))$$
-
+   $$
+   \frac{\partial^2}{\partial \eta^2} a(\eta) = \text{Var}(T(y))
+   $$
 ដោយសារដេរីវេទីពីរតំណាងឱ្យវ៉ារ្យ៉ង់ (ដែលជាតម្លៃមិនអវិជ្ជមានជានិច្ច $\ge 0$) នោះនាំឱ្យ $a(\eta)$ ត្រូវបានធានាថាជា **អនុគមន៍ប៉ោង (Convex Function)** ដែលធ្វើឱ្យការបង្កើនប្រសិទ្ធភាពតាម Gradient មានស្ថេរភាពខ្ពស់ និងរួមគ្នាមកកាន់ចំណុចប្រសើរបំផុតសកលជានិច្ច។
 
 ### ខ. ភស្តុតាង៖ បំណែងចែក Bernoulli ជាសមាជិកនៃ Exponential Family
 
 ពិចារណាលើការបោះកាក់ដែលតាងដោយបំណែងចែក Bernoulli ជាមួយប៉ារ៉ាម៉ែត្រ $\phi \in (0, 1)$ តំណាងឱ្យប្រូបាប៊ីលីតេចំពោះក្បាល ($y=1$)៖
-$$p(y; \phi) = \phi^y (1-\phi)^{1-y}$$
-
+$$
+p(y; \phi) = \phi^y (1-\phi)^{1-y}
+$$
 ដើម្បីបម្លែងសមីការនេះទៅជាទម្រង់កាណូនិចនៃ Exponential Family យើងយកអិចស្ប៉ូណង់ស្យែលលើលោការីតធម្មជាតិនៃបំណែងចែក៖
-$$p(y; \phi) = \exp\left(\log\left(\phi^y (1-\phi)^{1-y}\right)\right)$$
-$$p(y; \phi) = \exp\left(y \log \phi + (1-y) \log(1-\phi)\right)$$
-$$p(y; \phi) = \exp\left(y \log \phi - y\log(1-\phi) + \log(1-\phi)\right)$$
-$$p(y; \phi) = \exp\left(y \log\left(\frac{\phi}{1-\phi}\right) + \log(1-\phi)\right)$$
-
+$$
+p(y; \phi) = \exp\left(\log\left(\phi^y (1-\phi)^{1-y}\right)\right)
+$$
+$$
+p(y; \phi) = \exp\left(y \log \phi + (1-y) \log(1-\phi)\right)
+$$
+$$
+p(y; \phi) = \exp\left(y \log \phi - y\log(1-\phi) + \log(1-\phi)\right)
+$$
+$$
+p(y; \phi) = \exp\left(y \log\left(\frac{\phi}{1-\phi}\right) + \log(1-\phi)\right)
+$$
 ប្រៀបធៀបតួនេះទៅនឹងទម្រង់កាណូនិច $b(y) \exp\left(\eta^T T(y) - a(\eta)\right)$ យើងកំណត់បាន៖
 * $b(y) = 1$
 * $T(y) = y$
@@ -61,18 +76,23 @@ $$p(y; \phi) = \exp\left(y \log\left(\frac{\phi}{1-\phi}\right) + \log(1-\phi)\r
 * $a(\eta) = -\log(1-\phi)$
 
 ដើម្បីសរសេរ $a(\eta)$ ឱ្យអាស្រ័យសុទ្ធសាធលើ $\eta$ យើងដោះស្រាយរក $\phi$ ជាអនុគមន៍នៃ $\eta$៖
-$$\mathrm{e}^\eta = \frac{\phi}{1-\phi} \implies \phi(1-\phi)\mathrm{e}^\eta = \phi \implies \phi = \frac{\mathrm{e}^\eta}{1 + \mathrm{e}^\eta} = \frac{1}{1 + \mathrm{e}^{-\eta}}$$
+$$
+\mathrm{e}^\eta = \frac{\phi}{1-\phi} \implies \phi(1-\phi)\mathrm{e}^\eta = \phi \implies \phi = \frac{\mathrm{e}^\eta}{1 + \mathrm{e}^\eta} = \frac{1}{1 + \mathrm{e}^{-\eta}}
+$$
 នេះបង្ហាញឡើងវិញនូវ **អនុគមន៍ Sigmoid/Logistic** ដ៏ល្បីល្បាញ! ជំនួស $\phi$ ចូលក្នុង $a(\eta)$ យើងទទួលបាន៖
-$$a(\eta) = -\log\left(1 - \frac{1}{1+\mathrm{e}^{-\eta}}\right) = -\log\left(\frac{\mathrm{e}^{-\eta}}{1+\mathrm{e}^{-\eta}}\right) = \log\left(1 + \mathrm{e}^\eta\right)$$
-
+$$
+a(\eta) = -\log\left(1 - \frac{1}{1+\mathrm{e}^{-\eta}}\right) = -\log\left(\frac{\mathrm{e}^{-\eta}}{1+\mathrm{e}^{-\eta}}\right) = \log\left(1 + \mathrm{e}^\eta\right)
+$$
 ### គ. ភស្តុតាង៖ បំណែងចែក Gaussian ជាសមាជិកនៃ Exponential Family
 
 ពិចារណាលើបំណែងចែក Gaussian ដែលមានមធ្យម $\mu$ និងវ៉ារ្យ៉ង់ថេរ $\sigma^2 = 1$៖
-$$p(y; \mu) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{(y-\mu)^2}{2}\right)$$
-
+$$
+p(y; \mu) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{(y-\mu)^2}{2}\right)
+$$
 ពន្លាតកន្សោមដឺក្រេទីពីរក្នុងស្វ័យគុណ៖
-$$p(y; \mu) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{y^2}{2} + \mu y - \frac{\mu^2}{2}\right) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{y^2}{2}\right) \exp\left(\mu y - \frac{\mu^2}{2}\right)$$
-
+$$
+p(y; \mu) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{y^2}{2} + \mu y - \frac{\mu^2}{2}\right) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{y^2}{2}\right) \exp\left(\mu y - \frac{\mu^2}{2}\right)
+$$
 ប្រៀបធៀបតួទៅនឹង $b(y) \exp\left(\eta^T T(y) - a(\eta)\right)$៖
 * $b(y) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{y^2}{2}\right)$
 * $T(y) = y$
@@ -86,17 +106,23 @@ $$p(y; \mu) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{y^2}{2} + \mu y - \frac{\mu
 ដើម្បីបង្កើត GLM សម្រាប់ទស្សន៍ទាយអថេរគោលដៅ $y$ ដោយផ្អែកលើលក្ខណៈពិសេស $x \in \mathbb{R}^{d+1}$ និងប៉ារ៉ាម៉ែត្រ $\theta \in \mathbb{R}^{d+1}$ យើងផ្អែកលើការសន្មតរៀបចំចំនួន ៣៖
 
 1. **កំហុសរំខានជា Exponential Family**: បំណែងចែកមានលក្ខខណ្ឌនៃ $y$ ធៀបនឹង $x$ ស្ថិតនៅក្នុង Exponential Family កំណត់ដោយប៉ារ៉ាម៉ែត្រ $\eta$៖
-   $$y \mid x; \theta \sim \text{ExponentialFamily}(\eta)$$
+   $$
+   y \mid x; \theta \sim \text{ExponentialFamily}(\eta)
+   $$
 2. **ការទស្សន៍ទាយតម្លៃរំពឹងទុក**: គោលដៅរបស់យើងគឺទស្សន៍ទាយតម្លៃរំពឹងទុកនៃ $T(y)$ ដោយផ្តល់ទិន្នន័យ $x$។ នោះមានន័យថា អនុគមន៍សម្មតិកម្ម $h_\theta(x)$ ត្រូវបានកំណត់ដោយ៖
-   $$h_\theta(x) = \mathbb{E}[T(y) \mid x]$$
+   $$
+   h_\theta(x) = \mathbb{E}[T(y) \mid x]
+   $$
 3. **ភាពលីនេអ៊ែរ**: ប៉ារ៉ាម៉ែត្រធម្មជាតិ $\eta$ និងលក្ខណៈពិសេស $x$ មានទំនាក់ទំនងលីនេអ៊ែរតាមរយៈទម្ងន់ម៉ូដែល $\theta$៖
-   $$\eta = \theta^T x$$
-
+   $$
+   \eta = \theta^T x
+   $$
 ### ទម្រង់ជម្រាលកែកំហុសរួម (Common Error-Correcting Gradient Update)
 
 ក្រោមការប៉ាន់ស្មានលទ្ធភាពអតិបរមា (MLE) ការគណនា Log-Likelihood នៃ GLM ណាមួយ និងការរកជម្រាលធៀបនឹង $\theta$ ផ្តល់នូវវិធានធ្វើបច្ចុប្បន្នភាពកែកំហុសដូចគ្នាបេះបិទសម្រាប់ Stochastic Gradient Descent (SGD) កាត់តាម *គ្រប់* បំណែងចែកក្នុងអម្បូរនេះទាំងអស់៖
-$$\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}$$
-
+$$
+\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \right) x_j^{(i)}
+$$
 នេះមិនមែនជារឿងចៃដន្យតាមពីជគណិតទេ ប៉ុន្តែជារចនាសម្ព័ន្ធផ្ទាល់ដែលកើតចេញពីលក្ខណៈសម្បត្តិកាណូនិចនៃ Exponential Family!
 
 <div id="plotly-glm-crank" class="plotly-chart" aria-label="Interactive Plotly diagram: the GLM parameter crank mapping features through weights, the natural parameter, and the canonical response function to the prediction"></div>
@@ -120,13 +146,15 @@ $$\theta_j := \theta_j - \alpha \left( h_{\theta^{(t)}}(x^{(i)}) - y^{(i)} \righ
 ### រូបមន្ត Softmax
 
 ប្រូបាប៊ីលីតេមានលក្ខខណ្ឌដែលធាតុចូល $x$ ស្ថិតក្នុងថ្នាក់ $j$ ត្រូវបានគណនាដោយការលើកជាអិចស្ប៉ូណង់ស្យែល និងធ្វើស្តង់ដារលើផលបូកពិន្ទុទាំងអស់៖
-$$p(y = j \mid x; \theta) = \frac{\exp(\theta_j^T x)}{\sum_{l=1}^k \exp(\theta_l^T x)}$$
-
+$$
+p(y = j \mid x; \theta) = \frac{\exp(\theta_j^T x)}{\sum_{l=1}^k \exp(\theta_l^T x)}
+$$
 ### អនុគមន៍បាត់បង់ Cross-Entropy (Cross-Entropy Loss)
 
 ក្រោម MLE ការធ្វើអតិបរមាកម្មលើ Multinomial Log-Likelihood គឺស្មើគ្នានឹងការកាត់បន្ថយ Cross-Entropy Loss លើទិន្នន័យហ្វឹកហាត់ $n$ ឧទាហរណ៍៖
-$$\mathcal{L}(\theta) = -\sum_{i=1}^n \sum_{j=1}^k y_j^{(i)} \log p(y^{(i)} = j \mid x^{(i)}; \theta)$$
-
+$$
+\mathcal{L}(\theta) = -\sum_{i=1}^n \sum_{j=1}^k y_j^{(i)} \log p(y^{(i)} = j \mid x^{(i)}; \theta)
+$$
 <div id="plotly-softmax-geometry" class="plotly-chart" aria-label="Interactive Plotly chart: softmax decision regions for four classes in a 2D feature plane with probability heatmap"></div>
 
 ---
@@ -136,11 +164,13 @@ $$\mathcal{L}(\theta) = -\sum_{i=1}^n \sum_{j=1}^k y_j^{(i)} \log p(y^{(i)} = j 
 ស្លាកសម្គាល់ One-Hot "រឹង" ធម្មតា $y^{(i)} = [1, 0, 0, 0]^T$ បង្ខំឱ្យ Cross-Entropy រុញ Logits របស់ម៉ូដែល $\theta_1^T x \to \infty$ ធៀបនឹងថ្នាក់ផ្សេងៗ ដើម្បីសម្រេចបានប្រូបាប៊ីលីតេ ១.០ ឥតខ្ចោះ។ ចំណុចនេះនាំឱ្យម៉ូដែលកើតបញ្ហា Overfitting ធ្ងន់ធ្ងរ និងមានទំនុកចិត្តខ្ពស់ជ្រុលហួសហេតុ (Overconfident)។
 
 **Label Smoothing** កែប្រែវ៉ិចទ័រគោលដៅដោយបែងចែកទម្ងន់ប្រូបាប៊ីលីតេតូចមួយ $\epsilon$ ស្មើៗគ្នាទៅគ្រប់ថ្នាក់ទាំងអស់៖
-$$y_{\text{smooth}, j} = y_j (1 - \epsilon) + \frac{\epsilon}{k}$$
-
+$$
+y_{\text{smooth}, j} = y_j (1 - \epsilon) + \frac{\epsilon}{k}
+$$
 ឧទាហរណ៍ ក្នុងបញ្ហាចំណាត់ថ្នាក់ ៤ ថ្នាក់ ជាមួយ $\epsilon = 0.1$ ស្លាកសម្គាល់ផ្លាស់ប្តូរពី៖
-$$y = [1, 0, 0, 0]^T \implies y_{\text{smooth}} = [0.925, 0.025, 0.025, 0.025]^T$$
-
+$$
+y = [1, 0, 0, 0]^T \implies y_{\text{smooth}} = [0.925, 0.025, 0.025, 0.025]^T
+$$
 ### អត្ថប្រយោជន៍៖
 * **ទប់ស្កាត់ Overfitting**: ការពារមិនឱ្យទម្ងន់ $\theta$ ផ្ទុះកើនឡើងដល់អនន្ត។
 * **ភាពធន់ (Robustness)**: ជួយឱ្យម៉ូដែលធន់នឹងកំហុសទិន្នន័យដែលមានស្លាកសម្គាល់ខុស (Label Noise)។
@@ -152,7 +182,9 @@ $$y = [1, 0, 0, 0]^T \implies y_{\text{smooth}} = [0.925, 0.025, 0.025, 0.025]^T
 
 * **ការទស្សន៍ទាយ Token បន្ទាប់ក្នុង LLMs (Next-Token Prediction)**: ម៉ូដែលភាសាធំៗទំនើប (ដូចជា ChatGPT និង Claude) ប្រើប្រាស់ស្រទាប់ Softmax ដ៏ធំសម្បើមជា Prediction Head ចុងក្រោយ ដើម្បីជ្រើសរើសពាក្យ/Token បន្ទាប់ដែលមានប្រូបាប៊ីលីតេខ្ពស់បំផុតពីវចនានុក្រម (ជាទូទៅមានចន្លោះពី $50k$ ដល់ $250k$ Tokens)។
 * **យន្តការ Self-Attention ក្នុង Transformers**: ការធ្វើស្តង់ដារតាម Softmax គឺជាបេះដូងគណិតវិទ្យានៃរូបមន្ត Self-Attention ក្នុងស្ថាបត្យកម្ម Transformer៖
-  $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+  $$
+  \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+  $$
   ដែល Softmax ធ្វើមាត្រដ្ឋាន និងកំណត់កម្រិតពាក់ព័ន្ធរវាង Tokens នីមួយៗដោយស្វ័យប្រវត្តិ។
 
 ---

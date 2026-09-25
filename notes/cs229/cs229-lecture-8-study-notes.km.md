@@ -31,64 +31,91 @@
 
 #### ខ. វិធានច្រវាក់សម្រាប់តម្លៃវ៉ិចទ័រ (The Vector-Valued Chain Rule)
 ពិចារណាជំហានកម្រិតមធ្យមក្នុងក្រាហ្វគណនា ដែលវ៉ិចទ័រ $z \in \mathbb{R}^m$ ត្រូវបានផ្គូផ្គងទៅកាន់វ៉ិចទ័រ $u \in \mathbb{R}^n$ តាមរយៈអនុគមន៍ដេរីវេបាន $g$ ហើយ $u$ ត្រូវបានផ្គូផ្គងបន្តទៅកាន់កំហុសស្កាលែ $J \in \mathbb{R}$ តាមរយៈអនុគមន៍ $f$៖
-$$u = g(z) \in \mathbb{R}^n, \quad J = f(u) \in \mathbb{R}$$
-
+$$
+u = g(z) \in \mathbb{R}^n, \quad J = f(u) \in \mathbb{R}
+$$
 ឧបមាថាយើងបានស្គាល់ជម្រាលនៃកំហុសធៀបនឹងអថេរទិន្នផល $u$ រួចហើយ គឺ $\frac{\partial J}{\partial u} \in \mathbb{R}^n$។ យើងចង់គណនាជម្រាលធៀបនឹងអថេរធាតុចូល $z$ គឺ $\frac{\partial J}{\partial z} \in \mathbb{R}^m$។  
 តាមរយៈវិធានច្រវាក់ពហុអថេរ ដេរីវេដោយផ្នែកធៀបនឹងកូអរដោនេទោលមួយ $z_i$ ត្រូវបានទាញរកដោយធ្វើផលបូកលើគ្រប់ផ្លូវកម្រិតមធ្យម $u_j$ ទាំងអស់៖
-$$\frac{\partial J}{\partial z_i} = \sum_{j=1}^n \frac{\partial J}{\partial u_j} \frac{\partial u_j}{\partial z_i} = \sum_{j=1}^n \frac{\partial J}{\partial u_j} \frac{\partial g_j(z)}{\partial z_i}$$
-
+$$
+\frac{\partial J}{\partial z_i} = \sum_{j=1}^n \frac{\partial J}{\partial u_j} \frac{\partial u_j}{\partial z_i} = \sum_{j=1}^n \frac{\partial J}{\partial u_j} \frac{\partial g_j(z)}{\partial z_i}
+$$
 យើងអាចរៀបចំដេរីវេដោយផ្នែកទាំងនេះជាទម្រង់វ៉ិចទ័រ។ រូបមន្តនេះគឺសមមូលទៅនឹងការយកច្រាសត្រឡប់នៃម៉ាទ្រីសហ្សាខូប៊ី គុណនឹងវ៉ិចទ័រជម្រាលខាងក្រោម៖
-$$\frac{\partial J}{\partial z} = \left(\frac{\partial g}{\partial z}\right)^T \frac{\partial J}{\partial u}$$
+$$
+\frac{\partial J}{\partial z} = \left(\frac{\partial g}{\partial z}\right)^T \frac{\partial J}{\partial u}
+$$
 ដែលម៉ាទ្រីសហ្សាខូប៊ី $\frac{\partial g}{\partial z} \in \mathbb{R}^{n \times m}$ ត្រូវបានកំណត់ដោយ $\left[\frac{\partial g}{\partial z}\right]_{ji} = \frac{\partial u_j}{\partial z_i}$។
 
 #### គ. ដំណើរការផ្សាយបញ្ច្រាសនៃស្រទាប់គុណម៉ាទ្រីស (Matrix Multiplication Layer)
 តាងដំណើរការផ្សាយទៅមុខនៃស្រទាប់ Fully-connected កំណត់ដោយ៖
-$$u = W z + b$$
+$$
+u = W z + b
+$$
 ដែល $z \in \mathbb{R}^m$ ជាវ៉ិចទ័រធាតុចូល, $W \in \mathbb{R}^{n \times m}$ ជាម៉ាទ្រីសទម្ងន់, $b \in \mathbb{R}^n$ ជាវ៉ិចទ័រលម្អៀង, និង $u \in \mathbb{R}^n$ ជាវ៉ិចទ័រឡូជីតទិន្នផល។
 
 ##### ១. ជម្រាលធៀបនឹងធាតុចូល $z$៖
 កូអរដោនេទី $j$ នៃទិន្នផលគឺ៖
-$$u_j = b_j + \sum_{k=1}^m W_{jk} z_k$$
+$$
+u_j = b_j + \sum_{k=1}^m W_{jk} z_k
+$$
 ដេរីវេនៃ $u_j$ ធៀបនឹងកូអរដោនេធាតុចូល $z_i$៖
-$$\frac{\partial u_j}{\partial z_i} = \frac{\partial}{\partial z_i} \left( b_j + \sum_{k=1}^m W_{jk} z_k \right) = W_{ji}$$
+$$
+\frac{\partial u_j}{\partial z_i} = \frac{\partial}{\partial z_i} \left( b_j + \sum_{k=1}^m W_{jk} z_k \right) = W_{ji}
+$$
 នេះបញ្ជាក់ថាម៉ាទ្រីសហ្សាខូប៊ីគឺស្មើនឹងម៉ាទ្រីសទម្ងន់ផ្ទាល់តែម្តង៖ $\frac{\partial u}{\partial z} = W$។  
 អនុវត្តវិធានច្រវាក់វ៉ិចទ័រ៖
-$$\frac{\partial J}{\partial z} = W^T \frac{\partial J}{\partial u}$$
-
+$$
+\frac{\partial J}{\partial z} = W^T \frac{\partial J}{\partial u}
+$$
 ##### ២. ជម្រាលធៀបនឹងប៉ារ៉ាម៉ែត្រទម្ងន់ $W$៖
 យើងចង់គណនាដេរីវេដោយផ្នែកនៃកំហុសស្កាលែ $J$ ធៀបនឹងធាតុទម្ងន់ទោល $W_{ij}$។ អនុវត្តវិធានច្រវាក់៖
-$$\frac{\partial J}{\partial W_{ij}} = \sum_{k=1}^n \frac{\partial J}{\partial u_k} \frac{\partial u_k}{\partial W_{ij}}$$
+$$
+\frac{\partial J}{\partial W_{ij}} = \sum_{k=1}^n \frac{\partial J}{\partial u_k} \frac{\partial u_k}{\partial W_{ij}}
+$$
 ពន្លាតតួ $u_k$៖
-$$\frac{\partial u_k}{\partial W_{ij}} = \frac{\partial}{\partial W_{ij}} \left( b_k + \sum_{s=1}^m W_{ks} z_s \right)$$
+$$
+\frac{\partial u_k}{\partial W_{ij}} = \frac{\partial}{\partial W_{ij}} \left( b_k + \sum_{s=1}^m W_{ks} z_s \right)
+$$
 ដេរីវេនេះមិនសូន្យ លុះត្រាតែសន្ទស្សន៍ជួរដេកត្រូវគ្នា ($k=i$) និងសន្ទស្សន៍ជួរឈរត្រូវគ្នា ($s=j$)។ ដូច្នេះ៖
-$$\frac{\partial u_k}{\partial W_{ij}} = \begin{cases} z_j & \text{if } k=i \\ 0 & \text{if } k \neq i \end{cases}$$
+$$
+\frac{\partial u_k}{\partial W_{ij}} = \begin{cases} z_j & \text{if } k=i \\ 0 & \text{if } k \neq i \end{cases}
+$$
 ជំនួសលទ្ធផលនេះចូលទៅក្នុងផលបូកនៃវិធានច្រវាក់ ផលបូកទាំងមូលដួលរលំមកនៅសល់តែតួទោលមួយគត់៖
-$$\frac{\partial J}{\partial W_{ij}} = \frac{\partial J}{\partial u_i} z_j$$
-
+$$
+\frac{\partial J}{\partial W_{ij}} = \frac{\partial J}{\partial u_i} z_j
+$$
 *ទំនាក់ទំនងជីវសាស្ត្រ (Hebbian Learning Rule)*: នេះគឺដូចគ្នាបេះបិទទៅនឹងវិធានរៀនបែបហេបប៊ី។ ការធ្វើបច្ចុប្បន្នភាពទម្ងន់ស៊ីណាប់ $\frac{\partial J}{\partial W_{ij}}$ គឺជាផលគុណនៃកំហុស Activation ក្រោយស៊ីណាប់ $\frac{\partial J}{\partial u_i}$ និងតម្លៃ Activation មុនស៊ីណាប់ $z_j$។
 
 យើងអាចសរសេររូបមន្តនេះជាទម្រង់វ៉ិចទ័រយ៉ាងប្រណីតជា **ផលគុណក្រៅ (Outer Product)**៖
-$$\frac{\partial J}{\partial W} = \left(\frac{\partial J}{\partial u}\right) z^T$$
+$$
+\frac{\partial J}{\partial W} = \left(\frac{\partial J}{\partial u}\right) z^T
+$$
 សម្រាប់គំរូបង្វឹកទោលមួយ ម៉ាទ្រីសជម្រាលទម្ងន់ $\frac{\partial J}{\partial W} \in \mathbb{R}^{n \times m}$ គឺជា **ម៉ាទ្រីសលំដាប់ ១ (Rank-1 Matrix)**។
 
 ##### ៣. ជម្រាលធៀបនឹងប៉ារ៉ាម៉ែត្រលម្អៀង $b$៖
 ដោយសារ $u_j = b_j + \sum_{k=1}^m W_{jk} z_k$ យើងទទួលបាន $\frac{\partial u_j}{\partial b_i} = 1$ ប្រសិនបើ $j=i$ ហើយស្មើ $0$ ក្នុងករណីផ្សេងទៀត។  
 អនុវត្តវិធានច្រវាក់៖
-$$\frac{\partial J}{\partial b} = \frac{\partial J}{\partial u}$$
-
+$$
+\frac{\partial J}{\partial b} = \frac{\partial J}{\partial u}
+$$
 #### ឃ. ដំណើរការផ្សាយបញ្ច្រាសនៃស្រទាប់អនុគមន៍សកម្មកម្ម (Activation Layer)
 តាងដំណើរការផ្សាយទៅមុខនៃស្រទាប់ Activation កំណត់ដោយ៖
-$$u = \sigma(z)$$
+$$
+u = \sigma(z)
+$$
 ដែល $\sigma$ គឺជាអនុគមន៍សកម្មកម្មដែលត្រូវបានអនុវត្តលើធាតុនីមួយៗនៃ $z \in \mathbb{R}^n$។
 
 ដោយសារទិន្នផលទី $i$ គឺ $u_i = \sigma(z_i)$ អាស្រ័យតែលើកូអរដោនេធាតុចូលទី $i$ គឺ $z_i$ តែមួយគត់ ធាតុក្រៅអង្កត់ទ្រូងទាំងអស់នៃម៉ាទ្រីសហ្សាខូប៊ីសុទ្ធតែស្មើនឹងសូន្យ៖
-$$\frac{\partial u_j}{\partial z_i} = \begin{cases} \sigma'(z_i) & \text{if } j=i \\ 0 & \text{if } j \neq i \end{cases}$$
-
+$$
+\frac{\partial u_j}{\partial z_i} = \begin{cases} \sigma'(z_i) & \text{if } j=i \\ 0 & \text{if } j \neq i \end{cases}
+$$
 ម៉ាទ្រីសហ្សាខូប៊ី $\frac{\partial u}{\partial z} \in \mathbb{R}^{n \times n}$ គឺជា **ម៉ាទ្រីសអង្កត់ទ្រូង (Diagonal Matrix)**៖
-$$\frac{\partial u}{\partial z} = \operatorname{diag}\left(\sigma'(z_1), \sigma'(z_2), \dots, \sigma'(z_n)\right)$$
-
+$$
+\frac{\partial u}{\partial z} = \operatorname{diag}\left(\sigma'(z_1), \sigma'(z_2), \dots, \sigma'(z_n)\right)
+$$
 អនុវត្តវិធានច្រវាក់វ៉ិចទ័រ៖
-$$\frac{\partial J}{\partial z} = \operatorname{diag}\left(\sigma'(z)\right) \frac{\partial J}{\partial u} = \sigma'(z) \odot \frac{\partial J}{\partial u}$$
+$$
+\frac{\partial J}{\partial z} = \operatorname{diag}\left(\sigma'(z)\right) \frac{\partial J}{\partial u} = \sigma'(z) \odot \frac{\partial J}{\partial u}
+$$
 ដែល $\odot$ តំណាងឱ្យផលគុណហាដាម៉ាដតាមធាតុនីមួយៗ ដែលជួយជៀសវាងការបង្កើតម៉ាទ្រីសស្តើងទំហំ $n \times n$ ក្នុងអង្គចងចាំ។
 
 ---
@@ -100,24 +127,34 @@ $$\frac{\partial J}{\partial z} = \operatorname{diag}\left(\sigma'(z)\right) \fr
 #### ដំណាក់កាលទី ១៖ ដំណើរការផ្សាយទៅមុខ (Forward Pass)
 សម្រាប់ស្រទាប់ $l = 1, \dots, L$៖
 1. គណនាបន្សំលីនេអ៊ែរមុនសកម្មកម្ម (Pre-activation)៖
-   $$z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}$$
+   $$
+   z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}
+   $$
 2. អនុវត្តអនុគមន៍សកម្មកម្មតាមធាតុនីមួយៗ៖
-   $$a^{(l)} = \sigma\left(z^{(l)}\right)$$
+   $$
+   a^{(l)} = \sigma\left(z^{(l)}\right)
+   $$
    ដែល $a^{(0)} = x$ គឺជាវ៉ិចទ័រធាតុចូល។
 3. វាយតម្លៃតម្លៃកំហុសស្កាលែចុងក្រោយ $J = \mathcal{L}(a^{(L)}, y)$។
 
 #### ដំណាក់កាលទី ២៖ ដំណើរការផ្សាយបញ្ច្រាស (Backward Pass)
 យើងចាប់ផ្តើមដំណើរការផ្សាយបញ្ច្រាសនៅត្រង់ស្រទាប់ទិន្នផល $l = L$ ដោយគណនាជម្រាលនៃកំហុសធៀបនឹង Activation ទិន្នផល៖
-$$\delta^{(L)} = \frac{\partial J}{\partial a^{(L)}} = \nabla_{a^{(L)}} \mathcal{L}(a^{(L)}, y)$$
-
+$$
+\delta^{(L)} = \frac{\partial J}{\partial a^{(L)}} = \nabla_{a^{(L)}} \mathcal{L}(a^{(L)}, y)
+$$
 សម្រាប់ស្រទាប់ $l = L, L-1, \dots, 1$៖
 1. ផ្សាយបញ្ច្រាសជម្រាលកាត់តាមអនុគមន៍សកម្មកម្មមិនលីនេអ៊ែរនៅស្រទាប់ $l$៖
-   $$\gamma^{(l)} = \frac{\partial J}{\partial z^{(l)}} = \delta^{(l)} \odot \sigma'\left(z^{(l)}\right)$$
+   $$
+   \gamma^{(l)} = \frac{\partial J}{\partial z^{(l)}} = \delta^{(l)} \odot \sigma'\left(z^{(l)}\right)
+   $$
 2. គណនាជម្រាលធៀបនឹងប៉ារ៉ាម៉ែត្រនៃស្រទាប់ $l$៖
-   $$\frac{\partial J}{\partial W^{(l)}} = \gamma^{(l)} \left(a^{(l-1)}\right)^T, \quad \frac{\partial J}{\partial b^{(l)}} = \gamma^{(l)}$$
+   $$
+   \frac{\partial J}{\partial W^{(l)}} = \gamma^{(l)} \left(a^{(l-1)}\right)^T, \quad \frac{\partial J}{\partial b^{(l)}} = \gamma^{(l)}
+   $$
 3. ផ្សាយបញ្ច្រាសជម្រាលទៅកាន់ Activation នៃស្រទាប់មុន $l-1$ សម្រាប់ការធ្វើសារឡើងវិញបន្ទាប់៖
-   $$\delta^{(l-1)} = \frac{\partial J}{\partial a^{(l-1)}} = \left(W^{(l)}\right)^T \gamma^{(l)}$$
-
+   $$
+   \delta^{(l-1)} = \frac{\partial J}{\partial a^{(l-1)}} = \left(W^{(l)}\right)^T \gamma^{(l)}
+   $$
 <div id="plotly-backprop-graph" class="plotly-chart" aria-label="Interactive Plotly diagram: computational graph of backpropagation with forward pass left-to-right and backward pass right-to-left"></div>
 
 <p><em>រូបភាព៖ ក្រាហ្វគណនានៃការផ្សាយបញ្ច្រាស — ជួរខាងលើបង្ហាញពីដំណើរការផ្សាយទៅមុខ (ឆ្វេង → ស្តាំ)៖ Activations ឆ្លងកាត់ម៉ាទ្រីសទម្ងន់ទៅកាន់កំហុស $J$។ ជួរខាងក្រោមបង្ហាញពីដំណើរការផ្សាយបញ្ច្រាស (ស្តាំ → ឆ្វេង)៖ សញ្ញាកំហុស $\delta$ ហូរកាត់ Transposed Weight Matrices ហើយបំបែកនៅស្រទាប់នីមួយៗទៅជាជម្រាលប៉ារ៉ាម៉ែត្រលំដាប់ ១ គឺ $\frac{\partial J}{\partial W^{(l)}} = \gamma^{(l)} (a^{(l-1)})^T$។</em></p>
@@ -134,9 +171,13 @@ $$\delta^{(L)} = \frac{\partial J}{\partial a^{(L)}} = \nabla_{a^{(L)}} \mathcal
 
 ទោះជាយ៉ាងណា យើងអាចគណនា **ផលគុណហេសស៊ាន-វ៉ិចទ័រ ($H v$)** សម្រាប់វ៉ិចទ័រចៃដន្យ $v$ ណាមួយ ក្នុងរយៈពេល និងអង្គចងចាំត្រឹមតែ $O(N)$ ដោយពុំចាំបាច់បង្កើតម៉ាទ្រីសហេសស៊ានពេញលេញម្តងណាឡើយ៖
 1. កំណត់អនុគមន៍ជំនួយស្កាលែ $g(\theta)$ ជាផលគុណស្កាលែនៃជម្រាល $\nabla J(\theta)$ និងវ៉ិចទ័រ $v$៖
-   $$g(\theta) = \left(\nabla_\theta J(\theta)\right)^T v$$
+   $$
+   g(\theta) = \left(\nabla_\theta J(\theta)\right)^T v
+   $$
 2. គណនាជម្រាលនៃ $g(\theta)$ ធៀបនឹង $\theta$៖
-   $$\nabla_\theta g(\theta) = \nabla_\theta \left( \nabla_\theta J(\theta)^T v \right) = H(\theta) v$$
+   $$
+   \nabla_\theta g(\theta) = \nabla_\theta \left( \nabla_\theta J(\theta)^T v \right) = H(\theta) v
+   $$
 3. ដោយសារ $g(\theta)$ គឺជាអនុគមន៍ស្កាលែដែលអាចគណនាបានយ៉ាងរហ័ស យើងអាចអនុវត្តការផ្សាយបញ្ច្រាសជាលើកទីពីរ (ដេរីវេកាត់តាមការគណនាជម្រាល) ដើម្បីទទួលបាន $H v$ ក្នុងរយៈពេលត្រឹមតែ $O(N)$។
 
 #### First-Order vs. Second-Order Optimizers

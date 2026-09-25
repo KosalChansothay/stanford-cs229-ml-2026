@@ -22,43 +22,63 @@
 
 ##### Representational Formalisms
 *   **Point Clouds (Explicit):** Represented as a non-parametric matrix of coordinates:
-    $$P = \begin{bmatrix} x_1 & x_2 & \dots & x_N \\ y_1 & y_2 & \dots & y_N \\ z_1 & z_2 & \dots & z_N \end{bmatrix} \in \mathbb{R}^{3 \times N}$$
+    $$
+    P = \begin{bmatrix} x_1 & x_2 & \dots & x_N \\ y_1 & y_2 & \dots & y_N \\ z_1 & z_2 & \dots & z_N \end{bmatrix} \in \mathbb{R}^{3 \times N}
+    $$
     Optionally augmented with surface normal vectors $N \in \mathbb{R}^{3 \times N}$ to calculate lighting-surface interactions.
 *   **Implicit Level-Set Surfaces:** Defined as the zero-isocontour of a continuous scalar function $f: \mathbb{R}^3 \rightarrow \mathbb{R}$:
-    $$\mathcal{S} = \{ \mathbf{x} \in \mathbb{R}^3 \mid f(\mathbf{x}) = 0 \}$$
+    $$
+    \mathcal{S} = \{ \mathbf{x} \in \mathbb{R}^3 \mid f(\mathbf{x}) = 0 \}
+    $$
     where $f(\mathbf{x}) < 0$ denotes the interior volume, and $f(\mathbf{x}) > 0$ represents the exterior space.
 *   **Parametric Curves and Spheres:** Mapping low-dimensional parameters directly to 3D coordinate space. For example, a unit sphere parameterized by azimuth $u \in [0, 2\pi]$ and elevation $v \in [0, \pi]$:
-    $$f(u, v) = \begin{bmatrix} \cos(u)\sin(v) \\ \sin(u)\sin(v) \\ \cos(v) \end{bmatrix} \in \mathbb{R}^3$$
+    $$
+    f(u, v) = \begin{bmatrix} \cos(u)\sin(v) \\ \sin(u)\sin(v) \\ \cos(v) \end{bmatrix} \in \mathbb{R}^3
+    $$
     This explicit formulation simplifies surface point generation via forward sampling.
 
 ##### PointNet Formulation
 To construct a function $F$ over an unordered point set $\{p_1, \dots, p_N\}$ that is mathematically invariant to the permutation of its inputs:
-$$F(\{p_1, \dots, p_N\}) \approx g\left( h(p_1), h(p_2), \dots, h(p_N) \right)$$
+$$
+F(\{p_1, \dots, p_N\}) \approx g\left( h(p_1), h(p_2), \dots, h(p_N) \right)
+$$
 where $h: \mathbb{R}^3 \rightarrow \mathbb{R}^D$ is a multi-layer perceptron (MLP) mapping individual points to high-dimensional embedding spaces, and $g: \mathbb{R}^D \times \dots \times \mathbb{R}^D \rightarrow \mathbb{R}^K$ is a symmetric pooling function (e.g., element-wise $\max$ or $\sum$) that is invariant to input ordering.
 
 ##### Point Cloud Reconstruction Losses
 To compute backpropagatable reconstruction loss between a generated point cloud $S_1$ and a ground-truth cloud $S_2$:
 *   **Chamfer Distance:** Measures the average nearest-neighbor squared $L_2$ distance symmetrically between both point sets:
-    $$d\_{\text{CD}}(S_1, S_2) = \frac{1}{|S_1|} \sum\_{x \in S_1} \min\_{y \in S_2} \|x - y\|_2^2 + \frac{1}{|S_2|} \sum\_{y \in S_2} \min\_{x \in S_1} \|x - y\|_2^2$$
+    $$
+    d_{\text{CD}}(S_1, S_2) = \frac{1}{|S_1|} \sum_{x \in S_1} \min_{y \in S_2} \|x - y\|_2^2 + \frac{1}{|S_2|} \sum_{y \in S_2} \min_{x \in S_1} \|x - y\|_2^2
+    $$
     This is computationally efficient $O(|S_1| \log |S_2|)$ but can be sensitive to uneven cluster densities.
 *   **Earth Mover's Distance (EMD):** Solves the optimal transport problem by finding a strict one-to-one bijection $\phi: S_1 \rightarrow S_2$ (where $|S_1| = |S_2|$):
-    $$d\_{\text{EMD}}(S_1, S_2) = \min\_{\phi: S_1 \rightarrow S_2} \sum\_{x \in S_1} \|x - \phi(x)\|_2$$
+    $$
+    d_{\text{EMD}}(S_1, S_2) = \min_{\phi: S_1 \rightarrow S_2} \sum_{x \in S_1} \|x - \phi(x)\|_2
+    $$
     This yields cleaner structural alignments but requires solving a costly Hungarian matching algorithm.
 
 ##### Neural Radiance Fields (NeRF)
 NeRF represents a continuous 3D scene as a 5D function $f_\theta: (\mathbf{x}, \mathbf{d}) \rightarrow (\mathbf{c}, \sigma)$ where $\mathbf{x} = (x, y, z)$ is the 3D position, $\mathbf{d} = (\theta, \phi)$ is the camera viewing direction, $\mathbf{c} = (r, g, b)$ is the emitted radiance (color), and $\sigma \in [0, \infty)$ is the volume density.
 The color $C(\mathbf{r})$ of a pixel corresponding to camera ray $\mathbf{r}(t) = \mathbf{o} + t\mathbf{d}$ integrated from near bound $t_n$ to far bound $t_f$ is:
-$$C(\mathbf{r}) = \int\_{t_n}^{t_f} T(t) \sigma(\mathbf{r}(t)) \mathbf{c}(\mathbf{r}(t), \mathbf{d}) dt$$
-where $T(t) = \exp\left(-\int\_{t_n}^t \sigma(\mathbf{r}(s)) ds\right)$ represents the accumulated transmittance along the ray.
+$$
+C(\mathbf{r}) = \int_{t_n}^{t_f} T(t) \sigma(\mathbf{r}(t)) \mathbf{c}(\mathbf{r}(t), \mathbf{d}) dt
+$$
+where $T(t) = \exp\left(-\int_{t_n}^t \sigma(\mathbf{r}(s)) ds\right)$ represents the accumulated transmittance along the ray.
 Using numerical quadrature with $N$ stratified samples along the ray, the differentiable color approximation is:
-$$\hat{C}(\mathbf{r}) = \sum\_{i=1}^N T_i \left( 1 - \exp\left(-\sigma_i \delta_i\right) \right) \mathbf{c}_i$$
-where $T_i = \exp\left(-\sum\_{j=1}^{i-1} \sigma_j \delta_j\right)$ and $\delta_i = t\_{i+1} - t_i$ is the distance between adjacent sample points.
+$$
+\hat{C}(\mathbf{r}) = \sum_{i=1}^N T_i \left( 1 - \exp\left(-\sigma_i \delta_i\right) \right) \mathbf{c}_i
+$$
+where $T_i = \exp\left(-\sum_{j=1}^{i-1} \sigma_j \delta_j\right)$ and $\delta_i = t_{i+1} - t_i$ is the distance between adjacent sample points.
 
 ##### 3D Gaussian Splatting Covariance Formulation
 Each 3D Gaussian is parameterized by a mean position $\mu \in \mathbb{R}^3$ and a 3D covariance matrix $\Sigma \in \mathbb{R}^{3 \times 3}$:
-$$G(\mathbf{x}) = \exp\left(-\frac{1}{2} (\mathbf{x} - \mu)^T \Sigma^{-1} (\mathbf{x} - \mu)\right)$$
+$$
+G(\mathbf{x}) = \exp\left(-\frac{1}{2} (\mathbf{x} - \mu)^T \Sigma^{-1} (\mathbf{x} - \mu)\right)
+$$
 To ensure $\Sigma$ remains positive semi-definite during gradient descent, it is sharded and optimized via a scaling matrix $S$ and rotation matrix $R$:
-$$\Sigma = R S S^T R^T$$
+$$
+\Sigma = R S S^T R^T
+$$
 where $S = \text{diag}(s_x, s_y, s_z)$ and $R$ is represented by normalized quaternions.
 
 ---

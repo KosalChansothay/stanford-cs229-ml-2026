@@ -21,70 +21,90 @@
 ### 2.1 The Associativity Shift (Vanilla vs. Linear Attention)
 In standard attention, query, key, and value matrices ($Q, K, V \in \mathbb{R}^{N \times D}$) are multiplied as follows:
 
-$$Y = \text{softmax}\left(\frac{Q K^T}{\sqrt{D_k}}\right) V \quad [O(N^2 D_k + N D_k D_v)] \quad \text{}$$
-
+$$
+Y = \text{softmax}\left(\frac{Q K^T}{\sqrt{D_k}}\right) V \quad [O(N^2 D_k + N D_k D_v)] \quad \text{}
+$$
 If the softmax normalizer is omitted (or replaced by a feature map $\phi$):
 
-$$Y = (Q K^T) V = Q (K^T V) \quad [O(N D_k D_v)] \quad \text{}$$
-
+$$
+Y = (Q K^T) V = Q (K^T V) \quad [O(N D_k D_v)] \quad \text{}
+$$
 By shifting the parentheses via the associative property of matrix multiplication, the time complexity scales linearly with the sequence length $N$ rather than quadratically, provided $D_k, D_v \ll N$.
 
 ### 2.2 Recurrent State-Space Representation of Linear Attention
 This associativity allows us to rewrite linear attention as an online recurrence (equivalent to an RNN):
 *   **Hidden State Update**: 
-    $$S_t = S\_{t-1} + K_t V_t^T \in \mathbb{R}^{D_k \times D_v} \quad \text{}$$
+    $$
+    S_t = S_{t-1} + K_t V_t^T \in \mathbb{R}^{D_k \times D_v} \quad \text{}
+    $$
 *   **Output Projection**: 
-    $$Y_t = Q_t S_t \in \mathbb{R}^{D_v} \quad \text{}$$
-
+    $$
+    Y_t = Q_t S_t \in \mathbb{R}^{D_v} \quad \text{}
+    $$
 ### 2.3 Mamba 2 Stateful Gated Recurrence
 Mamba 2 introduces an input-dependent, non-stateful forget gate $\gamma_t = \sigma(W_\gamma X_t) \in (0, 1)$ to selectively clear the historical state:
 
-$$S_t = \gamma_t S\_{t-1} + K_t V_t^T \quad \text{}$$
-
-$$Y_t = Q_t S_t + D \cdot V_t \quad \text{}$$
-
+$$
+S_t = \gamma_t S_{t-1} + K_t V_t^T \quad \text{}
+$$
+$$
+Y_t = Q_t S_t + D \cdot V_t \quad \text{}
+$$
 Where $D \cdot V_t$ is a parameterized skip connection directly passing the current token value to the output.
 
 ### 2.4 Gated Delta Net Projection Recurrence
 Gated Delta Net adds a second gating signal $\beta_t = \sigma(W_\beta X_t) \in$ and uses a projection operator to forcefully erase the historical hidden state along the current key's spatial direction:
 
-$$S_t = (I - \beta_t K_t K_t^T) S\_{t-1} + \beta_t K_t V_t^T \quad \text{}$$
-
-$$Y_t = Q_t S_t \quad \text{}$$
-
+$$
+S_t = (I - \beta_t K_t K_t^T) S_{t-1} + \beta_t K_t V_t^T \quad \text{}
+$$
+$$
+Y_t = Q_t S_t \quad \text{}
+$$
 Here, the matrix term $(I - \beta_t K_t K_t^T)$ acts as a spatial projector that project out components of the history matching the current key $K_t$, allowing the model to overwrite outdated facts instantly.
 
 ### 2.5 Top-K Token Choice routing (MoE)
-Given input token representation $x_t \in \mathbb{R}^d$, router weights $W_g \in \mathbb{R}^{N\_{experts} \times d}$:
+Given input token representation $x_t \in \mathbb{R}^d$, router weights $W_g \in \mathbb{R}^{N_{experts} \times d}$:
 *   **Routing Logits**: 
-    $$H(x_t) = x_t \cdot W_g^T \in \mathbb{R}^{N\_{experts}} \quad \text{}$$
+    $$
+    H(x_t) = x_t \cdot W_g^T \in \mathbb{R}^{N_{experts}} \quad \text{}
+    $$
 *   **Expert Gate Probabilities**: 
-    $$s_t = \text{softmax}(H(x_t)) \in \mathbb{R}^{N\_{experts}} \quad \text{}$$
+    $$
+    s_t = \text{softmax}(H(x_t)) \in \mathbb{R}^{N_{experts}} \quad \text{}
+    $$
 *   **Sparse Token Routing Output**: 
-    $$y_t = \sum\_{i \in \text{top-K}(s_t)} s\_{t, i} E_i(x_t) \quad \text{}$$
-
+    $$
+    y_t = \sum_{i \in \text{top-K}(s_t)} s_{t, i} E_i(x_t) \quad \text{}
+    $$
 ### 2.6 Switch Transformer Load Balancing Loss
-To prevent "expert collapse" (where SGD updates reinforce a subset of experts, leaving the rest unused), a load-balancing loss $L\_{aux}$ is added over a batch of size $T$:
+To prevent "expert collapse" (where SGD updates reinforce a subset of experts, leaving the rest unused), a load-balancing loss $L_{aux}$ is added over a batch of size $T$:
 
-$$F_i = \frac{1}{T} \sum\_{t=1}^T \mathbb{I}(\text{expert } i \text{ is selected for token } t) \quad \text{}$$
-
-$$P_i = \frac{1}{T} \sum\_{t=1}^T s\_{t, i} \quad \text{}$$
-
-$$L\_{aux} = \alpha \cdot N\_{experts} \sum\_{i=1}^{N\_{experts}} F_i \cdot P_i \quad \text{}$$
-
+$$
+F_i = \frac{1}{T} \sum_{t=1}^T \mathbb{I}(\text{expert } i \text{ is selected for token } t) \quad \text{}
+$$
+$$
+P_i = \frac{1}{T} \sum_{t=1}^T s_{t, i} \quad \text{}
+$$
+$$
+L_{aux} = \alpha \cdot N_{experts} \sum_{i=1}^{N_{experts}} F_i \cdot P_i \quad \text{}
+$$
 During backpropagation, we treat the discrete fraction $F_i$ as a constant parameter, rendering the loss differentiable with respect to the router probability $P_i$:
 
-$$\frac{\partial L\_{aux}}{\partial s\_{t, i}} \propto F_i \quad \text{}$$
-
+$$
+\frac{\partial L_{aux}}{\partial s_{t, i}} \propto F_i \quad \text{}
+$$
 This exerts a gradient penalty that forces the router to reduce the probability allocated to expert $i$ if $i$ receives a high fraction of tokens, driving the system back to uniform distribution.
 
 ### 2.7 Multi-Head Latent Attention (MLA) Compression
 Instead of caching Keys $K_t$ and Values $V_t$ directly, MLA projects them into a low-dimensional compressed latent space $C_t \in \mathbb{R}^{D_c}$ ($D_c \ll D_h$):
 
-$$C_t = W\_{DK} X_t \quad \text{}$$
-
-$$K_t = W\_{UK} C_t, \quad V_t = W\_{UV} C_t \quad \text{}$$
-
+$$
+C_t = W_{DK} X_t \quad \text{}
+$$
+$$
+K_t = W_{UK} C_t, \quad V_t = W_{UV} C_t \quad \text{}
+$$
 Only the compressed latent vector $C_t$ needs to be cached in HBM, reducing KV cache memory footprint by up to 90% during decoding.
 
 ---
@@ -209,19 +229,21 @@ class Top2MoERouter(nn.Module):
 ### 4.1 Memory Footprint of KV Cache
 During autoregressive decoding, keys and values of past tokens must be held in global HBM memory. If storing cache tensors in FP16/BF16 (2 bytes per element), the required memory capacity is:
 
-$$\text{KV Cache Size per Token} = 2 \times N\_{layers} \times N\_{KV\_heads} \times D\_{head} \times 2 \quad (\text{Bytes}) \quad \text{}$$
+$$
+\text{KV Cache Size per Token} = 2 \times N_{layers} \times N_{KV_heads} \times D_{head} \times 2 \quad (\text{Bytes}) \quad \text{}
+$$
+For a standard **Llama-3-8B** model ($N_{layers}=32$, $N_{KV_heads}=8$ under GQA, $D_{head}=128$):
 
-For a standard **Llama-3-8B** model ($N\_{layers}=32$, $N\_{KV\_heads}=8$ under GQA, $D\_{head}=128$):
-
-$$\text{Llama-3-8B KV Size per Token} = 2 \times 32 \times 8 \times 128 \times 2 = 131,072 \text{ Bytes} \approx \mathbf{128 \text{ KB}}$$
-
+$$
+\text{Llama-3-8B KV Size per Token} = 2 \times 32 \times 8 \times 128 \times 2 = 131,072 \text{ Bytes} \approx \mathbf{128 \text{ KB}}
+$$
 For a context window of $128,000$ tokens, the KV cache alone demands **16 GB of memory per concurrent batch stream**, drastically bounding serving throughput on high-bandwidth memory (HBM) capacity.
 
 ### 4.2 Grouped Query Attention (GQA) Memory Savings
 GQA acts as a structural compression factor:
-*   **Multi-Head Attention (MHA)**: $N\_{KV\_heads} = N\_{Q\_heads}$ (No memory savings).
-*   **Multi-Query Attention (MQA)**: $N\_{KV\_heads} = 1$ (Aggressive memory savings but degrades performance significantly due to query head expressiveness compression).
-*   **Grouped-Query Attention (GQA)**: $1 < N\_{KV\_heads} < N\_{Q\_heads}$ (Retrieves nearly all MHA representational quality while capturing $8\times$ HBM reduction if queries are grouped into groups of 8).
+*   **Multi-Head Attention (MHA)**: $N_{KV_heads} = N_{Q_heads}$ (No memory savings).
+*   **Multi-Query Attention (MQA)**: $N_{KV_heads} = 1$ (Aggressive memory savings but degrades performance significantly due to query head expressiveness compression).
+*   **Grouped-Query Attention (GQA)**: $1 < N_{KV_heads} < N_{Q_heads}$ (Retrieves nearly all MHA representational quality while capturing $8\times$ HBM reduction if queries are grouped into groups of 8).
 
 ### 4.3 Dropless MoE and MegaBlocks
 Naive MoE routers route a variable number of tokens to each expert based on data distribution. In parallel GPU implementations, this asymmetry requires:
@@ -246,8 +268,8 @@ Naive MoE routers route a variable number of tokens to each expert based on data
 *   **Visualization Type**: Interactive Matrix-Grid & Expert Load Balance Simulator.
 *   **Data Fields & Encoding**:
     *   **X-axis**: Individual input tokens from a sequence ($t \in [1, \dots, T]$).
-    *   **Y-axis**: Individual experts ($e \in [1, \dots, N\_{experts}]$).
-    *   **Cell Fill Color**: Color intensity maps to the router probability $s\_{t, e}$. The cell is highlighted with a thick border if expert $e$ is in the `top-2` selection for token $t$.
+    *   **Y-axis**: Individual experts ($e \in [1, \dots, N_{experts}]$).
+    *   **Cell Fill Color**: Color intensity maps to the router probability $s_{t, e}$. The cell is highlighted with a thick border if expert $e$ is in the `top-2` selection for token $t$.
     *   **Right Bar-Chart Margin**: Displays a real-time bar-chart showing the exact load fraction $F_i$ for each expert to visually illustrate balancing.
 *   **Interactive Controls**:
     *   **Auxiliary Loss Coefficient ($\alpha$) Slider**: Adjusts $\alpha$ from `0.0` (unregularized) to `1.0`.
@@ -275,26 +297,32 @@ Pure linear attention / state space models struggle to preserve long-range assoc
 ## 7. Systems Warnings, Pitfalls, & Reflection Questions
 
 ### 7.1 Gotchas & Common Bugs
-1.  **Differentiability Trap in Hard Top-K Selection**: Softmax probability calculation is differentiable, but the `torch.topk` indices extraction is a discrete operation. The gradient must pass through the router's soft probability gates: $y = \sum g_i E_i(x)$. If you naively route the tensor without scaling the outputs of the experts by the continuous gating scores $s\_{t,i}$, the router parameters $W_g$ will receive a gradient of exactly zero and fail to learn.
+1.  **Differentiability Trap in Hard Top-K Selection**: Softmax probability calculation is differentiable, but the `torch.topk` indices extraction is a discrete operation. The gradient must pass through the router's soft probability gates: $y = \sum g_i E_i(x)$. If you naively route the tensor without scaling the outputs of the experts by the continuous gating scores $s_{t,i}$, the router parameters $W_g$ will receive a gradient of exactly zero and fail to learn.
 2.  **Unstable Router Softmax (Catastrophic Overflow)**: Router weights can drift, resulting in massive logits. When exponentiated during routing softmax, this causes sudden underflow/overflow (producing `NaN` gates). Always calculate routing logits and softmax in **FP32** precision and include a **Z-loss regularization** term ($10^{-4} \log^2 Z$) to prevent log normalizer drift.
 3.  **Fine-tuning Overfitting with MoE Parameters**: MoE models have billions of sparse parameters that quickly overfit on small downstream supervised datasets, creating a massive train-validation performance gap. Mitigate this by freezing the sparse expert weights completely during SFT, updating only the dense attention layers.
 
 ### 7.2 Conceptual Graduate-Level Reflection Questions
 
 **Q1: In Gated Delta Net, how does the projector term $(I - \beta_t K_t K_t^T)$ preserve the parallel-recurrent training duality, and why does an LSTM's state-dependent gate fail this test?**
-*   **Answer**: The recurrent update of Gated Delta Net is $S_t = (I - \beta_t K_t K_t^T) S\_{t-1} + \beta_t K_t V_t^T$. Notice that the coefficient on $S\_{t-1}$, which is $(I - \beta_t K_t K_t^T)$, depends *only* on the current input key $K_t$ and gating signal $\beta_t$ (which are derived purely from the input $X_t$). Because this forgetting transition matrix is strictly input-dependent and contains no dependencies on the historical state $S\_{t-1}$, we can write out the unrolled recurrence as a series of linear matrix products that can be computed in parallel using a scan prefix or parallel matrix multiplications during training.
-*   In contrast, a traditional LSTM forget gate is *state-dependent*: $f_t = \sigma(W_f x_t + U_f h\_{t-1})$. Because $f_t$ depends on $h\_{t-1}$, computing the gate value at step $t$ requires strictly finishing the computation at step $t-1$. This serial dependency prevents parallel training execution, forcing $O(N)$ sequential operations.
+*   **Answer**: The recurrent update of Gated Delta Net is $S_t = (I - \beta_t K_t K_t^T) S_{t-1} + \beta_t K_t V_t^T$. Notice that the coefficient on $S_{t-1}$, which is $(I - \beta_t K_t K_t^T)$, depends *only* on the current input key $K_t$ and gating signal $\beta_t$ (which are derived purely from the input $X_t$). Because this forgetting transition matrix is strictly input-dependent and contains no dependencies on the historical state $S_{t-1}$, we can write out the unrolled recurrence as a series of linear matrix products that can be computed in parallel using a scan prefix or parallel matrix multiplications during training.
+*   In contrast, a traditional LSTM forget gate is *state-dependent*: $f_t = \sigma(W_f x_t + U_f h_{t-1})$. Because $f_t$ depends on $h_{t-1}$, computing the gate value at step $t$ requires strictly finishing the computation at step $t-1$. This serial dependency prevents parallel training execution, forcing $O(N)$ sequential operations.
 
-**Q2: Analyze the mathematical impact of adding a shared general-purpose expert to a top-2 routed MoE. If we split a dense FFN layer of size $d\_{ffn}$ into $M$ routed experts of size $\frac{d\_{ffn}}{M}$ and 1 shared expert of size $d\_{ffn}$, what is the impact on active FLOPs, parameter count, and HBM memory footprint?**
+**Q2: Analyze the mathematical impact of adding a shared general-purpose expert to a top-2 routed MoE. If we split a dense FFN layer of size $d_{ffn}$ into $M$ routed experts of size $\frac{d_{ffn}}{M}$ and 1 shared expert of size $d_{ffn}$, what is the impact on active FLOPs, parameter count, and HBM memory footprint?**
 *   **Answer**: 
-    *   **Active FLOPs**: A single forward token pass through a standard top-2 MoE activates exactly 2 routed experts. If a shared expert of size $d\_{ffn}$ is added, the active compute becomes:
-        $$\text{FLOPs}\_{active} = \text{Compute}(E\_{shared}) + 2 \times \text{Compute}(E\_{routed}) \propto d\_{ffn} + 2 \times \left(\frac{d\_{ffn}}{M}\right) = d\_{ffn} \left(1 + \frac{2}{M}\right)$$
+    *   **Active FLOPs**: A single forward token pass through a standard top-2 MoE activates exactly 2 routed experts. If a shared expert of size $d_{ffn}$ is added, the active compute becomes:
+        $$
+        \text{FLOPs}_{active} = \text{Compute}(E_{shared}) + 2 \times \text{Compute}(E_{routed}) \propto d_{ffn} + 2 \times \left(\frac{d_{ffn}}{M}\right) = d_{ffn} \left(1 + \frac{2}{M}\right)
+        $$
     *   **Parameter Count**: The total parameters of the MLP blocks equal:
-        $$\text{Params}\_{total} = \text{Params}(E\_{shared}) + M \times \text{Params}(E\_{routed}) \propto d\_{ffn} + M \times \left(\frac{d\_{ffn}}{M}\right) = 2 \times d\_{ffn}$$
+        $$
+        \text{Params}_{total} = \text{Params}(E_{shared}) + M \times \text{Params}(E_{routed}) \propto d_{ffn} + M \times \left(\frac{d_{ffn}}{M}\right) = 2 \times d_{ffn}
+        $$
     *   **HBM Footprint**: To execute the shared expert, its weights must be held in the HBM memory of *every* GPU (all nodes). In contrast, the $M$ sparse experts can be partitioned (expert-parallelism) across $P$ different GPUs, storing only $\frac{M}{P}$ experts on any individual GPU. The shared expert therefore increases local GPU memory consumption, acting as a non-shardable memory footprint constant.
 
 **Q3: Why does standard autoregressive decoding of transformers become bottlenecked on memory bandwidth rather than FLOP capacity, and how does Grouped-Query Attention (GQA) directly shift this roofline location?**
-*   **Answer**: During autoregressive decoding, a single token is generated per step. This single token is converted to query, key, and value vectors of size $D_h$. While query is a vector, we must load the *entire* historical KV Cache of size $N\_{tokens} \times D_h$ from HBM to compute attention, and load all the model weight matrices from HBM to project it. Because we perform a matrix-vector multiplication (where we do $2 \times D\_{model}$ operations per element loaded), our **Arithmetic Intensity** is extremely low:
-    $$\text{Arithmetic Intensity} \propto \frac{\text{FLOPs}}{\text{Bytes Access}} \propto \frac{1}{\text{Batch Size}}$$
+*   **Answer**: During autoregressive decoding, a single token is generated per step. This single token is converted to query, key, and value vectors of size $D_h$. While query is a vector, we must load the *entire* historical KV Cache of size $N_{tokens} \times D_h$ from HBM to compute attention, and load all the model weight matrices from HBM to project it. Because we perform a matrix-vector multiplication (where we do $2 \times D_{model}$ operations per element loaded), our **Arithmetic Intensity** is extremely low:
+    $$
+    \text{Arithmetic Intensity} \propto \frac{\text{FLOPs}}{\text{Bytes Access}} \propto \frac{1}{\text{Batch Size}}
+    $$
     This places the decoder deeply in the diagonal, memory-bound region of the roofline plot.
 *   GQA groups query heads to share a single key-value head. This reduces the number of key-value cache elements that must be read from HBM by a factor of $G$ (the group size). Consequently, the bytes transferred from HBM drop by $G\times$, directly increasing the Arithmetic Intensity of the attention operation, shifting the model's operating point on the roofline curve further to the right toward the compute-saturated flat region.

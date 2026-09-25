@@ -6,7 +6,7 @@
 *   **The Depth Barrier Resolved:** Plain deep CNNs suffer from optimization degradation where stacked layers fail to learn even identity mappings. ResNets bypass this via residual skip connections ($H(x) = F(x) + x$), enabling successful optimization of 100+ layer architectures.
 *   **Receptive Field & Parameter Efficiency:** Stacking three $3\times3$ convolutions with stride 1 has the identical effective receptive field as a single $7\times7$ convolution ($7\times7$), but uses $\approx 45\%$ fewer parameters and introduces three non-linearities instead of one.
 *   **Normalizations Demystified:** Normalization techniques scale and shift activations after transforming them to unit Gaussians. **Layer Norm** computes statistics across channels, height, and width for each sample independently ($C \times H \times W$), whereas **Batch Norm** computes statistics across batch and spatial dimensions per channel ($N \times H \times W$).
-*   **Kaiming Initialization:** To prevent vanishing or exploding activations in deep ReLU networks, weights must be initialized with a zero-mean Gaussian with variance $\sigma^2 = \frac{2}{D\_{in}}$, where $D\_{in}$ is the layer input dimensionality.
+*   **Kaiming Initialization:** To prevent vanishing or exploding activations in deep ReLU networks, weights must be initialized with a zero-mean Gaussian with variance $\sigma^2 = \frac{2}{D_{in}}$, where $D_{in}$ is the layer input dimensionality.
 *   **In-Context Transfer Learning:** When target datasets are small, pre-trained ImageNet CNNs act as robust frozen feature extractors where only a newly initialized linear head is trained ("Linear Probing"). With more data, the entire network is end-to-end "fine-tuned" with a lower learning rate.
 
 ---
@@ -22,49 +22,78 @@
 
 ##### Receptive Field Scaling Arithmetic
 For a 1D or 2D grid with kernel size $K$, stride $S=1$, and padding $P$, stacking $L$ layers increases the effective receptive field ($RF$) of an activation map in layer $l$ relative to the input layer $l-1$ recursively:
-$$RF_l = RF\_{l-1} + (K - 1)$$
+$$
+RF_l = RF_{l-1} + (K - 1)
+$$
 With $RF_0 = 1$ (input pixel), the receptive field after $L$ layers is:
-$$RF_L = 1 + L(K - 1)$$
-
+$$
+RF_L = 1 + L(K - 1)
+$$
 ##### Parameter Footprint: Stacked Convolutions vs. Single Large Kernel
 Let $C$ be the number of input and output channels (assumed constant). 
 *   **Stacked Convolutions ($L$ layers of $K \times K$):**
-    $$\text{Params}\_{stack} = L \times (K \times K \times C \times C) = L \cdot K^2 \cdot C^2$$
-*   **Equivalent Single Large Convolution ($1$ layer of $K\_{eff} \times K\_{effective}$ where $K\_{eff} = 1 + L(K-1)$):**
-    $$\text{Params}\_{single} = K\_{eff}^2 \times C \times C = (1 + L(K-1))^2 \cdot C^2$$
+    $$
+    \text{Params}_{stack} = L \times (K \times K \times C \times C) = L \cdot K^2 \cdot C^2
+    $$
+*   **Equivalent Single Large Convolution ($1$ layer of $K_{eff} \times K_{effective}$ where $K_{eff} = 1 + L(K-1)$):**
+    $$
+    \text{Params}_{single} = K_{eff}^2 \times C \times C = (1 + L(K-1))^2 \cdot C^2
+    $$
 *   *VGG Case Comparison ($L=3, K=3$):*
-    $$\text{Params}\_{stack} = 3 \cdot (3^2) \cdot C^2 = 27 C^2$$
-    $$\text{Params}\_{single} = (1 + 3(3-1))^2 \cdot C^2 = 7^2 \cdot C^2 = 49 C^2$$
-    $$\text{Parameter Savings Ratio} = 1 - \frac{27 C^2}{49 C^2} \approx 44.9\%$$
-
+    $$
+    \text{Params}_{stack} = 3 \cdot (3^2) \cdot C^2 = 27 C^2
+    $$
+    $$
+    \text{Params}_{single} = (1 + 3(3-1))^2 \cdot C^2 = 7^2 \cdot C^2 = 49 C^2
+    $$
+    $$
+    \text{Parameter Savings Ratio} = 1 - \frac{27 C^2}{49 C^2} \approx 44.9\%
+    $$
 ##### Normalization Statistics
-Let the input batch tensor be $X \in \mathbb{R}^{N \times C \times H \times W}$. Normalization transforms each activation $X\_{n,c,h,w}$ to $\hat{X}\_{n,c,h,w}$ and applies a learnable scale $\gamma$ and shift $\beta$:
-$$\hat{X}\_{n,c,h,w} = \frac{X\_{n,c,h,w} - \mu}{\sqrt{\sigma^2 + \epsilon}}$$
-$$Y\_{n,c,h,w} = \gamma \hat{X}\_{n,c,h,w} + \beta$$
-
+Let the input batch tensor be $X \in \mathbb{R}^{N \times C \times H \times W}$. Normalization transforms each activation $X_{n,c,h,w}$ to $\hat{X}_{n,c,h,w}$ and applies a learnable scale $\gamma$ and shift $\beta$:
+$$
+\hat{X}_{n,c,h,w} = \frac{X_{n,c,h,w} - \mu}{\sqrt{\sigma^2 + \epsilon}}
+$$
+$$
+Y_{n,c,h,w} = \gamma \hat{X}_{n,c,h,w} + \beta
+$$
 The statistics $\mu$ and $\sigma^2$ are computed over different index subsets $\mathcal{S}$:
 *   **Layer Normalization (LN):** Normalizes across channels and spatial dimensions for each batch sample independently.
-    $$\mu\_{LN}(n) = \frac{1}{C \cdot H \cdot W} \sum\_{c=1}^C \sum\_{h=1}^H \sum\_{w=1}^W X\_{n,c,h,w}$$
-    $$\sigma^2\_{LN}(n) = \frac{1}{C \cdot H \cdot W} \sum\_{c=1}^C \sum\_{h=1}^H \sum\_{w=1}^W (X\_{n,c,h,w} - \mu\_{LN}(n))^2$$
+    $$
+    \mu_{LN}(n) = \frac{1}{C \cdot H \cdot W} \sum_{c=1}^C \sum_{h=1}^H \sum_{w=1}^W X_{n,c,h,w}
+    $$
+    $$
+    \sigma^2_{LN}(n) = \frac{1}{C \cdot H \cdot W} \sum_{c=1}^C \sum_{h=1}^H \sum_{w=1}^W (X_{n,c,h,w} - \mu_{LN}(n))^2
+    $$
 *   **Batch Normalization (BN):** Normalizes across the batch and spatial dimensions for each channel independently.
-    $$\mu\_{BN}(c) = \frac{1}{N \cdot H \cdot W} \sum\_{n=1}^N \sum\_{h=1}^H \sum\_{w=1}^W X\_{n,c,h,w}$$
-    $$\sigma^2\_{BN}(c) = \frac{1}{N \cdot H \cdot W} \sum\_{n=1}^N \sum\_{h=1}^H \sum\_{w=1}^W (X\_{n,c,h,w} - \mu\_{BN}(c))^2$$
-
+    $$
+    \mu_{BN}(c) = \frac{1}{N \cdot H \cdot W} \sum_{n=1}^N \sum_{h=1}^H \sum_{w=1}^W X_{n,c,h,w}
+    $$
+    $$
+    \sigma^2_{BN}(c) = \frac{1}{N \cdot H \cdot W} \sum_{n=1}^N \sum_{h=1}^H \sum_{w=1}^W (X_{n,c,h,w} - \mu_{BN}(c))^2
+    $$
 ##### Kaiming (He) Initialization
 To preserve the variance of activations in deep architectures using ReLU activations, weights are initialized from a zero-mean Gaussian distribution with standard deviation $\sigma$:
-$$W \sim \mathcal{N}\left(0, \sigma^2\right) \quad \text{where} \quad \sigma = \sqrt{\frac{2}{D\_{in}}}$$
-*   For a Fully Connected layer: $D\_{in} = \text{fan\_in}$ (number of input nodes).
-*   For a Convolutional layer: $D\_{in} = K_h \times K_w \times C\_{in}$ (kernel height $\times$ kernel width $\times$ input channel depth).
+$$
+W \sim \mathcal{N}\left(0, \sigma^2\right) \quad \text{where} \quad \sigma = \sqrt{\frac{2}{D_{in}}}
+$$
+*   For a Fully Connected layer: $D_{in} = \text{fan_in}$ (number of input nodes).
+*   For a Convolutional layer: $D_{in} = K_h \times K_w \times C_{in}$ (kernel height $\times$ kernel width $\times$ input channel depth).
 
 ##### Dropout Mathematical Expectation
 Let $M \in \{0, 1\}^{D}$ be a random mask vector where each element $M_i \sim \text{Bernoulli}(1-p)$, and $p$ is the dropout probability (the probability of setting an activation to zero).
 *   **Training Time Forward Pass:**
-    $$y\_{\text{train}} = x \odot M$$
+    $$
+    y_{\text{train}} = x \odot M
+    $$
 *   **Test Time Activation Scaling:** Since $50\%$ (or $p\%$) of the neurons are dropped during training, the expected magnitude of activations at test time is preserved by scaling the inputs by the keep probability $1-p$ (or multiplying by $p$ if $p$ is the keep probability):
-    $$y\_{\text{test}} = (1 - p) \cdot x$$
+    $$
+    y_{\text{test}} = (1 - p) \cdot x
+    $$
 *   **Inverted Dropout (Modern Alternative):** PyTorch implements inverted dropout by scaling activations during *training* to avoid any scaling overhead at test time:
-    $$y\_{\text{train}} = \frac{x \odot M}{1 - p}, \quad y\_{\text{test}} = x$$
-
+    $$
+    y_{\text{train}} = \frac{x \odot M}{1 - p}, \quad y_{\text{test}} = x
+    $$
 ---
 
 #### 3. Architecture / Algorithm Walkthrough
@@ -218,15 +247,18 @@ To visually isolate the effects of normalizations and initialization on gradient
 
 ##### Pre-processing Statistics (ImageNet Defaults)
 All input images must be normalized before model ingestion. The standard means and standard deviations computed over the ImageNet training set are:
-$$\mu\_{\text{ImageNet}} = [0.485, 0.456, 0.406], \quad \sigma\_{\text{ImageNet}} = [0.229, 0.224, 0.225]$$
+$$
+\mu_{\text{ImageNet}} = [0.485, 0.456, 0.406], \quad \sigma_{\text{ImageNet}} = [0.229, 0.224, 0.225]
+$$
 The normalized input pixel value is:
-$$x\_{\text{norm}} = \frac{x\_{\text{raw}} - \mu}{\sigma}$$
-
+$$
+x_{\text{norm}} = \frac{x_{\text{raw}} - \mu}{\sigma}
+$$
 ##### Test-Time Augmentation (TTA)
 For maximum competitive validation accuracy (such as winning Kaggle competitions or achieving top benchmark status), models use Test-Time Augmentation:
 1.  Generate $M$ variations (different scales, crop positions, horizontal flips) of a single test image.
 2.  Perform forward passes to obtain prediction logit vectors for all $M$ variations.
-3.  Compute the average prediction: $\bar{y} = \frac{1}{M} \sum\_{m=1}^M y_m$.
+3.  Compute the average prediction: $\bar{y} = \frac{1}{M} \sum_{m=1}^M y_m$.
 *This consistently yields a $1\%\text{--}2\%$ reduction in absolute error rates.*
 
 ##### Transfer Learning Decision Matrix
@@ -235,7 +267,7 @@ The choice of transfer learning strategy is governed strictly by target dataset 
 | Dataset Size | Domain Similarity | Transfer Strategy |
 | :--- | :--- | :--- |
 | **Very Small** | High (e.g. daily objects) | **Linear Probe:** Freeze the feature extractor backbone, replace the final classification layer, and train only the new linear weights. |
-| **Medium-Large** | High (e.g. daily objects) | **Full Fine-Tuning:** Initialize with pre-trained weights, replace the final layer, and train the entire network using a very small learning rate (e.g. $0.1 \times \text{lr}\_{initial}$). |
+| **Medium-Large** | High (e.g. daily objects) | **Full Fine-Tuning:** Initialize with pre-trained weights, replace the final layer, and train the entire network using a very small learning rate (e.g. $0.1 \times \text{lr}_{initial}$). |
 | **Very Small** | Low (e.g. Mars rover) | **Backbone Feature Extractor:** Freeze early layers, but try training a linear probe on top of intermediate layers (which contain more generic visual primitives like Gabor edges) instead of late semantic layers. |
 | **Medium-Large** | Low (e.g. Mars rover) | **Full/Partial Fine-Tuning:** Fine-tune deep blocks while freezing early visual layers, or train from scratch if compute constraints allow. |
 

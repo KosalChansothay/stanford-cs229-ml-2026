@@ -55,9 +55,8 @@ u_i = \frac{\phi_\theta(\hat{x}_i)}{\|\phi_\theta(\hat{x}_i)\|}, \quad v_i = \fr
 $$
 ការធ្វើ Normalization ធានាថាផលគុណស្កាលែរ (Inner Product) រវាងវ៉ិចទ័រទាំងពីរគឺស្មើនឹង **Cosine Similarity**៖
 $$
-S_{ij} = u_i^T v_j = \text{cosine\_similarity}(\phi_\theta(\hat{x}_i), \phi_\theta(\tilde{x}_j))
+S_{ij} = u_i^T v_j = \text{cosine_similarity}(\phi_\theta(\hat{x}_i), \phi_\theta(\tilde{x}_j))
 $$
-
 ##### ២. អនុគមន៍បាត់បង់ប្រៀបធៀប NT-Xent (Normalized Temperature-scaled Cross Entropy)
 សម្រាប់រូបភាពយុថ្កា (Anchor) ទី $i$ ណាមួយ យើងចង់ទាញគូវិជ្ជមាន $(u_i, v_i)$ ឱ្យនៅជិតគ្នា ខណៈពេលរុញច្រានគូអវិជ្ជមានទាំង $2B - 2$ ផ្សេងទៀតនៅក្នុង Batch ឱ្យនៅឆ្ងាយពីគ្នា។ អនុគមន៍បាត់បង់សម្រាប់គំរូទី $i$ ត្រូវបានបង្កើតឡើងជាបញ្ហាចំណាត់ថ្នាក់ពហុថ្នាក់ Softmax៖
 $$
@@ -67,7 +66,6 @@ $$
 $$
 \mathcal{L}_{\text{batch}} = \sum_{i=1}^B \mathcal{L}_i
 $$
-
 ##### ៣. ការទាញរកភាពម៉ូណូតូន និងការបញ្ជាក់តុល្យភាពកម្លាំង (Monotonicity & Force Balance Proof)
 ដើម្បីសម្រួលការវិភាគគណិតវិទ្យាសម្រាប់គំរូយុថ្កាតែមួយ យើងតាងតួភាពស្រដៀងគ្នានៃគូវិជ្ជមានដោយ $A = \exp(S_{ii} / \tau) > 0$ និងផលបូកភាពស្រដៀងគ្នានៃគូអវិជ្ជមានដោយ $B = \sum_{j \neq i} \exp(S_{ij} / \tau) > 0$។ អនុគមន៍បាត់បង់អាចសរសេរជា៖
 $$

@@ -22,32 +22,42 @@
 
 ##### Score Function of a Two-Layer Neural Network (MLP)
 The score function $f$ of a 2-layer neural network with a single hidden layer of size $H$ and non-linear activation is defined as:
-$$f(x, W_1, W_2) = W_2 \max(0, W_1 x)$$
+$$
+f(x, W_1, W_2) = W_2 \max(0, W_1 x)
+$$
 where $x \in \mathbb{R}^{D}$ is the input feature vector, $W_1 \in \mathbb{R}^{H \times D}$ represents the first-layer weight matrix, $W_2 \in \mathbb{R}^{C \times H}$ represents the second-layer weight matrix, and the $\max(0, \cdot)$ operation represents the element-wise Rectified Linear Unit (ReLU) activation. 
 *(Note: Bias terms $b_1 \in \mathbb{R}^H$ and $b_2 \in \mathbb{R}^C$ are omitted here for algebraic simplicity but are fully incorporated in practice.)*
 
 ##### Hinge (SVM) Loss Form
 The Multi-class Support Vector Machine (hinge) loss $L_i$ for a single training example is defined as:
-$$L_i = \sum\_{j \neq y_i} \max(0, s_j - s\_{y_i} + \Delta)$$
-where $s = f(x_i, W)$ represents the predicted class scores, $s\_{y_i}$ is the score of the correct class, $s_j$ are the scores of the incorrect classes, and $\Delta$ is the margin parameter (typically set to $1$).
+$$
+L_i = \sum_{j \neq y_i} \max(0, s_j - s_{y_i} + \Delta)
+$$
+where $s = f(x_i, W)$ represents the predicted class scores, $s_{y_i}$ is the score of the correct class, $s_j$ are the scores of the incorrect classes, and $\Delta$ is the margin parameter (typically set to $1$).
 
 ##### Collapse of Stacked Linear Layers
 If the activation function is removed from a two-layer network, the model collapses into a single linear classifier:
-$$f(x) = W_2 (W_1 x) = (W_2 W_1) x = W_3 x$$
+$$
+f(x) = W_2 (W_1 x) = (W_2 W_1) x = W_3 x
+$$
 where $W_3 = W_2 W_1 \in \mathbb{R}^{C \times D}$. Since the product of two matrices is simply a new matrix, stacking arbitrary linear layers provides no additional representational capacity over a single linear hyperplane.
 
 ##### Modular Sigmoid Local Gradient
 The Sigmoid activation function is defined as:
-$$\sigma(x) = \frac{1}{1 + e^{-x}}$$
+$$
+\sigma(x) = \frac{1}{1 + e^{-x}}
+$$
 Its local gradient with respect to $x$ is highly convenient as it can be formulated entirely as a function of its output:
-$$\frac{d\sigma(x)}{dx} = \sigma(x) \cdot (1 - \sigma(x))$$
-
+$$
+\frac{d\sigma(x)}{dx} = \sigma(x) \cdot (1 - \sigma(x))
+$$
 ---
 
 ##### Step-by-Step Backpropagation Derivation (Scalar Example)
 Let us trace the forward and backward pass for a single neuron using a sigmoid activation:
-$$f(w, x) = \frac{1}{1 + e^{-(w_0 x_0 + w_1 x_1 + w_2)}}$$
-
+$$
+f(w, x) = \frac{1}{1 + e^{-(w_0 x_0 + w_1 x_1 + w_2)}}
+$$
 We decompose this complex function into a computational graph of simple intermediate variables:
 1.  **Multiplication 1:** $u_0 = w_0 x_0$
 2.  **Multiplication 2:** $u_1 = w_1 x_1$
@@ -60,78 +70,118 @@ We decompose this complex function into a computational graph of simple intermed
 
 ###### Forward Pass Trace
 Given inputs:
-$$w_0 = 2.0, \quad x_0 = -1.0$$
-$$w_1 = -3.0, \quad x_1 = -2.0$$
-$$w_2 = -3.0$$
-
+$$
+w_0 = 2.0, \quad x_0 = -1.0
+$$
+$$
+w_1 = -3.0, \quad x_1 = -2.0
+$$
+$$
+w_2 = -3.0
+$$
 The forward intermediate values are computed as:
-$$u_0 = 2.0 \times (-1.0) = -2.0$$
-$$u_1 = -3.0 \times (-2.0) = 6.0$$
-$$q = -2.0 + 6.0 = 3.0$$
-$$a = 3.0 + (-3.0) = 0.0$$
-$$b = -0.0 = 0.0$$
-$$c = e^{0} = 1.0$$
-$$d = 1.0 + 1.0 = 2.0$$
-$$f = \frac{1}{2.0} = 0.5$$
-
+$$
+u_0 = 2.0 \times (-1.0) = -2.0
+$$
+$$
+u_1 = -3.0 \times (-2.0) = 6.0
+$$
+$$
+q = -2.0 + 6.0 = 3.0
+$$
+$$
+a = 3.0 + (-3.0) = 0.0
+$$
+$$
+b = -0.0 = 0.0
+$$
+$$
+c = e^{0} = 1.0
+$$
+$$
+d = 1.0 + 1.0 = 2.0
+$$
+$$
+f = \frac{1}{2.0} = 0.5
+$$
 ###### Backward Pass Trace (Chain Rule)
 Starting at the end of the network, the gradient of the output with respect to itself is defined as:
-$$\frac{\partial f}{\partial f} = 1.0$$
-
+$$
+\frac{\partial f}{\partial f} = 1.0
+$$
 Now we apply the chain rule step-by-step moving backward through the graph:
 1.  **Reciprocal Gate ($f = 1/d$):**
     The local gradient is $\frac{\partial f}{\partial d} = -\frac{1}{d^2}$.
-    $$\frac{\partial f}{\partial d} = 1.0 \times \left(-\frac{1}{2.0^2}\right) = -0.25$$
-
+    $$
+    \frac{\partial f}{\partial d} = 1.0 \times \left(-\frac{1}{2.0^2}\right) = -0.25
+    $$
 2.  **Increment Gate ($d = 1 + c$):**
     The local gradient is $\frac{\partial d}{\partial c} = 1$.
-    $$\frac{\partial f}{\partial c} = \frac{\partial f}{\partial d} \frac{\partial d}{\partial c} = -0.25 \times 1 = -0.25$$
-
+    $$
+    \frac{\partial f}{\partial c} = \frac{\partial f}{\partial d} \frac{\partial d}{\partial c} = -0.25 \times 1 = -0.25
+    $$
 3.  **Exponentiation Gate ($c = e^b$):**
     The local gradient is $\frac{\partial c}{\partial b} = e^b$.
-    $$\frac{\partial f}{\partial b} = \frac{\partial f}{\partial c} \frac{\partial c}{\partial b} = -0.25 \times e^{0.0} = -0.25 \times 1.0 = -0.25$$
-
+    $$
+    \frac{\partial f}{\partial b} = \frac{\partial f}{\partial c} \frac{\partial c}{\partial b} = -0.25 \times e^{0.0} = -0.25 \times 1.0 = -0.25
+    $$
 4.  **Negation Gate ($b = -a$):**
     The local gradient is $\frac{\partial b}{\partial a} = -1$.
-    $$\frac{\partial f}{\partial a} = \frac{\partial f}{\partial b} \frac{\partial b}{\partial a} = -0.25 \times (-1) = 0.25$$
-
+    $$
+    \frac{\partial f}{\partial a} = \frac{\partial f}{\partial b} \frac{\partial b}{\partial a} = -0.25 \times (-1) = 0.25
+    $$
 5.  **Bias Addition Gate ($a = q + w_2$):**
     Addition acts as a gradient distributor (local gradients are $1$).
-    $$\frac{\partial f}{\partial w_2} = \frac{\partial f}{\partial a} \frac{\partial a}{\partial w_2} = 0.25 \times 1 = 0.25$$
-    $$\frac{\partial f}{\partial q} = \frac{\partial f}{\partial a} \frac{\partial a}{\partial q} = 0.25 \times 1 = 0.25$$
-
+    $$
+    \frac{\partial f}{\partial w_2} = \frac{\partial f}{\partial a} \frac{\partial a}{\partial w_2} = 0.25 \times 1 = 0.25
+    $$
+    $$
+    \frac{\partial f}{\partial q} = \frac{\partial f}{\partial a} \frac{\partial a}{\partial q} = 0.25 \times 1 = 0.25
+    $$
 6.  **Sum Addition Gate ($q = u_0 + u_1$):**
     Again, addition distributes the upstream gradient.
-    $$\frac{\partial f}{\partial u_0} = 0.25, \quad \frac{\partial f}{\partial u_1} = 0.25$$
-
+    $$
+    \frac{\partial f}{\partial u_0} = 0.25, \quad \frac{\partial f}{\partial u_1} = 0.25
+    $$
 7.  **Multiplication Gate 1 ($u_0 = w_0 x_0$):**
     The multiplication gate swaps the inputs and scales by the upstream gradient.
-    $$\frac{\partial f}{\partial w_0} = \frac{\partial f}{\partial u_0} x_0 = 0.25 \times (-1.0) = -0.25$$
-    $$\frac{\partial f}{\partial x_0} = \frac{\partial f}{\partial u_0} w_0 = 0.25 \times 2.0 = 0.50$$
-
+    $$
+    \frac{\partial f}{\partial w_0} = \frac{\partial f}{\partial u_0} x_0 = 0.25 \times (-1.0) = -0.25
+    $$
+    $$
+    \frac{\partial f}{\partial x_0} = \frac{\partial f}{\partial u_0} w_0 = 0.25 \times 2.0 = 0.50
+    $$
 8.  **Multiplication Gate 2 ($u_1 = w_1 x_1$):**
-    $$\frac{\partial f}{\partial w_1} = \frac{\partial f}{\partial u_1} x_1 = 0.25 \times (-2.0) = -0.50$$
-    $$\frac{\partial f}{\partial x_1} = \frac{\partial f}{\partial u_1} w_1 = 0.25 \times (-3.0) = -0.75$$
-
+    $$
+    \frac{\partial f}{\partial w_1} = \frac{\partial f}{\partial u_1} x_1 = 0.25 \times (-2.0) = -0.50
+    $$
+    $$
+    \frac{\partial f}{\partial x_1} = \frac{\partial f}{\partial u_1} w_1 = 0.25 \times (-3.0) = -0.75
+    $$
 ---
 
 ##### Vectorized & Matrix Backpropagation Derivations
 When variables are matrices or tensors rather than scalars, the gradient of a scalar loss $L$ with respect to a tensor must have the exact same shape as the tensor itself:
-$$\dim\left(\frac{\partial L}{\partial X}\right) = \dim(X)$$
-
+$$
+\dim\left(\frac{\partial L}{\partial X}\right) = \dim(X)
+$$
 ###### Matrix Multiplication Gate
 Let us define the forward matrix multiplication operation:
-$$Y = X W$$
+$$
+Y = X W
+$$
 where $X \in \mathbb{R}^{N \times D}$, $W \in \mathbb{R}^{D \times M}$, and $Y \in \mathbb{R}^{N \times M}$. Given the upstream gradient $\frac{\partial L}{\partial Y} \in \mathbb{R}^{N \times M}$ coming from the subsequent layer, we derive the downstream gradients using dimension-matching matrix algebra:
 
 1.  **Gradient with respect to weights $W$:**
     To match the shape of $W$ ($D \times M$), we must multiply the transpose of the input $X^T$ ($D \times N$) by the upstream gradient $\frac{\partial L}{\partial Y}$ ($N \times M$):
-    $$\frac{\partial L}{\partial W} = X^T \frac{\partial L}{\partial Y}$$
-
+    $$
+    \frac{\partial L}{\partial W} = X^T \frac{\partial L}{\partial Y}
+    $$
 2.  **Gradient with respect to inputs $X$:**
     To match the shape of $X$ ($N \times D$), we must multiply the upstream gradient $\frac{\partial L}{\partial Y}$ ($N \times M$) by the transpose of the weight matrix $W^T$ ($M \times D$):
-    $$\frac{\partial L}{\partial X} = \frac{\partial L}{\partial Y} W^T$$
-
+    $$
+    \frac{\partial L}{\partial X} = \frac{\partial L}{\partial Y} W^T
+    $$
 These formulas form the computational foundation of backpropagation through Fully Connected/Linear layers.
 
 ---
@@ -277,7 +327,7 @@ To visualize how gradients flow and scale dynamically across different gates, we
 *   **Transposed Weight Shape Alignment:** In vectorized linear layers ($Y = XW$), a common silent bug is transposing the weight matrix incorrectly during backward updates. Always verify that the dimensions of $\frac{\partial L}{\partial W}$ exactly match $W$ ($D \times M$), and $\frac{\partial L}{\partial X}$ exactly match $X$ ($N \times D$).
 
 ##### Graduate-Level Reflection Questions
-1.  **Analytical Proof of Stacked Linearity:** Prove mathematically that a 100-layer neural network with weight matrices $W_1, W_2, \dots, W\_{100}$ and no activation functions has the exact same representational capacity as a single linear layer classifier.
+1.  **Analytical Proof of Stacked Linearity:** Prove mathematically that a 100-layer neural network with weight matrices $W_1, W_2, \dots, W_{100}$ and no activation functions has the exact same representational capacity as a single linear layer classifier.
 2.  **The Jacobian Memory Bottleneck:** Suppose you are training a linear layer with batch size $N = 100$, input dimension $D = 4096$, and output dimension $M = 4096$. 
     *   What are the dimensions of the Jacobian matrix $\frac{\partial Y}{\partial X}$?
     *   Why is storing this Jacobian computationally prohibitive (calculate the memory footprint in gigabytes assuming FP32), and how does the backprop equation $\frac{\partial L}{\partial X} = \frac{\partial L}{\partial Y} W^T$ completely bypass this bottleneck?

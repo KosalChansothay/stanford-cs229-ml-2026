@@ -1,0 +1,709 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { coursesInfo, getLecturesByCourse, type CourseInfo, type LectureItem } from '../../../data/lectures';
+
+export async function getStaticPaths() {
+  const codes: Array<'cs229' | 'cs336' | 'cs231n'> = ['cs229', 'cs336', 'cs231n'];
+
+  return codes.map((code) => {
+    const course = coursesInfo[code];
+    const lectures = getLecturesByCourse(code);
+
+    return {
+      params: { course: code },
+      props: { course, lectures }
+    };
+  });
+}
+
+interface Props {
+  course: CourseInfo;
+  lectures: LectureItem[];
+}
+
+const { course, lectures } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const courseThemes: Record<string, {
+  gradientBorder: string;
+  accentColor: string;
+  ambientGlow: string;
+  btnGradient: string;
+}> = {
+  cs229: {
+    gradientBorder: 'linear-gradient(90deg, #06b6d4 0%, #3b82f6 50%, #f43f5e 100%)',
+    accentColor: '#0ea5e9',
+    ambientGlow: 'rgba(6, 182, 212, 0.28)',
+    btnGradient: 'linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)',
+  },
+  cs336: {
+    gradientBorder: 'linear-gradient(90deg, #f43f5e 0%, #ec4899 50%, #06b6d4 100%)',
+    accentColor: '#f43f5e',
+    ambientGlow: 'rgba(244, 63, 94, 0.28)',
+    btnGradient: 'linear-gradient(135deg, #e11d48 0%, #f43f5e 100%)',
+  },
+  cs231n: {
+    gradientBorder: 'linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #f59e0b 100%)',
+    accentColor: '#10b981',
+    ambientGlow: 'rgba(16, 185, 129, 0.28)',
+    btnGradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+  },
+};
+
+const theme = courseThemes[course.code] || courseThemes.cs229;
+---
+
+<BaseLayout
+  title={`${course.name} Syllabus & Notes`}
+  description={course.summary}
+  currentCourse={course.code}
+>
+  <!-- Open Modern Course Hero Section (No Stiff Boxed Card) -->
+  <header
+    class={`course-hero theme-${course.code}`}
+    style={`--accent-color: ${theme.accentColor}; --ambient-glow: ${theme.ambientGlow}; --btn-gradient: ${theme.btnGradient};`}
+  >
+    <!-- Ambient Atmospheric Back-Glow -->
+    <div class="hero-ambient-aura" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <!-- Eyebrow row with live pulse beacon -->
+      <div class="hero-eyebrow-row">
+        <span class="eyebrow-pill">
+          <span class="pulse-dot"></span>
+          <span>{course.term}</span>
+        </span>
+        <span class="track-badge">{course.badge}</span>
+      </div>
+
+      <!-- Hero Title & Subtitle -->
+      <h1 class="hero-title">{course.name}</h1>
+      <p class="hero-subtitle">{course.subtitle}</p>
+
+      <!-- Narrative Course Overview with subtle left accent guide -->
+      <p class="hero-summary">{course.summary}</p>
+
+      <!-- Modern Integrated Technical Specs Ribbon -->
+      <div class="hero-specs-ribbon">
+        <div class="spec-pill">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="spec-body">
+            <span class="spec-label">Faculty</span>
+            <span class="spec-val">{course.instructors}</span>
+          </div>
+        </div>
+
+        <div class="spec-pill">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </div>
+          <div class="spec-body">
+            <span class="spec-label">Curriculum</span>
+            <span class="spec-val">{lectures.length} Lectures</span>
+          </div>
+        </div>
+
+        <div class="spec-pill">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="spec-body">
+            <span class="spec-label">Formulations</span>
+            <span class="spec-val">Full MathJax</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Topic Chips -->
+      <div class="hero-topics-row">
+        {course.topics.map((t) => (
+          <span class="topic-chip">{t}</span>
+        ))}
+      </div>
+
+      <!-- Action Row -->
+      <div class="hero-actions-row">
+        <a href={`${baseUrl}/courses/${course.code}/lecture-1/`} class="hero-primary-btn">
+          <span>Start Lecture 1</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+
+        <a href="#syllabus-roadmap" class="hero-secondary-btn">
+          <span>Explore Syllabus</span>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <polyline points="19 12 12 19 5 12"></polyline>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Floating Cybernetic Artwork Showcase -->
+    <div class="hero-visual-col">
+      <div class="visual-dock">
+        <div class="visual-glow-halo" aria-hidden="true"></div>
+        <div class="visual-frame">
+          <img
+            src={`${baseUrl}/img/courses/${course.thumbnail}`}
+            alt={`${course.name} Visual Showcase`}
+            class="visual-image"
+          />
+          <div class="visual-live-badge">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            <span>{course.badge}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Lecture Schedule Roadmap -->
+  <section class="syllabus-lectures-section" id="syllabus-roadmap">
+    <div class="section-header-row">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Complete Lecture Syllabus &amp; Study Notes</h2>
+        <p class="section-subtitle">Mathematical formulations, core concepts, algorithms, and practical advice</p>
+      </div>
+      <span class="lecture-counter">{lectures.length} Modules Available</span>
+    </div>
+
+    <div class="lectures-roadmap-grid">
+      {lectures.map((item, idx) => (
+        <a href={`${baseUrl}/courses/${course.code}/${item.slug}/`} class="lecture-roadmap-card">
+          <div class="card-num-box">
+            <span>{idx + 1}</span>
+          </div>
+          <div class="card-text-block">
+            <div class="card-lecture-tag">{course.code.toUpperCase()} • {item.slug.toUpperCase().replace('-', ' ')}</div>
+            <h3 class="card-lecture-name">{item.shortTitle}</h3>
+          </div>
+          <div class="card-arrow-circle">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Open Modern Edge-to-Edge Hero Section */
+  .course-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(360px, 480px);
+    gap: 3.5rem;
+    align-items: center;
+    padding: 1rem 0 3.5rem;
+    margin-bottom: 3.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  /* Atmospheric Radial Back-Glow */
+  .hero-ambient-aura {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: 520px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--ambient-glow) 0%, transparent 70%);
+    pointer-events: none;
+    filter: blur(60px);
+    opacity: 0.6;
+    z-index: 0;
+  }
+
+  :global([data-theme="dark"]) .hero-ambient-aura {
+    opacity: 0.85;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .hero-eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-color, var(--brand-accent));
+    box-shadow: 0 0 10px var(--accent-color, var(--brand-accent));
+    animation: pulseDot 2s infinite ease-in-out;
+  }
+
+  @keyframes pulseDot {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(0.85);
+    }
+  }
+
+  .track-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  :global([data-theme="dark"]) .track-badge {
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+  }
+
+  .hero-title {
+    font-size: clamp(2.2rem, 3.6vw, 3rem);
+    font-weight: 850;
+    color: var(--text-primary);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin: 0 0 0.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--accent-color, var(--brand-accent));
+    margin: 0 0 1.25rem;
+    line-height: 1.45;
+  }
+
+  .hero-summary {
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    border-left: 2px solid var(--accent-color, var(--brand-accent));
+    padding-left: 1.15rem;
+    margin: 0 0 1.5rem;
+    max-width: 680px;
+  }
+
+  /* Sleek Integrated Specs Ribbon */
+  .hero-specs-ribbon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .spec-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 12px;
+    background: var(--card-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.2s ease;
+  }
+
+  .spec-pill:hover {
+    border-color: var(--accent-color, var(--brand-accent));
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card);
+  }
+
+  .spec-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--card-surface-subtle);
+    color: var(--accent-color, var(--brand-accent));
+    flex-shrink: 0;
+  }
+
+  .spec-body {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.18;
+  }
+
+  .spec-label {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.15rem;
+  }
+
+  .spec-val {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Topics Row */
+  .hero-topics-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .topic-chip {
+    padding: 0.28rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+  }
+
+  .topic-chip:hover {
+    border-color: var(--accent-color, var(--brand-accent));
+    color: var(--text-primary);
+  }
+
+  /* Action Buttons */
+  .hero-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.78rem 1.65rem;
+    border-radius: var(--radius-pill);
+    background: var(--btn-gradient, var(--brand-accent));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-decoration: none;
+    box-shadow: 0 4px 20px -3px var(--ambient-glow, rgba(37, 99, 235, 0.4));
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hero-primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px -2px var(--ambient-glow, rgba(37, 99, 235, 0.65));
+  }
+
+  .hero-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .hero-secondary-btn:hover {
+    background: var(--card-surface-subtle);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+  }
+
+  /* Right Column: Floating Cybernetic Artwork Showcase */
+  .hero-visual-col {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .visual-dock {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .visual-glow-halo {
+    position: absolute;
+    inset: -15px;
+    border-radius: 28px;
+    background: radial-gradient(circle, var(--ambient-glow) 0%, transparent 70%);
+    filter: blur(28px);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  :global([data-theme="dark"]) .visual-glow-halo {
+    opacity: 0.8;
+  }
+
+  .visual-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #080D1A;
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.38), 0 0 0 1px var(--border-subtle);
+    z-index: 1;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  }
+
+  :global([data-theme="dark"]) .visual-frame {
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .visual-dock:hover .visual-frame {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 30px 68px -12px rgba(0, 0, 0, 0.48), 0 0 0 1.5px var(--accent-color, var(--brand-accent));
+  }
+
+  :global([data-theme="dark"]) .visual-dock:hover .visual-frame {
+    box-shadow: 0 35px 80px -12px rgba(0, 0, 0, 0.8), 0 0 0 1.5px var(--accent-color, var(--brand-accent));
+  }
+
+  .visual-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .visual-dock:hover .visual-image {
+    transform: scale(1.03);
+  }
+
+  .visual-live-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.34rem 0.82rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent-lime);
+    color: var(--accent-lime-dark);
+    font-size: 0.72rem;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    z-index: 2;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .course-hero {
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px);
+      gap: 2.5rem;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .course-hero {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 2.5rem;
+      padding: 1rem 0 2.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .visual-dock {
+      max-width: 520px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-specs-ribbon {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .spec-pill {
+      width: 100%;
+    }
+  }
+
+  /* Roadmap Section */
+  .syllabus-lectures-section {
+    margin-bottom: 4rem;
+  }
+
+  .section-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .section-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .section-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .lecture-counter {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .lectures-roadmap-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .lecture-roadmap-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.15rem 1.4rem;
+    background: var(--card-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: var(--shadow-subtle);
+  }
+
+  .lecture-roadmap-card:hover {
+    border-color: var(--brand-accent);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-num-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+
+  .card-text-block {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-lecture-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .card-lecture-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .card-arrow-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+
+  .lecture-roadmap-card:hover .card-arrow-circle {
+    background: var(--brand-accent);
+    color: #ffffff;
+    border-color: var(--brand-accent);
+  }
+</style>

@@ -17,21 +17,25 @@
 ### Perplexity Metric
 Perplexity is the exponentiated cross-entropy loss of the model over a validation dataset $D = [x_1, x_2, \dots, x_N]$:
 
-$$\text{PPL}(D) = \exp\left( -\frac{1}{N} \sum\_{i=1}^N \log P(x_i | x\_{<i})  \right)$$
-
+$$
+\text{PPL}(D) = \exp\left( -\frac{1}{N} \sum_{i=1}^N \log P(x_i | x_{<i})  \right)
+$$
 At optimal convergence where the model distribution $P$ matches the true distribution $T$, perplexity equals the exponentiated Shannon entropy of the true data distribution:
 
-$$\text{PPL}\_{\text{opt}} = \exp\left( H(T)  \right)$$
-
+$$
+\text{PPL}_{\text{opt}} = \exp\left( H(T)  \right)
+$$
 ### Bradley-Terry Preference Modeling (ELO)
 To fit ELO rankings from Chatbot Arena A/B comparison trials, the probability of model $A$ beating model $B$ is modeled as a sigmoid function of their latent scores $r_A, r_B$:
 
-$$P(A \succ B) = \frac{1}{1 + 10^{(r_B - r_A)/400}} = \sigma\left( \frac{\ln(10)}{400} (r_A - r_B)  \right)$$
+$$
+P(A \succ B) = \frac{1}{1 + 10^{(r_B - r_A)/400}} = \sigma\left( \frac{\ln(10)}{400} (r_A - r_B)  \right)
+$$
+We estimate the rating parameters $\mathbf{r}$ by maximizing the log-likelihood of all observed comparisons $Y_{ij}$:
 
-We estimate the rating parameters $\mathbf{r}$ by maximizing the log-likelihood of all observed comparisons $Y\_{ij}$:
-
-$$\mathcal{L}(\mathbf{r}) = \sum\_{(i, j) \in \text{Comparisons}} \left( Y\_{ij} \log P(i \succ j) + (1 - Y\_{ij}) \log P(j \succ i)  \right)$$
-
+$$
+\mathcal{L}(\mathbf{r}) = \sum_{(i, j) \in \text{Comparisons}} \left( Y_{ij} \log P(i \succ j) + (1 - Y_{ij}) \log P(j \succ i)  \right)
+$$
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### Detecting Data Contamination (Deduplication / Order-Permutation test)

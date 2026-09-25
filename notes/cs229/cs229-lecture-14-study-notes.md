@@ -11,7 +11,7 @@ The core of the lecture focuses on the inner workings of the **Transformer archi
 ### 2. Key Concepts & Definitions
 - **Autoregressive Sequence Modeling**: A probabilistic modeling paradigm where the joint probability of a sequence of tokens is modeled sequentially, generating one token at a time based on the history of previously generated tokens.
 - **Subword Tokenization (BPE)**: A hybrid tokenization technique (such as Byte-Pair Encoding) that breaks down words into the most frequent subword segments. It solves the sequence length explosion of character-level tokenization and the out-of-vocabulary (OOV) / morphological parameter-sharing failures of word-level tokenization.
-- **Beginning of Sentence (BOS) Token ($x\_0$)**: A fixed special token prepended to the start of every text sequence during training and inference to provide an initial conditioning state.
+- **Beginning of Sentence (BOS) Token ($x_0$)**: A fixed special token prepended to the start of every text sequence during training and inference to provide an initial conditioning state.
 - **Logits**: The raw, unnormalized outputs of a transformer corresponding to the vocabulary size $|V|$. Passing these through a softmax function maps them to a valid probability distribution.
 - **Causal Masking**: A triangular matrix operation applied to raw attention scores during training to block information flowing from future tokens ($j > t$) back to the current token ($t$), ensuring the model remains causal.
 - **Isotropic Embeddings / Scaling Invariance**: Properties established via LayerNorm and RMSNorm to keep vector sizes and scaling factors consistent across deep stacks of hidden dimensions.
@@ -22,26 +22,26 @@ The core of the lecture focuses on the inner workings of the **Transformer archi
 ### 3. Mathematical Formulations & Derivations
 
 #### A. Autoregressive Factored Joint Probability
-Given a vocabulary $V$ containing subword segments, the total number of possible combinations of length $T$ is $|V|^T$. We model the joint probability distribution of a sequence of tokens $\mathbf{x} = (x\_1, x\_2, \dots, x\_T) \in V^T$ by factoring it into a chain of conditional distributions using the probability chain rule:
+Given a vocabulary $V$ containing subword segments, the total number of possible combinations of length $T$ is $|V|^T$. We model the joint probability distribution of a sequence of tokens $\mathbf{x} = (x_1, x_2, \dots, x_T) \in V^T$ by factoring it into a chain of conditional distributions using the probability chain rule:
 $$
-P(x\_1, x\_2, \dots, x\_T) = \prod\_{t=1}^T P(x\_t \mid x\_1, x\_2, \dots, x\_{t-1})
+P(x_1, x_2, \dots, x_T) = \prod_{t=1}^T P(x_t \mid x_1, x_2, \dots, x_{t-1})
 $$
 #### B. The Softmax Next-Word Predictor
-For each time step $t$, the transformer model parameterized by $\theta$ maps the history of prior tokens $(x\_0, x\_1, \dots, x\_{t-1})$ to a vector of logits $U\_t \in \mathbb{R}^{|V|}$:
+For each time step $t$, the transformer model parameterized by $\theta$ maps the history of prior tokens $(x_0, x_1, \dots, x_{t-1})$ to a vector of logits $U_t \in \mathbb{R}^{|V|}$:
 $$
-U\_t = f\_\theta(x\_0, x\_1, \dots, x\_{t-1})
+U_t = f_\theta(x_0, x_1, \dots, x_{t-1})
 $$
 Applying the softmax function entrywise produces a probability vector on the simplex of dimension $|V|$:
 $$
-P(x\_t = j \mid x\_1, \dots, x\_{t-1}; \theta) = \text{softmax}(U\_t)\_j = \frac{e^{U\_{t, j}}}{\sum\_{l=1}^{|V|} e^{U\_{t, l}}}
+P(x_t = j \mid x_1, \dots, x_{t-1}; \theta) = \text{softmax}(U_t)_j = \frac{e^{U_{t, j}}}{\sum_{l=1}^{|V|} e^{U_{t, l}}}
 $$
 #### C. Next-Token Prediction Loss (Negative Log-Likelihood)
-At training time, the model is shown a complete sequence of tokens. We minimize the Negative Log-Likelihood (NLL) of predicting the correct next token $x\_t$ over all positions $t \in \{1, \dots, T\}$:
+At training time, the model is shown a complete sequence of tokens. We minimize the Negative Log-Likelihood (NLL) of predicting the correct next token $x_t$ over all positions $t \in \{1, \dots, T\}$:
 $$
-\mathcal{L}(\theta) = -\log P(x\_1, \dots, x\_T \mid \theta) = -\sum\_{t=1}^T \log P(x\_t \mid x\_1, \dots, x\_{t-1}; \theta)
+\mathcal{L}(\theta) = -\log P(x_1, \dots, x_T \mid \theta) = -\sum_{t=1}^T \log P(x_t \mid x_1, \dots, x_{t-1}; \theta)
 $$
 $$
-\mathcal{L}(\theta) = \sum\_{t=1}^T \left[ -U\_{t, x\_t} + \log \sum\_{l=1}^{|V|} e^{U\_{t, l}} \right]
+\mathcal{L}(\theta) = \sum_{t=1}^T \left[ -U_{t, x_t} + \log \sum_{l=1}^{|V|} e^{U_{t, l}} \right]
 $$
 *Derivation Note*: This loss is equivalent to the categorical cross-entropy loss between the true next-token (represented as a one-hot target vector over $V$) and the model's predicted probability distribution.
 
@@ -54,72 +54,81 @@ $$
 <p><em>Figure: Causal attention probability heatmap.</em></p>
 
 #### A. Autoregressive Decoding with Temperature Scaling
-Once a model $\theta$ is trained, we generate text sequentially. To balance creativity and coherence, we apply temperature scaling $\tau > 0$ to the logits vector $U\_t$ before taking the softmax:
-1. **Initialize**: Given a prompt sequence $(x\_1, \dots, x\_k)$, prepend the BOS token $x\_0$.
+Once a model $\theta$ is trained, we generate text sequentially. To balance creativity and coherence, we apply temperature scaling $\tau > 0$ to the logits vector $U_t$ before taking the softmax:
+1. **Initialize**: Given a prompt sequence $(x_1, \dots, x_k)$, prepend the BOS token $x_0$.
 2. **Loop until termination** (e.g., generating an End of Sentence token or reaching max context length $T$):
-   - Compute logits $U\_t = f\_\theta(x\_0, \dots, x\_{t-1})$.
+   - Compute logits $U_t = f_\theta(x_0, \dots, x_{t-1})$.
    - Scale logits by temperature $\tau$ and apply softmax:
 
-$$P(x\_t = j \mid x\_1, \dots, x\_{t-1}) = \frac{e^{U\_{t, j}/\tau}}{\sum\_l e^{U\_{t, l}/\tau}}
+$$
+P(x_t = j \mid x_1, \dots, x_{t-1}) = \frac{e^{U_{t, j}/\tau}}{\sum_l e^{U_{t, l}/\tau}}
 $$
    - **Temperature Properties**:
      - **$\tau \to 0$ (Greedy / Deterministic Decoding)**: The probability mass concentrates entirely on the token with the maximum logit.
 
-$$P(x\_t = j) \to \begin{cases} 1 & j = \text{argmax}\_l U\_{t, l} \\ 0 & \text{otherwise} \end{cases}
+$$
+P(x_t = j) \to \begin{cases} 1 & j = \text{argmax}_l U_{t, l} \\ 0 & \text{otherwise} \end{cases}
 $$
      - **$\tau > 1$ (High Stochasticity)**: The distribution flattens, increasing sample diversity by pulling from the long tail of the vocabulary.
    - **Top-$k$ Filtering**: Retain only the top-$k$ most probable tokens, zero out all other indices, and renormalize the distribution to prevent generating incoherent long-tail tokens.
-   - **Sample** the next token $x\_t \sim P(x\_t \mid x\_{1 \dots t-1})$.
-   - **Append** $x\_t$ to the context window and repeat.
+   - **Sample** the next token $x_t \sim P(x_t \mid x_{1 \dots t-1})$.
+   - **Append** $x_t$ to the context window and repeat.
 
 #### B. Single-Head Causal Self-Attention
-Self-attention maps an input sequence of hidden representation row vectors $H^{\text{in}} = [h\_1^{\text{in}}; \dots; h\_T^{\text{in}}] \in \mathbb{R}^{T \times d}$ to an output sequence of hidden states $H^{\text{out}} \in \mathbb{R}^{T \times d}$.
+Self-attention maps an input sequence of hidden representation row vectors $H^{\text{in}} = [h_1^{\text{in}}; \dots; h_T^{\text{in}}] \in \mathbb{R}^{T \times d}$ to an output sequence of hidden states $H^{\text{out}} \in \mathbb{R}^{T \times d}$.
 1. **Project Inputs to Queries, Keys, and Values**:
-   We multiply the input row vectors on the right by trained weight matrices $W^Q \in \mathbb{R}^{d \times d\_h}$, $W^K \in \mathbb{R}^{d \times d\_h}$, and $W^V \in \mathbb{R}^{d \times d}$:
+   We multiply the input row vectors on the right by trained weight matrices $W^Q \in \mathbb{R}^{d \times d_h}$, $W^K \in \mathbb{R}^{d \times d_h}$, and $W^V \in \mathbb{R}^{d \times d}$:
 
-$$q\_t = h\_t^{\text{in}} W^Q \in \mathbb{R}^{1 \times d\_h}
 $$
-$$k\_t = h\_t^{\text{in}} W^K \in \mathbb{R}^{1 \times d\_h}
+q_t = h_t^{\text{in}} W^Q \in \mathbb{R}^{1 \times d_h}
 $$
-$$v\_t = h\_t^{\text{in}} W^V \in \mathbb{R}^{1 \times d}
+$$
+k_t = h_t^{\text{in}} W^K \in \mathbb{R}^{1 \times d_h}
+$$
+$$
+v_t = h_t^{\text{in}} W^V \in \mathbb{R}^{1 \times d}
 $$
 2. **Compute Raw Causal Attention Scores with Masking**:
-   For any position $t$, we compute the dot products between query $q\_t$ and keys $k\_1, \dots, k\_T$ to capture contextual relevance. To maintain causality, future keys ($j > t$) are mathematically deleted by adding negative infinity ($-\infty$) to their raw scores:
+   For any position $t$, we compute the dot products between query $q_t$ and keys $k_1, \dots, k_T$ to capture contextual relevance. To maintain causality, future keys ($j > t$) are mathematically deleted by adding negative infinity ($-\infty$) to their raw scores:
 
-$$A\_{t, j} = \begin{cases} \frac{q\_t k\_j^T}{c} & j \le t \\ -\infty & j > t \end{cases}
 $$
-   where $c = \sqrt{d\_h}$ is a scaling constant preventing raw dot products from pushing softmax gradients into vanishing regimes.
+A_{t, j} = \begin{cases} \frac{q_t k_j^T}{c} & j \le t \\ -\infty & j > t \end{cases}
+$$
+   where $c = \sqrt{d_h}$ is a scaling constant preventing raw dot products from pushing softmax gradients into vanishing regimes.
 3. **Normalize with Softmax**:
 
-$$P\_t = \text{softmax}(A\_t \in \mathbb{R}^{1 \times T})
 $$
-   Because $e^{-\infty} = 0$, future token coefficients are nullified, ensuring $P\_{t, j} = 0$ for all $j > t$.
+P_t = \text{softmax}(A_t \in \mathbb{R}^{1 \times T})
+$$
+   Because $e^{-\infty} = 0$, future token coefficients are nullified, ensuring $P_{t, j} = 0$ for all $j > t$.
 4. **Fleshing out the Value Aggregation**:
 
-$$h\_t^{\text{out}} = \sum\_{i=1}^t P\_{t, i} v\_i
+$$
+h_t^{\text{out}} = \sum_{i=1}^t P_{t, i} v_i
 $$
    This weighted convex combination aggregates the values of all historically relevant vectors.
 
 **Causal Matrix Formulation**:
 Grouping all steps together, the vectorized attention block is written as:
 $$
-H^{\text{out}} = \text{softmax}\left( \frac{Q K^T}{\sqrt{d\_h}} + M \right) V
+H^{\text{out}} = \text{softmax}\left( \frac{Q K^T}{\sqrt{d_h}} + M \right) V
 $$
 where $M \in \mathbb{R}^{T \times T}$ is the causal mask matrix:
 $$
-M\_{i, j} = \begin{cases} 0 & j \le i \\ -\infty & j > i \end{cases}
+M_{i, j} = \begin{cases} 0 & j \le i \\ -\infty & j > i \end{cases}
 $$
 ---
 
 ### 5. Architectural Building Blocks
 
 #### A. Multi-Head Attention (MHA)
-To enable the network to simultaneously attend to different semantic structures (such as grammatical parsing vs. entity sentiment), we run $n\_h$ parallel attention heads:
-1. **Parallel Computations**: Each head $i \in \{1, \dots, n\_h\}$ uses separate parameter sets $\{W\_i^Q, W\_i^K, W\_i^V\}$ to produce its own output matrix $\text{Head}\_i \in \mathbb{R}^{T \times d\_{\text{head}}}$.
+To enable the network to simultaneously attend to different semantic structures (such as grammatical parsing vs. entity sentiment), we run $n_h$ parallel attention heads:
+1. **Parallel Computations**: Each head $i \in \{1, \dots, n_h\}$ uses separate parameter sets $\{W_i^Q, W_i^K, W_i^V\}$ to produce its own output matrix $\text{Head}_i \in \mathbb{R}^{T \times d_{\text{head}}}$.
 2. **Concatenation and Output Projection**:
-   The outputs are concatenated column-wise and projected back to the hidden space $d$ using the trained matrix $W^O \in \mathbb{R}^{(n\_h d\_{\text{head}}) \times d}$:
+   The outputs are concatenated column-wise and projected back to the hidden space $d$ using the trained matrix $W^O \in \mathbb{R}^{(n_h d_{\text{head}}) \times d}$:
 
-$$\text{MHA}(H^{\text{in}}) = \text{concat}\left( \text{Head}\_1, \text{Head}\_2, \dots, \text{Head}\_{n\_h} \right) W^O
+$$
+\text{MHA}(H^{\text{in}}) = \text{concat}\left( \text{Head}_1, \text{Head}_2, \dots, \text{Head}_{n_h} \right) W^O
 $$
 #### B. Multi-Layer Perceptrons (MLPs) vs. Self-Attention
 Within a Transformer block, layers are strictly divided:
@@ -137,13 +146,15 @@ Within a Transformer block, layers are strictly divided:
 
 #### A. Causal Attention Bottleneck
 The computational and memory limits of modern language models are heavily constrained by sequence length $T$.
-- **FLOPs Complexity**: Computing $Q K^T$ involves taking the inner product of $T$ queries with $T$ keys. This requires $T^2$ dot-product calculations of dimension $d\_h$, resulting in a complexity of:
+- **FLOPs Complexity**: Computing $Q K^T$ involves taking the inner product of $T$ queries with $T$ keys. This requires $T^2$ dot-product calculations of dimension $d_h$, resulting in a complexity of:
 
-$$\text{FLOPs} = O(T^2 d\_h)
+$$
+\text{FLOPs} = O(T^2 d_h)
 $$
 - **Memory Footprint Complexity**: Storing the raw and normalized attention matrix requires storing $T \times T$ values per layer, leading to:
 
-$$\text{Space Complexity} = O(T^2)
+$$
+\text{Space Complexity} = O(T^2)
 $$
 As $T$ grows to millions of tokens, these $O(T^2)$ bottlenecks become prohibitive, requiring the truncation or compacting of sequence history.
 
@@ -163,7 +174,7 @@ In modern deep learning systems, the physical bottleneck of attention calculatio
 ### 8. Reflection Questions
 1. **Subword vs. Word-Level Tokenization**: How does the use of subword Byte-Pair Encoding (BPE) prevent "out-of-vocabulary" errors during model deployment when encountering completely novel, synthetic words (e.g., `LLMefication`), and how does this affect downstream representational capacity?
 2. **The MLP Parameter Bottleneck**: Why would a single, massive Multi-Layer Perceptron (MLP) designed to take a concatenated vector of all sequence tokens ($H \in \mathbb{R}^{Td}$) be strictly inferior to interleaving self-attention with position-wise MLPs, both in terms of parameter scaling and handling variable sequence lengths?
-3. **Causal Masking and Softmax Behavior**: Mathematically analyze what would occur to the softmax probability distribution $P\_t$ at step $t$ if causal masking was implemented by assigning $M\_{i, j} = 0$ instead of $M\_{i, j} = -\infty$ for future positions ($j > i$). How does the choice of $-\infty$ guarantee causal boundaries?
+3. **Causal Masking and Softmax Behavior**: Mathematically analyze what would occur to the softmax probability distribution $P_t$ at step $t$ if causal masking was implemented by assigning $M_{i, j} = 0$ instead of $M_{i, j} = -\infty$ for future positions ($j > i$). How does the choice of $-\infty$ guarantee causal boundaries?
 
 ---
 

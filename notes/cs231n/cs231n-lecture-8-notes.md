@@ -22,55 +22,82 @@
 
 ##### RNN Seq2Seq and the Bottleneck
 In a standard Recurrent Neural Network (RNN) sequence-to-sequence (seq2seq) architecture, the encoder processes an input sequence of length $T_x$:
-$$h_t = f\_{\text{RNN}}(x_t, h\_{t-1}) \quad \text{for } t = 1, \dots, T_x$$
+$$
+h_t = f_{\text{RNN}}(x_t, h_{t-1}) \quad \text{for } t = 1, \dots, T_x
+$$
 The entire input sequence is compressed into a fixed-length context vector $C$:
-$$C = h\_{T_x}$$
+$$
+C = h_{T_x}
+$$
 The decoder hidden states $s_t$ are then recursively updated utilizing $C$:
-$$s_t = f\_{\text{dec}}(y\_{t-1}, s\_{t-1}, C)$$
+$$
+s_t = f_{\text{dec}}(y_{t-1}, s_{t-1}, C)
+$$
 This formulation forces $C$ to act as a lossy compression bottleneck for long sequences.
 
 ##### Attention-Based Context Vectors
 To remove this bottleneck, the attention mechanism computes a dynamic context vector $c_t$ for each decoder step $t$:
-1.  **Alignment Scores ($e\_{ti}$):** Measures the similarity between the previous decoder state $s\_{t-1}$ and each encoder state $h_i$:
-    $$e\_{ti} = f\_{\text{att}}(s\_{t-1}, h_i) = w_a^T \tanh(W_a [s\_{t-1} ; h_i])$$
+1.  **Alignment Scores ($e_{ti}$):** Measures the similarity between the previous decoder state $s_{t-1}$ and each encoder state $h_i$:
+    $$
+    e_{ti} = f_{\text{att}}(s_{t-1}, h_i) = w_a^T \tanh(W_a [s_{t-1} ; h_i])
+    $$
     where $W_a$ and $w_a$ are learnable linear projection parameters.
-2.  **Attention Weights ($a\_{ti}$):** Normalized via softmax to represent a discrete probability distribution over input tokens:
-    $$a\_{ti} = \frac{\exp(e\_{ti})}{\sum\_{j=1}^{T_x} \exp(e\_{tj})}$$
+2.  **Attention Weights ($a_{ti}$):** Normalized via softmax to represent a discrete probability distribution over input tokens:
+    $$
+    a_{ti} = \frac{\exp(e_{ti})}{\sum_{j=1}^{T_x} \exp(e_{tj})}
+    $$
 3.  **Dynamic Context Vector ($c_t$):** Computed as a weighted sum of encoder hidden states:
-    $$c_t = \sum\_{i=1}^{T_x} a\_{ti} h_i$$
+    $$
+    c_t = \sum_{i=1}^{T_x} a_{ti} h_i
+    $$
 This $c_t$ replaces the static context vector $C$ in the decoder update:
-$$s_t = f\_{\text{dec}}(y\_{t-1}, s\_{t-1}, c_t)$$
-
+$$
+s_t = f_{\text{dec}}(y_{t-1}, s_{t-1}, c_t)
+$$
 ##### Scaled Dot-Product Attention
 To divorce attention from RNNs and formulate it as a highly optimized, batched tensor operation, the similarity scoring is simplified to a dot product. 
 
 Let $Q \in \mathbb{R}^{N_q \times d_k}$ be the Query matrix, $K \in \mathbb{R}^{N_k \times d_k}$ be the Key matrix, and $V \in \mathbb{R}^{N_k \times d_v}$ be the Value matrix.
-$$\text{Attention}(Q, K, V) = \text{softmax}\left( \frac{Q K^T}{\sqrt{d_k}} \right) V$$
-
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left( \frac{Q K^T}{\sqrt{d_k}} \right) V
+$$
 *   **Derivation of the Scaling Factor ($\sqrt{d_k}$):** 
     Assume components of query vector $q \in \mathbb{R}^{d_k}$ and key vector $k \in \mathbb{R}^{d_k}$ are independent random variables with mean 0 and variance 1. 
-    The dot product is $q \cdot k = \sum\_{i=1}^{d_k} q_i k_i$. 
+    The dot product is $q \cdot k = \sum_{i=1}^{d_k} q_i k_i$. 
     The mean of the dot product is $\mathbb{E}[q \cdot k] = 0$.
     The variance of the dot product is:
-    $$\text{Var}(q \cdot k) = \sum\_{i=1}^{d_k} \text{Var}(q_i k_i) = d_k \left( \text{Var}(q_i) \text{Var}(k_i) + \mathbb{E}[q_i]^2 \text{Var}(k_i) + \mathbb{E}[k_i]^2 \text{Var}(q_i) \right) = d_k (1 \cdot 1 + 0 + 0) = d_k$$
+    $$
+    \text{Var}(q \cdot k) = \sum_{i=1}^{d_k} \text{Var}(q_i k_i) = d_k \left( \text{Var}(q_i) \text{Var}(k_i) + \mathbb{E}[q_i]^2 \text{Var}(k_i) + \mathbb{E}[k_i]^2 \text{Var}(q_i) \right) = d_k (1 \cdot 1 + 0 + 0) = d_k
+    $$
     As the dimensionality $d_k$ scales to large values, the variance of the dot products grows to $d_k$. This drives the softmax function into regions of extremely small gradients (vanishing gradients). Dividing by $\sqrt{d_k}$ scales the variance of the inputs back to 1, ensuring stable gradient flow during backpropagation.
 
 ##### Self-Attention Layer
-For a sequence of input vectors $X \in \mathbb{R}^{N \times d\_{\text{in}}}$, we project $X$ into Queries ($Q$), Keys ($K$), and Values ($V$) using learnable projection matrices $W_Q \in \mathbb{R}^{d\_{\text{in}} \times d_k}$, $W_K \in \mathbb{R}^{d\_{\text{in}} \times d_k}$, and $W_V \in \mathbb{R}^{d\_{\text{in}} \times d_v}$:
-$$Q = X W_Q, \quad K = X W_K, \quad V = X W_V$$
-$$Y = \text{softmax}\left( \frac{(X W_Q) (X W_K)^T}{\sqrt{d_k}} \right) (X W_V)$$
-
+For a sequence of input vectors $X \in \mathbb{R}^{N \times d_{\text{in}}}$, we project $X$ into Queries ($Q$), Keys ($K$), and Values ($V$) using learnable projection matrices $W_Q \in \mathbb{R}^{d_{\text{in}} \times d_k}$, $W_K \in \mathbb{R}^{d_{\text{in}} \times d_k}$, and $W_V \in \mathbb{R}^{d_{\text{in}} \times d_v}$:
+$$
+Q = X W_Q, \quad K = X W_K, \quad V = X W_V
+$$
+$$
+Y = \text{softmax}\left( \frac{(X W_Q) (X W_K)^T}{\sqrt{d_k}} \right) (X W_V)
+$$
 ##### Masked Self-Attention
 For auto-regressive decoding (e.g., causal language models), a token at step $t$ must not attend to future tokens $t' > t$. This is enforced by applying a mask matrix $M \in \mathbb{R}^{N \times N}$ to the alignment score matrix $E = \frac{Q K^T}{\sqrt{d_k}}$ before running softmax:
-$$M\_{ij} = \begin{cases} 0 & \text{if } j \le i \\ -\infty & \text{if } j > i \end{cases}$$
-$$\text{MaskedAttention}(Q, K, V) = \text{softmax}(E + M) V$$
+$$
+M_{ij} = \begin{cases} 0 & \text{if } j \le i \\ -\infty & \text{if } j > i \end{cases}
+$$
+$$
+\text{MaskedAttention}(Q, K, V) = \text{softmax}(E + M) V
+$$
 Since $\exp(-\infty) = 0$, future positions receive exactly zero attention weight, preventing data leakage.
 
 ##### Multi-Head Self-Attention (MHA)
 Rather than performing a single attention function over $d$-dimensional queries, keys, and values, MHA projects them $H$ times with different, learned linear projections to $d_k, d_k, d_v$ dimensions respectively:
-$$\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \dots, \text{head}_H) W^O$$
-$$\text{where } \text{head}_h = \text{Attention}(Q W_Q^{(h)}, K W_K^{(h)}, V W_V^{(h)})$$
-where the projections are parameter matrices $W_Q^{(h)} \in \mathbb{R}^{d\_{\text{model}} \times d_k}$, $W_K^{(h)} \in \mathbb{R}^{d\_{\text{model}} \times d_k}$, $W_V^{(h)} \in \mathbb{R}^{d\_{\text{model}} \times d_v}$, and $W^O \in \mathbb{R}^{H d_v \times d\_{\text{model}}}$.
+$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \dots, \text{head}_H) W^O
+$$
+$$
+\text{where } \text{head}_h = \text{Attention}(Q W_Q^{(h)}, K W_K^{(h)}, V W_V^{(h)})
+$$
+where the projections are parameter matrices $W_Q^{(h)} \in \mathbb{R}^{d_{\text{model}} \times d_k}$, $W_K^{(h)} \in \mathbb{R}^{d_{\text{model}} \times d_k}$, $W_V^{(h)} \in \mathbb{R}^{d_{\text{model}} \times d_v}$, and $W^O \in \mathbb{R}^{H d_v \times d_{\text{model}}}$.
 
 ---
 
@@ -200,7 +227,9 @@ class TransformerBlock(nn.Module):
 
 ##### Permutation Equivariance Diagram
 *   Without positional information, a self-attention block behaves as a permutation equivariant operator. If the input matrix $X$ is permuted by a permutation matrix $P$, the output is permuted identically:
-$$\text{Attention}(PX, PX, PX) = P \cdot \text{Attention}(X, X, X)$$
+$$
+\text{Attention}(PX, PX, PX) = P \cdot \text{Attention}(X, X, X)
+$$
 This demonstrates that self-attention operates over sets rather than ordered vectors.
 
 ##### Receptive Field Expansion Comparison
@@ -219,7 +248,7 @@ This demonstrates that self-attention operates over sets rather than ordered vec
 *   **Data Fields & Encoding:**
     *   **X-axis:** Source sequence tokens (e.g., input English sentence).
     *   **Y-axis:** Target sequence tokens (e.g., output French/Italian sentence).
-    *   **Cell Intensity (Opacity):** Magnitude of the scalar attention weight $a\_{ti} \in [0, 1]$.
+    *   **Cell Intensity (Opacity):** Magnitude of the scalar attention weight $a_{ti} \in [0, 1]$.
     *   **Line Color:** Color-coded by active Attention Head index $h \in \{1, \dots, H\}$, demonstrating how different heads specialize in different linguistic relations (e.g., Head 1 tracks verb-noun dependencies, Head 2 tracks noun-adjective order).
 *   **Interactive Controls:**
     *   **Head Toggle Checkbox:** Filters the bipartite connector lines to display only selected heads, illustrating head specialization.

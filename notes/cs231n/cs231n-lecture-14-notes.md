@@ -6,13 +6,13 @@
 *   **Zero-Sum Minimax Game:** GANs optimize a competitive zero-sum objective between a generator $G$ and discriminator $D$. This creates highly unstable, non-stationary dynamics that lack an interpretable loss curve and often collapse into isolated modes.
 *   **Non-Saturating Gradient Hack:** The naive minimax objective suffers from flat gradients early in training when the generator is weak. Resolving this requires a heuristic shift to minimizing $-\log D(G(z))$ to provide strong early gradient signals.
 *   **Rectified Flow & ODE Trajectories:** Rectified flow simplifies diffusion by defining straight-line ODE trajectories. It linearly interpolates between clean data $X_0$ and Gaussian noise $Z$, training the model to predict the constant velocity vector $V = Z - X_0$.
-*   **Classifier-Free Guidance (CFG):** CFG control sample alignment by linearly combining conditional and unconditional velocity predictions ($v\_{CFG} = (1+w)v_y - w v\_{\emptyset}$). It requires evaluating the model twice per step and is trained by dropping the condition 50% of the time.
+*   **Classifier-Free Guidance (CFG):** CFG control sample alignment by linearly combining conditional and unconditional velocity predictions ($v_{CFG} = (1+w)v_y - w v_{\emptyset}$). It requires evaluating the model twice per step and is trained by dropping the condition 50% of the time.
 *   **Hybrid Latent Diffusion Pipelines:** State-of-the-art architectures (e.g., Stable Diffusion, Flux, Veo) operate in the low-dimensional latent space of a frozen, pretrained VAE. To prevent the typical blurriness of standard VAEs, the latent autoencoder is regularized using a hybrid GAN discriminator to guarantee crisp reconstructions.
 
 ---
 
 #### 1. Core Concept & Learning Objectives
-*   **Objective:** To master the theoretical and practical transitions of generative modeling from implicit, competitive density estimators (GANs) to iterative, score-matching denoising processes (Rectified Flow and Diffusion Models). The lecture focuses on how these different paradigms address the fundamental challenge of mapping a simple, tractable noise prior $P_z$ to a complex, high-dimensional empirical data manifold $P\_{data}$.
+*   **Objective:** To master the theoretical and practical transitions of generative modeling from implicit, competitive density estimators (GANs) to iterative, score-matching denoising processes (Rectified Flow and Diffusion Models). The lecture focuses on how these different paradigms address the fundamental challenge of mapping a simple, tractable noise prior $P_z$ to a complex, high-dimensional empirical data manifold $P_{data}$.
 *   **Lecture Category:** (a) Mathematical Foundations and (b) Architecture Design (specifically exploring minimax game dynamics, stochastic differential equations, linear flow interpolations, and hybrid latent space pipelines).
 *   **Builds on:** Lecture 13 (Generative Models 1), extending from explicit density autoregressive models and Variational Autoencoders (VAEs) to implicit sampling frameworks (GANs) and iterative continuous probability flow ODEs.
 
@@ -22,52 +22,81 @@
 
 ##### A. Generative Adversarial Networks (GANs) Minimax Objective
 The objective is formulated as a zero-sum game with value function $V(G, D)$:
-$$\min\_{G} \max\_{D} V(G, D) = \mathbb{E}\_{x \sim p\_{data}}\left[\log D(x)\right] + \mathbb{E}\_{z \sim p\_{z}}\left[\log (1 - D(G(z)))\right]$$
+$$
+\min_{G} \max_{D} V(G, D) = \mathbb{E}_{x \sim p_{data}}\left[\log D(x)\right] + \mathbb{E}_{z \sim p_{z}}\left[\log (1 - D(G(z)))\right]
+$$
 *   **Discriminator Objective ($D$):** Maximizes the probability of assigning the correct label ($1$ for real, $0$ for generated).
 *   **Generator Objective ($G$):** Minimizes the probability that $D$ identifies its generated samples as fake.
 
 ##### B. Analytical Proof of the Optimal Discriminator
 For a fixed generator $G$ inducing a distribution $p_G$, the objective can be written as an integral over the data space $x$:
-$$V(G, D) = \int\_{x} \left( p\_{data}(x) \log D(x) + p_G(x) \log (1 - D(x)) \right) dx$$
+$$
+V(G, D) = \int_{x} \left( p_{data}(x) \log D(x) + p_G(x) \log (1 - D(x)) \right) dx
+$$
 To find the optimal discriminator $D^*_G(x)$, take the functional derivative of the integrand with respect to $D(x)$ and set it to zero:
-$$\frac{\partial}{\partial D(x)} \left[ p\_{data}(x) \log D(x) + p_G(x) \log (1 - D(x)) \right] = 0$$
-$$\frac{p\_{data}(x)}{D(x)} - \frac{p_G(x)}{1 - D(x)} = 0$$
-$$p\_{data}(x)(1 - D(x)) = p_G(x) D(x)$$
-$$p\_{data}(x) - p\_{data}(x) D(x) = p_G(x) D(x)$$
-$$D^*_G(x) = \frac{p\_{data}(x)}{p\_{data}(x) + p_G(x)}$$
-Substituting $D^*_G(x)$ back into the minimax equation demonstrates that when $D$ is optimal, the generator minimizes the Jensen-Shannon Divergence ($JSD$) between $p_G$ and $p\_{data}$. The global minimum occurs if and only if $p_G = p\_{data}$, yielding $D^*_G(x) = 0.5$.
+$$
+\frac{\partial}{\partial D(x)} \left[ p_{data}(x) \log D(x) + p_G(x) \log (1 - D(x)) \right] = 0
+$$
+$$
+\frac{p_{data}(x)}{D(x)} - \frac{p_G(x)}{1 - D(x)} = 0
+$$
+$$
+p_{data}(x)(1 - D(x)) = p_G(x) D(x)
+$$
+$$
+p_{data}(x) - p_{data}(x) D(x) = p_G(x) D(x)
+$$
+$$
+D^*_G(x) = \frac{p_{data}(x)}{p_{data}(x) + p_G(x)}
+$$
+Substituting $D^*_G(x)$ back into the minimax equation demonstrates that when $D$ is optimal, the generator minimizes the Jensen-Shannon Divergence ($JSD$) between $p_G$ and $p_{data}$. The global minimum occurs if and only if $p_G = p_{data}$, yielding $D^*_G(x) = 0.5$.
 
 ##### C. Rectified Flow Linear Interpolation & Velocity Fields
-Rectified flow defines a continuous probability path by constructing straight-line trajectories between data $X_0 \sim P\_{data}$ and noise $Z \sim \mathcal{N}(0, I)$.
+Rectified flow defines a continuous probability path by constructing straight-line trajectories between data $X_0 \sim P_{data}$ and noise $Z \sim \mathcal{N}(0, I)$.
 *   **Linear Interpolation (Flow Path):**
-    $$X_t = (1 - t) X_0 + t Z, \quad t \in [0, 1]$$
+    $$
+    X_t = (1 - t) X_0 + t Z, \quad t \in [0, 1]
+    $$
 *   **Constant Reconstructive Velocity Vector:**
-    $$V\_{GT} = \frac{dX_t}{dt} = Z - X_0$$
+    $$
+    V_{GT} = \frac{dX_t}{dt} = Z - X_0
+    $$
 *   **Velocity Vector Field Loss:**
-    $$L(\theta) = \mathbb{E}\_{X_0 \sim P\_{data}, Z \sim \mathcal{N}(0, I), t \sim \mathcal{U}(0, 1)} \left[ \| v_\theta(X_t, t) - (Z - X_0) \|^2 \right]$$
+    $$
+    L(\theta) = \mathbb{E}_{X_0 \sim P_{data}, Z \sim \mathcal{N}(0, I), t \sim \mathcal{U}(0, 1)} \left[ \| v_\theta(X_t, t) - (Z - X_0) \|^2 \right]
+    $$
     where $v_\theta$ is a neural network parameterized by $\theta$ that inputs the noisy sample $X_t$ and the scalar time $t$ to predict the velocity field.
 
 ##### D. Theoretical Target of the Velocity Predictor
 Because multiple straight-line paths can intersect at an intermediate point $X_t$, the optimal network prediction $v^*(x, t)$ must marginalize over all possible trajectories:
-$$v^*(x, t) = \mathbb{E}[Z - X_0 \mid X_t = x]$$
+$$
+v^*(x, t) = \mathbb{E}[Z - X_0 \mid X_t = x]
+$$
 This represents the conditional expectation of the velocity vector given the intermediate state $X_t = x$.
 
 ##### E. Classifier-Free Guidance (CFG) Vector Formulation
-During training, the conditioning signal $y$ (e.g., text embeddings) is randomly set to a null token $\emptyset$ with probability $p\_{drop} \approx 0.5$. At inference, the guidance vector $v\_{CFG}$ is computed as a linear extrapolation:
-$$v\_{CFG} = (1 + w) v_\theta(X_t, t, y) - w v_\theta(X_t, t, \emptyset)$$
+During training, the conditioning signal $y$ (e.g., text embeddings) is randomly set to a null token $\emptyset$ with probability $p_{drop} \approx 0.5$. At inference, the guidance vector $v_{CFG}$ is computed as a linear extrapolation:
+$$
+v_{CFG} = (1 + w) v_\theta(X_t, t, y) - w v_\theta(X_t, t, \emptyset)
+$$
 where $w \ge 0$ is the guidance scale.
 *   Setting $w = 0$ yields standard conditional generation.
 *   Setting $w > 0$ amplifies the conditioning direction relative to the unconditional prior.
 
 ##### F. Generalization of Diffusion Path Formulations
 Different continuous-time diffusion formulations represent variations of the linear path parameters:
-$$X_t = a_t X_0 + b_t Z$$
+$$
+X_t = a_t X_0 + b_t Z
+$$
 *   **Rectified Flow:** $a_t = 1 - t$ and $b_t = t$.
 *   **Variance Preserving (VP):** Constrains the path to preserve unit variance under independent assumptions:
-    $$a_t^2 + b_t^2 = 1 \implies X_t = \sqrt{1 - \sigma_t^2} X_0 + \sigma_t Z$$
+    $$
+    a_t^2 + b_t^2 = 1 \implies X_t = \sqrt{1 - \sigma_t^2} X_0 + \sigma_t Z
+    $$
 *   **Variance Exploding (VE):** Preserves the raw data scale while adding unbounded noise:
-    $$a_t = 1 \quad \text{and} \quad b_t = \sigma_t \implies X_t = X_0 + \sigma_t Z$$
-
+    $$
+    a_t = 1 \quad \text{and} \quad b_t = \sigma_t \implies X_t = X_0 + \sigma_t Z
+    $$
 ---
 
 #### 3. Architecture / Algorithm Walkthrough
@@ -115,7 +144,7 @@ Z ~ N(0, I)  ──┤                                                      │
 t ~ U(0, 1)  ──┘                                       (MSE Loss) <───┴──> V_GT = Z - X_0
 
 [Inference Loop]
-X_1 ~ N(0, I) ──> [ Model v_theta(X_1, t=1) ] ──> v_pred ──> X\_{t-dt} = X_t - dt * v_pred ──> X_0
+X_1 ~ N(0, I) ──> [ Model v_theta(X_1, t=1) ] ──> v_pred ──> X_{t-dt} = X_t - dt * v_pred ──> X_0
 ```
 
 ##### C. PyTorch Blueprint: Rectified Flow with Classifier-Free Guidance
@@ -259,7 +288,7 @@ X_0^{(2)} (Dog) ───/                     \─── Z_b (Noise)
 At these intersection points, the network cannot predict both paths simultaneously. The $L_2$ regression objective forces the model to predict the average of all intersecting paths at that location. This represents the expected velocity field pointing toward the average mean of the spatial modes.
 
 ##### C. Classifier-Free Guidance Vector Extrapolation
-If trained naively, conditional models often ignore the conditional prompt $y$ due to representation shortcuts. Classifier-Free Guidance amplifies the visual attributes by calculating both the conditional vector $v\_{cond}$ and the unconditional vector $v\_{uncond}$, then pushing the inference vector $v\_{CFG}$ past the conditional prediction:
+If trained naively, conditional models often ignore the conditional prompt $y$ due to representation shortcuts. Classifier-Free Guidance amplifies the visual attributes by calculating both the conditional vector $v_{cond}$ and the unconditional vector $v_{uncond}$, then pushing the inference vector $v_{CFG}$ past the conditional prediction:
 
 ```
                 Unconditional Vector (v_uncond)
@@ -316,8 +345,9 @@ We propose an interactive **Probability Flow ODE Vector Field Trajectory Simulat
 *   **Mode Collapse:** The generator discovers a small subset of safe spatial modes that easily fool the discriminator (e.g., generating only one type of car) and concentrates all probability mass there. This is diagnosed by monitoring sample diversity rather than the highly uninformative individual loss curves.
 *   **CFG Computational Cost:** Because CFG requires evaluating the model twice per step (once for the conditional vector $v(x_t, t, y)$ and once for the unconditional vector $v(x_t, t, \emptyset)$), it doubles the inference latency.
 *   **Intractable Backpropagation in VAEs:** Sampling $Z \sim q(Z \mid X)$ directly breaks backpropagation because sampling is a non-differentiable operation. This is resolved by using the **Reparameterization Trick**, which routes gradients through the deterministic parameters:
-    $$Z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
-
+    $$
+    Z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+    $$
 ##### B. Graduate-Level Reflection Questions
 1.  **Divergence Limits of the Minimax Game:** Prove mathematically why a perfectly optimal discriminator $D^*_G(x)$ causes the gradient of the generator's objective to vanish when optimizing the original minimax game $\log(1 - D(G(z)))$. Show how the non-saturating generator loss $-\log D(G(z))$ resolves this.
 2.  **Path Crossing in Rectified Flow:** Since the optimal velocity predictor in Rectified Flow learns to output the conditional expectation $\mathbb{E}[Z - X_0 \mid X_t]$ at intersecting path coordinates, explain why this leads to a "curving" trajectory at inference when using finite Euler steps. How do distillation algorithms address this to enable single-step generation?

@@ -22,38 +22,48 @@
 
 #### ក. ដំណើរការបន្ថែមសំឡេងរំខានទៅមុខ (The Forward Noising Process)
 ចាប់ផ្តើមពីទិន្នន័យរូបភាពស្អាត $x_0 \in \mathbb{R}^d$ យើងកំណត់ការផ្លាស់ប្តូរទៅមុខនៅជំហាន $t \in \{1, \dots, T\}$ ដោយការធ្វើមាត្រដ្ឋានជំហានមុន និងបូកបន្ថែមសំឡេងរំខានហ្គោស IID៖
-$$x_t = \sqrt{1 - \beta_t} x_{t-1} + \sqrt{\beta_t} \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, I)$$
+$$
+x_t = \sqrt{1 - \beta_t} x_{t-1} + \sqrt{\beta_t} \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, I)
+$$
 ដែល $\beta_t \in (0, 1)$ គឺជាកាលវិភាគវ៉ារ្យ៉ង់សំឡេងរំខានដែលបានកំណត់ទុកជាមុន (ជាទូទៅមានតម្លៃតូចបំផុត ឧទាហរណ៍៖ $10^{-4}$ ដល់ $10^{-2}$)។
 
 ##### មូលហេតុនៃការជ្រើសរើសមេគុណទាំងនេះ៖
 ពិចារណាកូវ៉ារ្យ៉ង់នៃ $x_t$ ក្រោមវិធានផ្លាស់ប្តូរនេះ។ ដោយសារសំឡេងរំខាន $\epsilon_t$ ឯករាជ្យពី $x_{t-1}$ កូវ៉ារ្យ៉ង់របស់ពួកវាអាចបូកបញ្ចូលគ្នាបាន៖
-$$\text{Cov}(x_t) = (1 - \beta_t) \text{Cov}(x_{t-1}) + \beta_t \text{Cov}(\epsilon_t) = (1 - \beta_t) \text{Cov}(x_{t-1}) + \beta_t I$$
-
+$$
+\text{Cov}(x_t) = (1 - \beta_t) \text{Cov}(x_{t-1}) + \beta_t \text{Cov}(\epsilon_t) = (1 - \beta_t) \text{Cov}(x_{t-1}) + \beta_t I
+$$
 នេះតំណាងឱ្យ **បន្សំប៉ោង (Convex Combination / Linear Interpolation)** រវាងកូវ៉ារ្យ៉ង់មុន និងម៉ាទ្រីសឯកតា $I$។ រូបមន្តនេះទប់ស្កាត់មិនឱ្យវ៉ារ្យ៉ង់នៃ Activation ផ្ទុះឡើងកំឡុងពេលដំណើរការផ្សាយទៅមុខ។ នៅពេល $t \to \infty$ កូវ៉ារ្យ៉ង់រួមចំណុះទៅកាន់ម៉ាទ្រីសឯកតា $I$ ដែលមានន័យថាបំណែងចែកនៃអថេរលាក់ចុងក្រោយ $x_T$ រួមចំណុះទៅកាន់បំណែងចែកប្រក្រតីស្តង់ដារ៖
-$$x_T \sim \mathcal{N}(0, I)$$
-
+$$
+x_T \sim \mathcal{N}(0, I)
+$$
 <div id="plotly-11-variance-schedule" class="plotly-chart" aria-label="Interactive Plotly chart: Variance stability of the noising schedule"></div>
 
 <p><em>រូបភាព៖ ស្ថិរភាពវ៉ារ្យ៉ង់នៃកាលវិភាគសំឡេងរំខាន — ការប្រៀបធៀបវ៉ារ្យ៉ង់នៃ $x_t$ ដែលមាន និងគ្មានការធ្វើមាត្រដ្ឋាន $\sqrt{1-\beta}$៖ បន្សំប៉ោងជួយរក្សាឱ្យវ៉ារ្យ៉ង់មានព្រំដែនកំណត់ច្បាស់លាស់ និងរួមចំណុះទៅកាន់ ១។</em></p>
 
 #### ខ. ការធ្វើ Marginalization ដោយផ្ទាល់ក្នុងទម្រង់បិទជិត (Closed-Form Direct Marginalization)
 ជំនួសឱ្យការចាប់យកគំរូ $t$ ជំហានបន្តបន្ទាប់គ្នាដើម្បីបង្កើតរូបភាពសំឡេងរំខាន $x_t$ យើងអាចសរសេរបំណែងចែកនៃ $x_t$ ដោយផ្ទាល់តាមលក្ខខណ្ឌនៃ $x_0$។ តាង $\alpha_t = 1 - \beta_t$ និងកំណត់ផលគុណបន្តបន្ទាប់នៃកត្តាមាត្រដ្ឋាន៖
-$$\bar{\alpha}_t = \prod_{s=1}^t \alpha_s$$
-
+$$
+\bar{\alpha}_t = \prod_{s=1}^t \alpha_s
+$$
 តាមរយៈការពន្លាតនិយមន័យច្រំដែលនៃ $x_t$ និងការប្រើប្រាស់លក្ខណៈសម្បត្តិដែលផលបូកនៃអថេរហ្គោសឯករាជ្យគឺជាអថេរហ្គោស យើងអាចសម្រួលសមីការមកត្រឹម៖
-$$x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \bar{\epsilon}, \quad \bar{\epsilon} \sim \mathcal{N}(0, I)$$
-
+$$
+x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \bar{\epsilon}, \quad \bar{\epsilon} \sim \mathcal{N}(0, I)
+$$
 រូបមន្តនេះអនុញ្ញាតឱ្យយើងសរសេរបំណែងចែកតាមលក្ខខណ្ឌ $q(x_t \mid x_0)$ ក្នុងទម្រង់បិទជិតបានភ្លាមៗ៖
-$$q(x_t \mid x_0) = \mathcal{N}\left(x_t; \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t)I\right)$$
-
+$$
+q(x_t \mid x_0) = \mathcal{N}\left(x_t; \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t)I\right)
+$$
 ដោយសារ $\bar{\alpha}_t \to 0$ នៅពេល $t \to \infty$ (ដោយសារផលគុណនៃចំនួនតូចជាង ១ ជាច្រើន) នោះ $\sqrt{\bar{\alpha}_t} \to 0$ និង $\sqrt{1 - \bar{\alpha}_t} \to 1$ ដែលធានាថា $q(x_T \mid x_0)$ រួមចំណុះយ៉ាងស្អាតទៅកាន់ $\mathcal{N}(0, I)$។
 
 #### គ. ដំណើរការផ្សាយបញ្ច្រាសដែលមានប៉ារ៉ាម៉ែត្រ (The Parameterized Reverse Process)
 ដោយសារដំណើរការផ្សាយបញ្ច្រាសពិត $q(x_{t-1} \mid x_t)$ មិនអាចគណនាបានដោយផ្ទាល់ដោយពុំស្គាល់បំណែងចែកទិន្នន័យទាំងមូល យើងធ្វើការប៉ាន់ស្មានវាដោយប្រើម៉ូដែលប៉ារ៉ាម៉ែត្រ $p_\theta$៖
-$$p_\theta(x_{0:T}) = p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} \mid x_t)$$
-
+$$
+p_\theta(x_{0:T}) = p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} \mid x_t)
+$$
 យើងកំណត់ប៉ារ៉ាម៉ែត្រជំហាននីមួយៗជាបំណែងចែកហ្គោស៖
-$$p_\theta(x_{t-1} \mid x_t) = \mathcal{N}\left(x_{t-1}; \mu_\theta(x_t, t), \sigma_t^2 I\right)$$
+$$
+p_\theta(x_{t-1} \mid x_t) = \mathcal{N}\left(x_{t-1}; \mu_\theta(x_t, t), \sigma_t^2 I\right)
+$$
 ដែល $\mu_\theta(x_t, t)$ ត្រូវបានតំណាងដោយបណ្តាញញាណជ្រៅ (ដូចជា U-Net ឬ Transformer) ដើម្បីទស្សន៍ទាយមធ្យមដោយផ្អែកលើធាតុចូលសំឡេងរំខាន $x_t$ និងជំហានពេលវេលា $t$ ហើយ $\sigma_t^2$ ត្រូវបានជ្រើសរើសជាកាលវិភាគវ៉ារ្យ៉ង់ថេរ។
 
 ---
@@ -61,32 +71,42 @@ $$p_\theta(x_{t-1} \mid x_t) = \mathcal{N}\left(x_{t-1}; \mu_\theta(x_t, t), \si
 ### ៤. ការបង្កើនប្រសិទ្ធភាពជាជំហានៗ & ការទាញរក Loss បង្វឹក (Optimization & Training Loss)
 
 ដើម្បីបង្វឹកប៉ារ៉ាម៉ែត្រ $\theta$ យើងចង់ធ្វើអតិបរមាកម្មលើលោការីតលទ្ធភាពនៃទិន្នន័យដែលសង្កេតឃើញ $\log p_\theta(x_0)$។ ដោយប្រើប្រាស់សភាពសំឡេងរំខានកម្រិតមធ្យម $x_{1:T}$ ជាអថេរលាក់កំបាំង យើងកសាងព្រំដែនក្រោមនៃភស្តុតាង (ELBO)៖
-$$\log p_\theta(x_0) \ge \mathbb{E}_{q(x_{1:T} \mid x_0)} \left[ \log \frac{p_\theta(x_{0:T})}{q(x_{1:T} \mid x_0)} \right]$$
-
+$$
+\log p_\theta(x_0) \ge \mathbb{E}_{q(x_{1:T} \mid x_0)} \left[ \log \frac{p_\theta(x_{0:T})}{q(x_{1:T} \mid x_0)} \right]
+$$
 #### ការបំបែក ELBO
 តាមរយៈការជំនួសរូបមន្តបំបែកនៃ $p_\theta$ និង $q$ រួចអនុវត្តវិធានច្រវាក់នៃគម្លាត KL Divergence ជាបន្តបន្ទាប់ តួ KL នៃគន្លងរួមគ្នាត្រូវបានសម្រួលទៅជាផលបូកនៃតួ KL តាមជំហាននីមួយៗ៖
-$$\log p_\theta(x_0) \ge \mathbb{E}_q \left[ \log p_\theta(x_0 \mid x_1) \right] - \sum_{t=2}^T \mathbb{E}_{q(x_t \mid x_0)} \left[ D_{\text{KL}}\left(q(x_{t-1} \mid x_t, x_0) \parallel p_\theta(x_{t-1} \mid x_t)\right) \right] - D_{\text{KL}}\left(q(x_T \mid x_0) \parallel p(x_T)\right)$$
-
+$$
+\log p_\theta(x_0) \ge \mathbb{E}_q \left[ \log p_\theta(x_0 \mid x_1) \right] - \sum_{t=2}^T \mathbb{E}_{q(x_t \mid x_0)} \left[ D_{\text{KL}}\left(q(x_{t-1} \mid x_t, x_0) \parallel p_\theta(x_{t-1} \mid x_t)\right) \right] - D_{\text{KL}}\left(q(x_T \mid x_0) \parallel p(x_T)\right)
+$$
 - **ចំណុចយល់ដឹងគន្លឹះ**: ការកសាង $x_{t-1}$ ចេញពី $x_t$ ដោយផ្ទាល់គឺពិបាកខ្លាំងណាស់ ប្រសិនបើយើងមិនដឹងថារូបភាពស្អាតដើមជាអ្វី។ ប៉ុន្តែ ប្រសិនបើយើងបន្ថែមលក្ខខណ្ឌលើរូបភាពស្អាតដើម $x_0$ នោះបំណែងចែកក្រោយទៅមុខ $q(x_{t-1} \mid x_t, x_0)$ អាចត្រូវបានគណនាយ៉ាងងាយស្រួលតាមវិធានបាយេស។
 
 #### ការទាញរកបំណែងចែកក្រោយទៅមុខតាមបែបវិភាគ
 តាមវិធានបាយេស យើងពន្លាតបំណែងចែកក្រោយ៖
-$$q(x_{t-1} \mid x_t, x_0) = \frac{q(x_t \mid x_{t-1}, x_0) q(x_{t-1} \mid x_0)}{q(x_t \mid x_0)}$$
-
+$$
+q(x_{t-1} \mid x_t, x_0) = \frac{q(x_t \mid x_{t-1}, x_0) q(x_{t-1} \mid x_0)}{q(x_t \mid x_0)}
+$$
 ដោយសារ $x_{1:T}$ ជាច្រវាក់ម៉ាកូវ $q(x_t \mid x_{t-1}, x_0) = q(x_t \mid x_{t-1}) = \mathcal{N}(x_t; \sqrt{\alpha_t}x_{t-1}, \beta_t I)$។ ជំនួសអនុគមន៍ដង់ស៊ីតេហ្គោសចូល និងសម្រួលតួការ៉េ យើងទទួលបានថា $q(x_{t-1} \mid x_t, x_0)$ ក៏ជាបំណែងចែកហ្គោសផងដែរ៖
-$$q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\left(x_{t-1}; \tilde{\mu}_t(x_t, x_0), \tilde{\beta}_t I\right)$$
+$$
+q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\left(x_{t-1}; \tilde{\mu}_t(x_t, x_0), \tilde{\beta}_t I\right)
+$$
 ដែលមធ្យម $\tilde{\mu}_t(x_t, x_0)$ គឺជាបន្សំលីនេអ៊ែរនៃ $x_t$ និង $x_0$៖
-$$\tilde{\mu}_t(x_t, x_0) = \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0$$
+$$
+\tilde{\mu}_t(x_t, x_0) = \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0
+$$
 និងវ៉ារ្យ៉ង់ក្រោយ $\tilde{\beta}_t$ គឺ៖
-$$\tilde{\beta}_t = \frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t$$
-
+$$
+\tilde{\beta}_t = \frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t
+$$
 #### ការបង្កើតអនុគមន៍កំហុសផ្គូផ្គងមធ្យម (Mean-Matching Loss)
 យើងជ្រើសរើសវ៉ារ្យ៉ង់បញ្ច្រាសរបស់ម៉ូដែល $\sigma_t^2$ ឱ្យស្មើនឹង $\tilde{\beta}_t$។ ក្រោមជម្រើសនេះ គម្លាត KL Divergence រវាងបំណែងចែកហ្គោសទាំងពីរ $q(x_{t-1} \mid x_t, x_0)$ និង $p_\theta(x_{t-1} \mid x_t)$ សម្រួលមកត្រឹម **ចម្ងាយ $L_2$ ការ៉េនៃមធ្យមរបស់ពួកវា**៖
-$$D_{\text{KL}}\left(q(x_{t-1} \mid x_t, x_0) \parallel p_\theta(x_{t-1} \mid x_t)\right) = \frac{1}{2\tilde{\beta}_t} \| \mu_\theta(x_t, t) - \tilde{\mu}_t(x_t, x_0) \|^2$$
-
+$$
+D_{\text{KL}}\left(q(x_{t-1} \mid x_t, x_0) \parallel p_\theta(x_{t-1} \mid x_t)\right) = \frac{1}{2\tilde{\beta}_t} \| \mu_\theta(x_t, t) - \tilde{\mu}_t(x_t, x_0) \|^2
+$$
 ដូច្នេះ ការបង្វឹកម៉ូដែលឌីភ្យូសិនដួលរលំមកត្រឹមការដោះស្រាយបញ្ហា **Weighted Least-Squares Regression** ដ៏សាមញ្ញបំផុត៖
-$$\mathcal{L}_{t-1}(\theta) = \frac{1}{2\tilde{\beta}_t} \| \mu_\theta(x_t, t) - \tilde{\mu}_t(x_t, x_0) \|^2$$
-
+$$
+\mathcal{L}_{t-1}(\theta) = \frac{1}{2\tilde{\beta}_t} \| \mu_\theta(x_t, t) - \tilde{\mu}_t(x_t, x_0) \|^2
+$$
 <div id="plotly-11-diffusion-trajectory" class="plotly-chart" aria-label="Interactive Plotly chart: Forward noising paths and the reverse posterior mean alignment"></div>
 
 <p><em>រូបភាព៖ គន្លងបន្ថែមសំឡេងរំខានទៅមុខ និងការតម្រឹមមធ្យមបន្សុទ្ធសំឡេងរំខានបញ្ច្រាស។</em></p>
@@ -99,12 +119,16 @@ $$\mathcal{L}_{t-1}(\theta) = \frac{1}{2\tilde{\beta}_t} \| \mu_\theta(x_t, t) -
 
 #### សមីការ Forward SDE
 ប្រសិនបើយើងឱ្យទំហំជំហាន $\Delta t \to 0$ និងចំនួនជំហាន $T \to \infty$ ដំណើរការបន្ថែមសំឡេងរំខានទៅមុខអាចត្រូវបានសរសេរជាផ្លូវការជាសមីការ SDE៖
-$$dx_t = f(x, t) dt + g(t) dw_t$$
+$$
+dx_t = f(x, t) dt + g(t) dw_t
+$$
 ដែល $f(x, t)$ ជាតួបម្រែបម្រួលរសាត់កំណត់ (Deterministic Drift), $g(t)$ ជាមាត្រដ្ឋានសំឡេងរំខានបន្តបន្ទាប់, និង $dw_t$ ជាចលនាប្រោនស្តង់ដារ (Brownian Motion / Wiener Process)។
 
 #### សមីការ Reverse SDE (Anderson, 1985)
 ទ្រឹស្តីបទជាមូលដ្ឋានក្នុង Stochastic Calculus (Anderson, 1985) បានស្រាយបញ្ជាក់ថា ប្រសិនបើដំណើរការទៅមុខគោរពតាមសមីការ SDE ខាងលើ នោះដំណើរការបញ្ច្រាសពេលវេលា $y_\tau = x_{T-\tau}$ ក៏ជាដំណើរការឌីភ្យូសិនដែលផ្ទៀងផ្ទាត់សមីការ SDE ដូចខាងក្រោមផងដែរ៖
-$$dy_\tau = \left[ -f(y, T-\tau) + g^2(T-\tau) \nabla_y \log p_{T-\tau}(y) \right] d\tau + g(T-\tau) d\bar{w}_\tau$$
+$$
+dy_\tau = \left[ -f(y, T-\tau) + g^2(T-\tau) \nabla_y \log p_{T-\tau}(y) \right] d\tau + g(T-\tau) d\bar{w}_\tau
+$$
 ដែល $d\bar{w}_\tau$ តំណាងឱ្យចលនាប្រោនដែលហូរបញ្ច្រាសទិសពេលវេលា ហើយ $\nabla_y \log p_t(y)$ គឺជា **អនុគមន៍ពិន្ទុ (Score Function)** នៃបំណែងចែកនៅខណៈពេល $t$។
 
 ##### សេចក្តីសន្និដ្ឋានទ្រឹស្តី៖

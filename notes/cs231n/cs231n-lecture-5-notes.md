@@ -22,35 +22,52 @@
 
 ##### Spatial Dimension Propagation Formulas
 For an input tensor of spatial dimensions $W \times H$, a convolutional kernel of size $K_w \times K_h$, padding $P$, and stride $S$, the output spatial dimensions $W'$ and $H'$ are defined as:
-$$W' = \left\lfloor \frac{W - K_w + 2P}{S} \right\rfloor + 1$$
-$$H' = \left\lfloor \frac{H - K_h + 2P}{S} \right\rfloor + 1$$
-
+$$
+W' = \left\lfloor \frac{W - K_w + 2P}{S} \right\rfloor + 1
+$$
+$$
+H' = \left\lfloor \frac{H - K_h + 2P}{S} \right\rfloor + 1
+$$
 *   **Boundary Preserving Padding:** To ensure the output spatial dimensions match the input ($W' = W$) when stride $S=1$, the padding $P$ must be set as a function of an odd-sized kernel $K$:
-    $$P = \frac{K - 1}{2}$$
-
+    $$
+    P = \frac{K - 1}{2}
+    $$
 ##### 4D Convolution Tensor Formulation (Batched Mode)
-Given a batch of $N$ images with $C\_{in}$ channels, spatial dimensions $H \times W$:
-*   **Input Tensor $X$:** Shape $(N, C\_{in}, H, W)$.
-*   **Filter Bank Matrix $W$:** Shape $(C\_{out}, C\_{in}, K_h, K_w)$ where $C\_{out}$ is the number of filters.
-*   **Bias Vector $b$:** Shape $(C\_{out},)$.
-*   **Output Tensor $Y$:** Shape $(N, C\_{out}, H', W')$.
+Given a batch of $N$ images with $C_{in}$ channels, spatial dimensions $H \times W$:
+*   **Input Tensor $X$:** Shape $(N, C_{in}, H, W)$.
+*   **Filter Bank Matrix $W$:** Shape $(C_{out}, C_{in}, K_h, K_w)$ where $C_{out}$ is the number of filters.
+*   **Bias Vector $b$:** Shape $(C_{out},)$.
+*   **Output Tensor $Y$:** Shape $(N, C_{out}, H', W')$.
 
-For a single sample index $n \in [1, N]$, output channel $c \in [1, C\_{out}]$, and output coordinate $(i, j)$:
-$$Y[n, c, i, j] = b[c] + \sum\_{ch=1}^{C\_{in}} \sum\_{ki=1}^{K_h} \sum\_{kj=1}^{K_w} X[n, ch, i \cdot S + ki, j \cdot S + kj] \cdot W[c, ch, ki, kj]$$
-
+For a single sample index $n \in [1, N]$, output channel $c \in [1, C_{out}]$, and output coordinate $(i, j)$:
+$$
+Y[n, c, i, j] = b[c] + \sum_{ch=1}^{C_{in}} \sum_{ki=1}^{K_h} \sum_{kj=1}^{K_w} X[n, ch, i \cdot S + ki, j \cdot S + kj] \cdot W[c, ch, ki, kj]
+$$
 ##### Gradient Propagation through 2D Convolutions
 During backpropagation, we compute the gradient of the loss $L$ with respect to the filter weights $W$ and the input activations $X$. For simplicity of notation, let $S=1, P=0$:
-$$\frac{\partial L}{\partial W[c, ch, ki, kj]} = \sum\_{n=1}^{N} \sum\_{i=1}^{H'} \sum\_{j=1}^{W'} \frac{\partial L}{\partial Y[n, c, i, j]} \cdot X[n, ch, i + ki, j + kj]$$
-$$\frac{\partial L}{\partial X[n, ch, r, s]} = \sum\_{c=1}^{C\_{out}} \sum\_{ki=1}^{K_h} \sum\_{kj=1}^{K_w} \frac{\partial L}{\partial Y[n, c, r - ki, s - kj]} \cdot W[c, ch, ki, kj]$$
+$$
+\frac{\partial L}{\partial W[c, ch, ki, kj]} = \sum_{n=1}^{N} \sum_{i=1}^{H'} \sum_{j=1}^{W'} \frac{\partial L}{\partial Y[n, c, i, j]} \cdot X[n, ch, i + ki, j + kj]
+$$
+$$
+\frac{\partial L}{\partial X[n, ch, r, s]} = \sum_{c=1}^{C_{out}} \sum_{ki=1}^{K_h} \sum_{kj=1}^{K_w} \frac{\partial L}{\partial Y[n, c, r - ki, s - kj]} \cdot W[c, ch, ki, kj]
+$$
 *(This mathematically represents a transposed convolution of the upstream gradient with the filter weights).*
 
 ##### Translation Equivariance Operator Proof
 An operator $f$ is equivariant to a translation operator $g_t$ if:
-$$f(g_t(x)) = g_t(f(x))$$
+$$
+f(g_t(x)) = g_t(f(x))
+$$
 Let $g_t(x)[n, c, i, j] = x[n, c, i - t_y, j - t_x]$ be the translation operator. Applying convolution $f$:
-$$f(g_t(x))[n, c, i, j] = \sum\_{ch, ki, kj} g_t(x)[n, ch, i + ki, j + kj] \cdot W[c, ch, ki, kj]$$
-$$= \sum\_{ch, ki, kj} x[n, ch, (i - t_y) + ki, (j - t_x) + kj] \cdot W[c, ch, ki, kj]$$
-$$= f(x)[n, c, i - t_y, j - t_x] = g_t(f(x))[n, c, i, j]$$
+$$
+f(g_t(x))[n, c, i, j] = \sum_{ch, ki, kj} g_t(x)[n, ch, i + ki, j + kj] \cdot W[c, ch, ki, kj]
+$$
+$$
+= \sum_{ch, ki, kj} x[n, ch, (i - t_y) + ki, (j - t_x) + kj] \cdot W[c, ch, ki, kj]
+$$
+$$
+= f(x)[n, c, i - t_y, j - t_x] = g_t(f(x))[n, c, i, j]
+$$
 Thus proving translation equivariance analytically.
 
 ---
@@ -179,7 +196,7 @@ Feature Map (Y)  ───[ Translate by t ]───>  Shifted Map (g_t(Y))
 *   **Purpose:** To demonstrate how changing convolutional hyperparameters ($K, P, S$) transforms output activations and parameter counts in real-time.
 *   **Interactive Panel Components:**
     *   **Input Image Grid:** Upload custom $H \times W$ images.
-    *   **Hyperparameter Sliders:** Kernel Size ($K \in$), Padding ($P \in$), Stride ($S \in$), and Filter Count ($C\_{out} \in$).
+    *   **Hyperparameter Sliders:** Kernel Size ($K \in$), Padding ($P \in$), Stride ($S \in$), and Filter Count ($C_{out} \in$).
     *   **Dynamic Output Indicators:** Parameter Count, Total Floating Point Operations (FLOPs), and Receptive Field Size.
 *   **Interactive Graphics:**
     *   **3D Tensor Block:** Displays a 3D volumetric representation of the input $X$ and output $Y$.
@@ -211,7 +228,9 @@ To highlight the efficiency of weight sharing, consider a toy calculation of an 
 
 ##### Critical Architecture Gotchas
 *   **The Dimensionality Mismatch Trap:** Specifying invalid hyperparameters that do not divide evenly in the spatial sizing formula. For example, if $W=10, K=3, P=0, S=2$:
-    $$W' = \frac{10 - 3 + 2(0)}{2} + 1 = 4.5$$
+    $$
+    W' = \frac{10 - 3 + 2(0)}{2} + 1 = 4.5
+    $$
     In PyTorch, fractional dimension results will trigger a compile-time or runtime exception depending on the framework, demanding careful coordinate padding design.
 *   **The Zero-Padding Boundary Artifact:** Appending zeros to the boundaries of an image ($P > 0$) causes convolutional kernels to consistently receive inactive, artificial values at borders. Deeper networks can learn to over-rely on these border artifacts, resulting in spatial localization biases.
 *   **The Loss-of-Symmetry Pitfall:** Initializing multiple convolutional filters to identical or constant weights. Because the backpropagation gradient is uniform across symmetric nodes, the filters will compute the exact same gradient updates, failing to specialize and collapsing model capacity back to a single filter.

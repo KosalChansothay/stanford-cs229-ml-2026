@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BentoHero from '../components/bento/BentoHero.astro';
+import BentoFilterBar from '../components/bento/BentoFilterBar.astro';
+import BentoCourseCard from '../components/bento/BentoCourseCard.astro';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title="Frontier AI & Machine Learning Lecture Series — Spring 2026"
+  description="Master study notes for Stanford CS229 (Machine Learning), CS336 (Frontier LLMs), and CS231N (Computer Vision & 3D Perception). Expanding to MIT and top curricula."
+>
+  <!-- Hero Section -->
+  <BentoHero />
+
+  <!-- Course Tracks Section Header with Filter Pills -->
+  <BentoFilterBar />
+
+  <!-- Responsive Bento Grid matching reference UI -->
+  <section class="bento-courses-grid" id="courses-grid">
+    <!-- Course 1: CS229 -->
+    <BentoCourseCard
+      courseCode="CS229"
+      title="Machine Learning: Foundations & Paradigms"
+      instructors="Prof. Christopher Ré"
+      lectureCount={14}
+      thumbnailUrl={`${baseUrl}/img/courses/cs229.jpg`}
+      trackBadge="Flagship Track"
+      overviewUrl={`${baseUrl}/courses/cs229/`}
+      firstLectureUrl={`${baseUrl}/courses/cs229/lecture-1/`}
+      technicalChips={['MathJax Derivations', 'Supervised & Unsupervised']}
+    />
+
+    <!-- Course 2: CS336 -->
+    <BentoCourseCard
+      courseCode="CS336"
+      title="Language Modeling from Scratch"
+      instructors="Prof. Percy Liang"
+      lectureCount={18}
+      thumbnailUrl={`${baseUrl}/img/courses/cs336.jpg`}
+      trackBadge="Frontier LLMs"
+      overviewUrl={`${baseUrl}/courses/cs336/`}
+      firstLectureUrl={`${baseUrl}/courses/cs336/lecture-1/`}
+      technicalChips={['FlashAttention & RoPE', 'ZeRO Distributed Training']}
+    />
+
+    <!-- Course 3: CS231N -->
+    <BentoCourseCard
+      courseCode="CS231N"
+      title="Computer Vision & 3D Perception"
+      instructors="Prof. Fei-Fei Li"
+      lectureCount={18}
+      thumbnailUrl={`${baseUrl}/img/courses/cs231n.jpg`}
+      trackBadge="3D Vision & NeRF"
+      overviewUrl={`${baseUrl}/courses/cs231n/`}
+      firstLectureUrl={`${baseUrl}/courses/cs231n/lecture-1/`}
+      technicalChips={['Vision Transformers', 'NeRF & 3D Splatting']}
+    />
+  </section>
+</BaseLayout>
+
+<style>
+  .bento-courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.75rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 1200px) {
+    .bento-courses-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .bento-courses-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+  }
+</style>

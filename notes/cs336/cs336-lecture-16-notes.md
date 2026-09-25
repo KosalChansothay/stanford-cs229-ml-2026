@@ -17,29 +17,32 @@
 ### GRPO Advantage Estimation
 For a prompt $x$, GRPO draws a group of $G$ output completions $[o_1, o_2, \dots, o_G]$ from the policy $\pi_\theta$. The advantage $A_i$ for each rollout $o_i$ is computed as:
 
-$$A_i = \frac{r(o_i) - \mu}{\sigma + \epsilon}$$
-
+$$
+A_i = \frac{r(o_i) - \mu}{\sigma + \epsilon}
+$$
 Where:
-- $\mu = \frac{1}{G} \sum\_{g=1}^G r(o_g)$
-- $\sigma = \sqrt{\frac{1}{G} \sum\_{g=1}^G (r(o_g) - \mu)^2}$
+- $\mu = \frac{1}{G} \sum_{g=1}^G r(o_g)$
+- $\sigma = \sqrt{\frac{1}{G} \sum_{g=1}^G (r(o_g) - \mu)^2}$
 - $\epsilon$: A tiny stabilizer (typically $10^{-4}$) to prevent division by zero.
 
 ### GRPO Clipped Surrogate Loss
 The complete GRPO objective optimizes the clipped surrogate reward with token-wise KL regularization:
 
-$$\mathcal{L}\_{\text{GRPO}}(\theta) = \frac{1}{G} \sum\_{g=1}^G \sum\_{t=1}^{T_g} \left( \min \left( \rho_t(\theta) A_g, \text{clip}(\rho_t(\theta), 1-\epsilon, 1+\epsilon) A_g \right) - \beta \mathbb{D}\_{\text{KL}}(\pi_\theta \| \pi\_{\text{ref}}) \right)$$
-
+$$
+\mathcal{L}_{\text{GRPO}}(\theta) = \frac{1}{G} \sum_{g=1}^G \sum_{t=1}^{T_g} \left( \min \left( \rho_t(\theta) A_g, \text{clip}(\rho_t(\theta), 1-\epsilon, 1+\epsilon) A_g \right) - \beta \mathbb{D}_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}}) \right)
+$$
 Where the probability ratio is defined token-wise as:
 
-$$\rho_t(\theta) = \frac{\pi_\theta(o\_{g, t} | x, o\_{g, <t})}{\pi\_{\theta\_{\text{old}}}(o\_{g, t} | x, o\_{g, <t})}$$
-
+$$
+\rho_t(\theta) = \frac{\pi_\theta(o_{g, t} | x, o_{g, <t})}{\pi_{\theta_{\text{old}}}(o_{g, t} | x, o_{g, <t})}
+$$
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### GRPO Step Execution Workflow
 1. Sample prompt $x$ and generate $G$ parallel completions via temperature sampling: $o_1, \dots, o_G \sim \pi_\theta$.
 2. Pass each completion to the verifiable environment (compiler/calculator) to compute rewards $r(o_1), \dots, r(o_G)$.
 3. Compute group mean $\mu$ and standard deviation $\sigma$, and z-score the advantages $A_i$.
-4. Evaluate forward log-likelihoods for both $\pi_\theta$ and reference model $\pi\_{\text{ref}}$.
+4. Evaluate forward log-likelihoods for both $\pi_\theta$ and reference model $\pi_{\text{ref}}$.
 5. Compute the clipped GRPO loss and take gradient steps.
 
 ### PyTorch/Pythonic Blueprint (Educational GRPO Step)
@@ -86,7 +89,7 @@ def grpo_loss_step(policy, ref_policy, prompt_ids, rollouts_list, rewards_list, 
 
 <p><em>Figure: Test-Time Compute Scaling — Sampling multiple rollouts and voting/verifying unlocks substantial accuracy gains on reasoning benchmarks.</em></p>
 
-- **Format Rewards**: Under GRPO, training stability requires a composite reward function: $R = R\_{\text{accuracy}} + R\_{\text{format}}$. Format rewards penalize the policy if its chain-of-thought does not properly start with `<think>` and end with `</think>` tags.
+- **Format Rewards**: Under GRPO, training stability requires a composite reward function: $R = R_{\text{accuracy}} + R_{\text{format}}$. Format rewards penalize the policy if its chain-of-thought does not properly start with `<think>` and end with `</think>` tags.
 
 ## 6. Systems Warnings, Pitfalls, & Reflection Questions
 

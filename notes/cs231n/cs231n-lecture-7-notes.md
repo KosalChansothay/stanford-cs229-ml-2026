@@ -3,8 +3,8 @@
 ### CS231N Lecture 7: Recurrent Neural Networks
 
 #### 0. Quick-Recall Summary
-*   **Sequential Recurrence Paradigm:** Sequence modeling resolves variable-length input/output constraints by maintaining a dynamic hidden state vector $h_t = f_W(h\_{t-1}, x_t)$ utilizing parameter sharing (W) across all temporal ticks.
-*   **The BPTT Bottleneck:** Backpropagation Through Time (BPTT) unrolls the computational graph over the sequence length, requiring repeated multiplication of the transition matrix $W\_{hh}$, which triggers exponential vanishing or exploding gradients.
+*   **Sequential Recurrence Paradigm:** Sequence modeling resolves variable-length input/output constraints by maintaining a dynamic hidden state vector $h_t = f_W(h_{t-1}, x_t)$ utilizing parameter sharing (W) across all temporal ticks.
+*   **The BPTT Bottleneck:** Backpropagation Through Time (BPTT) unrolls the computational graph over the sequence length, requiring repeated multiplication of the transition matrix $W_{hh}$, which triggers exponential vanishing or exploding gradients.
 *   **Gradient Cliff Mitigation:** Exploding gradients are solved via **gradient clipping** (clipping the norm above a threshold), while vanishing gradients are addressed by the **LSTM** architecture, which establishes an additive, linear cell-state "highway".
 *   **Truncated BPTT:** To avoid massive GPU memory footprints ($O(T)$ activation caching) over long sequences, training is chunked into fixed temporal windows where gradients are zeroed at boundaries, but hidden states are forwarded.
 *   **Multimodal Sequence Conditioning:** Tasks like image captioning inject high-level visual features (CNN feature map outputs) directly into the RNN hidden state initialization $h_0 = f_W(v)$, bypassing the raw pixel representation.
@@ -21,39 +21,51 @@
 #### 2. Mathematical Foundations
 
 ##### Recurrence and Output Formalisms (Vanilla RNN)
-At each temporal step $t$, the hidden state vector $h_t \in \mathbb{R}^H$ is updated using the previous hidden state $h\_{t-1} \in \mathbb{R}^H$ and the current input $x_t \in \mathbb{R}^D$:
-$$h_t = \tanh(W\_{hh} h\_{t-1} + W\_{xh} x_t + b_h)$$
-where $W\_{hh} \in \mathbb{R}^{H \times H}$, $W\_{xh} \in \mathbb{R}^{H \times D}$, and $b_h \in \mathbb{R}^H$ are shared across all steps.
+At each temporal step $t$, the hidden state vector $h_t \in \mathbb{R}^H$ is updated using the previous hidden state $h_{t-1} \in \mathbb{R}^H$ and the current input $x_t \in \mathbb{R}^D$:
+$$
+h_t = \tanh(W_{hh} h_{t-1} + W_{xh} x_t + b_h)
+$$
+where $W_{hh} \in \mathbb{R}^{H \times H}$, $W_{xh} \in \mathbb{R}^{H \times D}$, and $b_h \in \mathbb{R}^H$ are shared across all steps.
 The network predicts an output vector $y_t \in \mathbb{R}^C$ at step $t$ via:
-$$y_t = W\_{hy} h_t + b_y$$
-where $W\_{hy} \in \mathbb{R}^{C \times H}$ and $b_y \in \mathbb{R}^C$.
+$$
+y_t = W_{hy} h_t + b_y
+$$
+where $W_{hy} \in \mathbb{R}^{C \times H}$ and $b_y \in \mathbb{R}^C$.
 
 ##### The Mathematical Proof of Vanishing/Exploding Gradients
 Consider a vanilla RNN unrolled for $T$ steps. Let a loss term $L$ be computed at step $T$ (e.g. $L = \mathcal{L}(y_T, \hat{y})$).
 To calculate the gradient of the loss with respect to the hidden state at an early step $t$, we apply the calculus chain rule:
-$$\frac{\partial L}{\partial h_t} = \frac{\partial L}{\partial h_T} \frac{\partial h_T}{\partial h_t} = \frac{\partial L}{\partial h_T} \prod\_{k=t+1}^{T} \frac{\partial h_k}{\partial h\_{k-1}}$$
+$$
+\frac{\partial L}{\partial h_t} = \frac{\partial L}{\partial h_T} \frac{\partial h_T}{\partial h_t} = \frac{\partial L}{\partial h_T} \prod_{k=t+1}^{T} \frac{\partial h_k}{\partial h_{k-1}}
+$$
 The local Jacobian matrix mapping hidden state transitions is:
-$$\frac{\partial h_k}{\partial h\_{k-1}} = \text{diag}\left(1 - \tanh^2(W\_{hh} h\_{k-1} + W\_{xh} x_k + b_h)\right) W\_{hh}^T$$
+$$
+\frac{\partial h_k}{\partial h_{k-1}} = \text{diag}\left(1 - \tanh^2(W_{hh} h_{k-1} + W_{xh} x_k + b_h)\right) W_{hh}^T
+$$
 Since the final gradient contains a product of these Jacobians:
-$$\frac{\partial h_T}{\partial h_t} = \prod\_{k=t+1}^{T} \text{diag}\left(1 - \tanh^2(\cdot)\right) W\_{hh}^T$$
-*   **Exploding Gradients:** If the largest singular value (spectral radius) of the shared weight matrix $W\_{hh}$ is greater than $1$ ($\rho(W\_{hh}) > 1$), then as the temporal distance $(T - t)$ grows, the repeated matrix product $\left(W\_{hh}^T\right)^{T-t}$ scales exponentially, driving the gradient norm toward infinity.
-*   **Vanishing Gradients:** If $\rho(W\_{hh}) < 1$, or because the derivative of the hyperbolic tangent is bounded by $\frac{d\tanh(z)}{dz} = 1 - \tanh^2(z) \in (0, 1]$ (which is almost always strictly less than 1 in active units), the repeated product of fractional scalar factors drives the gradient norm exponentially to $0$, blocking long-range temporal dependencies.
+$$
+\frac{\partial h_T}{\partial h_t} = \prod_{k=t+1}^{T} \text{diag}\left(1 - \tanh^2(\cdot)\right) W_{hh}^T
+$$
+*   **Exploding Gradients:** If the largest singular value (spectral radius) of the shared weight matrix $W_{hh}$ is greater than $1$ ($\rho(W_{hh}) > 1$), then as the temporal distance $(T - t)$ grows, the repeated matrix product $\left(W_{hh}^T\right)^{T-t}$ scales exponentially, driving the gradient norm toward infinity.
+*   **Vanishing Gradients:** If $\rho(W_{hh}) < 1$, or because the derivative of the hyperbolic tangent is bounded by $\frac{d\tanh(z)}{dz} = 1 - \tanh^2(z) \in (0, 1]$ (which is almost always strictly less than 1 in active units), the repeated product of fractional scalar factors drives the gradient norm exponentially to $0$, blocking long-range temporal dependencies.
 
 ##### Gradient Norm Clipping Heuristic
 To prevent numerical instability (NaNs) caused by exploding gradients, the gradient vector $g = \frac{\partial L}{\partial W}$ is scaled if its $L_2$ norm exceeds a threshold:
-$$\hat{g} = \begin{cases} g & \text{if } \|g\|_2 \le \tau \ \frac{\text{threshold}}{\|g\|_2} g & \text{if } \|g\|_2 > \tau \end{cases}$$
+$$
+\hat{g} = \begin{cases} g & \text{if } \|g\|_2 \le \tau \ \frac{\text{threshold}}{\|g\|_2} g & \text{if } \|g\|_2 > \tau \end{cases}
+$$
 where $\tau$ is a hyperparameter representing the maximum allowed gradient norm.
 
 ##### Gated Recurrent Formulations: Long Short-Term Memory (LSTM)
 To resolve the vanishing gradient problem, the LSTM introduces a cell state vector $c_t \in \mathbb{R}^H$ acting as an additive memory highway.
-At step $t$, the LSTM projects the concatenated vector $[h\_{t-1}, x_t]$ to compute four gate vectors $i, f, o, g \in \mathbb{R}^H$:
+At step $t$, the LSTM projects the concatenated vector $[h_{t-1}, x_t]$ to compute four gate vectors $i, f, o, g \in \mathbb{R}^H$:
 $$\begin{aligned}
-\begin{pmatrix} i \\ f \\ o \\ g \end{pmatrix} &= \begin{pmatrix} \sigma \\ \sigma \\ \sigma \\ \tanh \end{pmatrix} \left( W \begin{pmatrix} h\_{t-1} \\ x_t \end{pmatrix} + b \right) \
-c_t &= f \odot c\_{t-1} + i \odot g \
+\begin{pmatrix} i \\ f \\ o \\ g \end{pmatrix} &= \begin{pmatrix} \sigma \\ \sigma \\ \sigma \\ \tanh \end{pmatrix} \left( W \begin{pmatrix} h_{t-1} \\ x_t \end{pmatrix} + b \right) \
+c_t &= f \odot c_{t-1} + i \odot g \
 h_t &= o \odot \tanh(c_t)
 \end{aligned}$$
 where:
-*   $f \in^H$ is the **forget gate**, specifying how much of the old memory $c\_{t-1}$ to retain.
+*   $f \in^H$ is the **forget gate**, specifying how much of the old memory $c_{t-1}$ to retain.
 *   $i \in^H$ is the **input gate**, controlling how much new information to write to memory.
 *   $g \in [-1, 1]^H$ is the **gate gate** (candidate cell state), representing the new memory update.
 *   $o \in^H$ is the **output gate**, determining what parts of the cell state $c_t$ are exposed to the hidden state $h_t$.
@@ -93,7 +105,7 @@ import torch.nn as nn
 
 class CustomRNNCell(nn.Module):
     """
-    Vanilla RNN cell executing: h_t = tanh(W_hh * h\_{t-1} + W_xh * x_t + b_h)
+    Vanilla RNN cell executing: h_t = tanh(W_hh * h_{t-1} + W_xh * x_t + b_h)
     """
     def __init__(self, input_dim: int, hidden_dim: int):
         super(CustomRNNCell, self).__init__()
@@ -173,7 +185,7 @@ Inputs:    x_1          x_2          x_3
 
 ##### Failure Modes & Biases
 *   **The Co-occurrence/Visual Bias Trap:** Recurrent models trained on image captioning datasets often hallucinate objects based on statistical co-occurrences rather than grounding decisions on raw image pixels. For example, when shown a person holding an object near their face, the model frequently captions it as "a person speaking on a phone", or seeing a hand near a round object outputs "throwing a ball" even if the ball is moving into a glove.
-*   **Temporal Context Decoupling:** In vanilla RNNs, early inputs are systematically overwritten by later tokens due to the continuous squashing effect of the $W\_{hh}$ and $\tanh$ updates, making the model completely blind to long context.
+*   **Temporal Context Decoupling:** In vanilla RNNs, early inputs are systematically overwritten by later tokens due to the continuous squashing effect of the $W_{hh}$ and $\tanh$ updates, making the model completely blind to long context.
 
 ---
 
@@ -199,17 +211,17 @@ To represent the inner workings of an LSTM's gates, we propose an interactive **
 #### 6. Empirical Design Heuristics & Benchmark Results
 *   **Defaults for Hidden State Initialization:** Standard practice is to initialize the initial hidden state $h_0$ (and $c_0$ in LSTMs) to all zeros. However, learning $h_0$ as a trainable parameter often yields marginal convergence boosts on highly structured sequences.
 *   **Truncated BPTT Step Size:** When training on long sequences (e.g., book chapters, audio waveforms), the truncation window is typically set between $16$ and $100$ steps depending on GPU hardware memory limits, striking a balance between memory footprint and gradient propagation range.
-*   **Activation Bounds:** The hyperbolic tangent ($\tanh$) activation function is systematically preferred in vanilla RNN states and LSTM output paths over ReLU. Because $\tanh$ maps activations strictly to the open interval $(-1, 1)$, it stabilizes activations across hundreds of unrolled iterations, whereas unbounded ReLU activations tend to explode rapidly when repeatedly projected by $W\_{hh}$.
+*   **Activation Bounds:** The hyperbolic tangent ($\tanh$) activation function is systematically preferred in vanilla RNN states and LSTM output paths over ReLU. Because $\tanh$ maps activations strictly to the open interval $(-1, 1)$, it stabilizes activations across hundreds of unrolled iterations, whereas unbounded ReLU activations tend to explode rapidly when repeatedly projected by $W_{hh}$.
 
 ---
 
 #### 7. Pitfalls, Debugging Tips & Reflection Questions
 
 ##### Gotchas & Silent Failure Modes
-*   **Vanishing Gradients in LSTM Cell Highways:** Although LSTMs alleviate vanishing gradients via additive paths ($c_t = f \odot c\_{t-1} + i \odot g$), if the forget gate bias is initialized too low (e.g., 0), the network will repeatedly clear its memory. **Debugging Tip:** Always initialize the forget gate bias $b_f$ to a high positive value (e.g., $1.0$ or $2.0$) at the start of training to enforce memory retention.
+*   **Vanishing Gradients in LSTM Cell Highways:** Although LSTMs alleviate vanishing gradients via additive paths ($c_t = f \odot c_{t-1} + i \odot g$), if the forget gate bias is initialized too low (e.g., 0), the network will repeatedly clear its memory. **Debugging Tip:** Always initialize the forget gate bias $b_f$ to a high positive value (e.g., $1.0$ or $2.0$) at the start of training to enforce memory retention.
 *   **Gradient Explosion Instability:** A model's loss suddenly jumping to `NaN` during sequence training is a clear signature of exploding gradients in backpropagation through time. **Debugging Tip:** Inspect loss logs; if the loss spikes abruptly, immediately enable gradient clipping with a maximum norm threshold of $\tau = 1.0$ or $5.0$.
 
 ##### Graduate-Level Reflection Questions
-1.  **Gated Additive Highway Derivation:** Mathematically prove how the LSTM cell-state update ($c_t = f_t \odot c\_{t-1} + i_t \odot g_t$) prevents vanishing gradients. Specifically, derive the partial derivative $\frac{\partial c_t}{\partial c\_{t-1}}$ and analyze the gradient flow when the forget gate $f_t \approx 1$. How does this contrast with the vanilla recurrence update?
+1.  **Gated Additive Highway Derivation:** Mathematically prove how the LSTM cell-state update ($c_t = f_t \odot c_{t-1} + i_t \odot g_t$) prevents vanishing gradients. Specifically, derive the partial derivative $\frac{\partial c_t}{\partial c_{t-1}}$ and analyze the gradient flow when the forget gate $f_t \approx 1$. How does this contrast with the vanilla recurrence update?
 2.  **The Context Compression Bottleneck:** Given an RNN with a hidden state dimension of $H = 256$, what is the theoretical limit on the amount of information the network can retain over an input sequence of length $T = 1000$? Express this through the lens of lossy information compression.
 3.  **Truncated BPTT Bias:** Explain the mathematical and empirical trade-offs of using Truncated Backpropagation Through Time (TBPTT). If we choose a truncation window of $k = 20$ steps for a sequence task that requires a context window of at least $100$ steps to resolve temporal dependencies, how are the learning dynamics affected, and what kind of biases are introduced to the gradient estimates?

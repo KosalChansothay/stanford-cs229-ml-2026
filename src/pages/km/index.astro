@@ -1,0 +1,160 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BentoHero from '../../components/bento/BentoHero.astro';
+import BentoCourseCard from '../../components/bento/BentoCourseCard.astro';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title="ស៊េរីមេរៀនបញ្ញាសិប្បនិម្មិត និងការសិក្សាម៉ាស៊ីន — Frontier AI 2026"
+  description="បណ្តុំកំណត់ចំណាំមេរៀនការសិក្សាម៉ាស៊ីនលំដាប់ពិភពលោក (Stanford, MIT) ជាភាសាខ្មែរ និងអង់គ្លេស។"
+  lang="km"
+>
+  <header class="bento-tracks-header">
+    <div class="header-top-row">
+      <div>
+        <div class="header-eyebrow">FRONTIER ARTIFICIAL INTELLIGENCE & MACHINE LEARNING</div>
+        <h1 class="header-title">កម្មវិធីសិក្សា និងកំណត់ត្រាមេរៀន</h1>
+      </div>
+
+      <a href={`${baseUrl}/notes/`} class="show-all-link">
+        <span>មើលកំណត់ត្រាទាំង 50+ មេរៀន</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <div class="filter-pills-row">
+      <button class="filter-pill active">
+        <span>វគ្គសិក្សាទាំងអស់ (3 Tracks)</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="bento-courses-grid">
+    <!-- Course 1: CS229 (Has Khmer notes!) -->
+    <BentoCourseCard
+      courseCode="CS229"
+      title="Machine Learning: គ្រឹះ និងទស្សនទានទំនើប"
+      instructors="សាស្រ្តាចារ្យ Christopher Ré"
+      lectureCount={14}
+      thumbnailUrl={`${baseUrl}/img/courses/cs229.jpg`}
+      trackBadge="Flagship Track"
+      overviewUrl={`${baseUrl}/courses/cs229/`}
+      firstLectureUrl={`${baseUrl}/km/courses/cs229/lecture-1/`}
+      technicalChips={['កំណត់ចំណាំជាភាសាខ្មែរ', 'MathJax រូបមន្តគណិតវិទ្យា']}
+    />
+
+    <!-- Course 2: CS336 -->
+    <BentoCourseCard
+      courseCode="CS336"
+      title="Language Modeling from Scratch (LLMs)"
+      instructors="សាស្រ្តាចារ្យ Percy Liang"
+      lectureCount={18}
+      thumbnailUrl={`${baseUrl}/img/courses/cs336.jpg`}
+      trackBadge="Frontier LLMs"
+      overviewUrl={`${baseUrl}/courses/cs336/`}
+      firstLectureUrl={`${baseUrl}/courses/cs336/lecture-1/`}
+      technicalChips={['FlashAttention & RoPE', 'ZeRO Distributed Training']}
+    />
+
+    <!-- Course 3: CS231N -->
+    <BentoCourseCard
+      courseCode="CS231N"
+      title="Computer Vision & 3D Perception"
+      instructors="សាស្រ្តាចារ្យ Fei-Fei Li"
+      lectureCount={18}
+      thumbnailUrl={`${baseUrl}/img/courses/cs231n.jpg`}
+      trackBadge="3D Vision & NeRF"
+      overviewUrl={`${baseUrl}/courses/cs231n/`}
+      firstLectureUrl={`${baseUrl}/courses/cs231n/lecture-1/`}
+      technicalChips={['Vision Transformers', 'NeRF & 3D Splatting']}
+    />
+  </section>
+</BaseLayout>
+
+<style>
+  .bento-tracks-header {
+    margin-bottom: 2rem;
+    font-family: var(--font-khmer);
+  }
+
+  .header-top-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .header-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .header-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .show-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .show-all-link:hover {
+    color: var(--brand-accent);
+  }
+
+  .filter-pills-row {
+    display: flex;
+    gap: 0.65rem;
+  }
+
+  .filter-pill {
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent-lime);
+    color: var(--accent-lime-dark);
+    border: 1px solid var(--accent-lime);
+    font-size: 0.82rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(163, 230, 53, 0.3);
+  }
+
+  .bento-courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.75rem;
+    align-items: stretch;
+    font-family: var(--font-khmer);
+  }
+
+  @media (max-width: 1200px) {
+    .bento-courses-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .bento-courses-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+  }
+</style>

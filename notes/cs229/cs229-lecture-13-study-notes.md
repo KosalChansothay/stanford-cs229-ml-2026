@@ -11,7 +11,7 @@ The lecture details the mechanics of **Supervised Pre-training** (and its limita
 ### 2. Key Concepts & Definitions
 - **Foundation Model**: A massive, general-purpose model pre-trained on diverse, unstructured web-scale corpora (often several orders of magnitude larger than traditional datasets) which can be adapted to a wide variety of downstream tasks.
 - **Pre-training and Adaptation**: A two-phase paradigm. In *pre-training*, a model learns from massive unlabeled data. In *adaptation*, the model is customized to a downstream task (historically via few-shot/fine-tuning, and modernly via zero-shot prompting).
-- **Embedding / Representation**: A mapping function $\phi\_\theta(x)$ that translates raw input data $x \in \mathcal{X}$ into a dense continuous vector in an $m$-dimensional Euclidean space $\mathbb{R}^m$, preserving semantic relationships.
+- **Embedding / Representation**: A mapping function $\phi_\theta(x)$ that translates raw input data $x \in \mathcal{X}$ into a dense continuous vector in an $m$-dimensional Euclidean space $\mathbb{R}^m$, preserving semantic relationships.
 - **Supervised Pre-training**: Learning embeddings by training a model on a large-scale classification task (e.g., ImageNet) and extracting the activations of the penultimate (last-but-one) layer as the features.
 - **Contrastive Learning**: A self-supervised paradigm that trains embeddings without labels by encouraging positive pairs (different views of the same image or paired modalities) to be close in vector space, while forcing negative pairs (distinct data points) to be far apart.
 - **Degenerate Collapse**: A failure state in self-supervised learning where the encoder maps all inputs to a single constant vector to trivially minimize positive-pair distance. This is prevented by introducing a repulsive force via negative pairs.
@@ -29,13 +29,13 @@ The lecture details the mechanics of **Supervised Pre-training** (and its limita
 #### A. Supervised Feature Extraction (The Penultimate Layer)
 In a traditional supervised setup, a network is trained to classify images into one of $K$ discrete classes (such as ImageNet's 1,000 classes). The architecture takes an input $x$, processes it through multiple non-linear layers, and yields a penultimate vector representation:
 $$
-\phi\_\theta(x) \in \mathbb{R}^m
+\phi_\theta(x) \in \mathbb{R}^m
 $$
 A final classification weight matrix $W \in \mathbb{R}^{K \times m}$ is applied to produce the raw logits, which are mapped to class probabilities via softmax:
 $$
-\hat{y} = \text{softmax}(W \phi\_\theta(x))
+\hat{y} = \text{softmax}(W \phi_\theta(x))
 $$
-After pre-training on ImageNet, the final classification head $W$ is discarded. The parameter set $\theta$ is saved as the deliverable, and $\phi\_\theta(x)$ is extracted as the data's semantic embedding.
+After pre-training on ImageNet, the final classification head $W$ is discarded. The parameter set $\theta$ is saved as the deliverable, and $\phi_\theta(x)$ is extracted as the data's semantic embedding.
 
 *Limitations of the Supervised Approach*: 
 1. **Feature Diversity Bottleneck**: If the labeling task has too few classes (e.g., MNIST digits 0-9) or a simple binary objective (e.g., classifying black-and-white vs. color), the network only learns the narrow set of features needed for that task, ignoring broader semantic structures.
@@ -47,29 +47,29 @@ After pre-training on ImageNet, the final classification head $W$ is discarded. 
 To eliminate the need for human-annotated labels, self-supervised systems use **contrastive objectives**.
 
 ##### 1. Data Processing and Augmentation Workflow
-For each training batch of size $B$, the system samples $B$ images from the corpus. For each image $x\_i$, two random data augmentations are generated:
+For each training batch of size $B$, the system samples $B$ images from the corpus. For each image $x_i$, two random data augmentations are generated:
 $$
-\hat{x}\_i \sim \mathcal{A}(x\_i), \quad \tilde{x}\_i \sim \mathcal{A}(x\_i)
+\hat{x}_i \sim \mathcal{A}(x_i), \quad \tilde{x}_i \sim \mathcal{A}(x_i)
 $$
 This produces a processed batch of $2B$ total augmented images. The images are mapped through the network to generate normalized embeddings:
 $$
-u\_i = \frac{\phi\_\theta(\hat{x}\_i)}{\|\phi\_\theta(\hat{x}\_i)\|}, \quad v\_i = \frac{\phi\_\theta(\tilde{x}\_i)}{\|\phi\_\theta(\tilde{x}\_i)\|}
+u_i = \frac{\phi_\theta(\hat{x}_i)}{\|\phi_\theta(\hat{x}_i)\|}, \quad v_i = \frac{\phi_\theta(\tilde{x}_i)}{\|\phi_\theta(\tilde{x}_i)\|}
 $$
 Using normalized embeddings ensures that their inner product is equivalent to the **cosine similarity**:
 $$
-S\_{ij} = u\_i^T v\_j = \text{cosine\_similarity}(\phi\_\theta(\hat{x}\_i), \phi\_\theta(\tilde{x}\_j))
+S_{ij} = u_i^T v_j = \text{cosine_similarity}(\phi_\theta(\hat{x}_i), \phi_\theta(\tilde{x}_j))
 $$
 ##### 2. The Contrastive Loss Function (NT-Xent / InfoNCE style)
-For a given anchor image $i$, we want to encourage the positive pair $(u\_i, v\_i)$ to be close, while forcing all other $2B - 2$ negative pairings in the batch to be far apart. The loss for column $i$ is formulated as a multi-class softmax classification problem:
+For a given anchor image $i$, we want to encourage the positive pair $(u_i, v_i)$ to be close, while forcing all other $2B - 2$ negative pairings in the batch to be far apart. The loss for column $i$ is formulated as a multi-class softmax classification problem:
 $$
-\mathcal{L}\_i = -\log \frac{\exp(S\_{ii} / \tau)}{\exp(S\_{ii} / \tau) + \sum\_{j \neq i} \exp(S\_{ij} / \tau)}
+\mathcal{L}_i = -\log \frac{\exp(S_{ii} / \tau)}{\exp(S_{ii} / \tau) + \sum_{j \neq i} \exp(S_{ij} / \tau)}
 $$
 where $\tau$ is a temperature hyperparameter. The total batch loss is the sum over all columns:
 $$
-\mathcal{L}\_{\text{batch}} = \sum\_{i=1}^B \mathcal{L}\_i
+\mathcal{L}_{\text{batch}} = \sum_{i=1}^B \mathcal{L}_i
 $$
 ##### 3. Monotonicity and Force Balance Proof
-Let us simplify the loss for a single anchor by denoting the positive pair similarity term as $A = \exp(S\_{ii} / \tau) > 0$ and the sum of the negative pair similarities as $B = \sum\_{j \neq i} \exp(S\_{ij} / \tau) > 0$. The loss is:
+Let us simplify the loss for a single anchor by denoting the positive pair similarity term as $A = \exp(S_{ii} / \tau) > 0$ and the sum of the negative pair similarities as $B = \sum_{j \neq i} \exp(S_{ij} / \tau) > 0$. The loss is:
 $$
 \mathcal{L} = -\log \left(\frac{A}{A + B}\right) = \log(A + B) - \log A
 $$
@@ -77,24 +77,28 @@ To evaluate the mathematical dynamics of the optimizer, we compute the partial d
 - **Derivative with respect to positive similarity ($A$)**:
   
 
-$$\frac{\partial \mathcal{L}}{\partial A} = \frac{1}{A + B} - \frac{1}{A} = \frac{A - (A + B)}{A(A + B)} = \frac{-B}{A(A + B)}
+$$
+\frac{\partial \mathcal{L}}{\partial A} = \frac{1}{A + B} - \frac{1}{A} = \frac{A - (A + B)}{A(A + B)} = \frac{-B}{A(A + B)}
 $$
   Since both $A > 0$ and $B > 0$, we have:
   
 
-$$\frac{\partial \mathcal{L}}{\partial A} < 0
+$$
+\frac{\partial \mathcal{L}}{\partial A} < 0
 $$
   This negative gradient proves that the loss function is monotonically decreasing with respect to positive similarity $A$. Therefore, minimizing $\mathcal{L}$ mathematically forces the optimizer to **maximize positive-pair similarity**.
 
 - **Derivative with respect to negative similarity ($B$)**:
   
 
-$$\frac{\partial \mathcal{L}}{\partial B} = \frac{1}{A + B} > 0
+$$
+\frac{\partial \mathcal{L}}{\partial B} = \frac{1}{A + B} > 0
 $$
   Since $A + B > 0$, we have:
   
 
-$$\frac{\partial \mathcal{L}}{\partial B} > 0
+$$
+\frac{\partial \mathcal{L}}{\partial B} > 0
 $$
   This positive gradient proves that the loss function is monotonically increasing with respect to negative similarity $B$. Therefore, minimizing $\mathcal{L}$ mathematically forces the optimizer to **minimize negative-pair similarity (maximizing their distance)**.
 
@@ -116,25 +120,28 @@ Because negative pairs are chosen at random from the batch, some negative exampl
 
 #### A. Document Representation Learning
 Because text cannot be cropped or flipped like pixels, positive pairs in language are constructed using document structure:
-1. **Positive Pair Formulation**: For a given document $D\_i$, define the first view ($\hat{x}\_i$) as the document's **Title and Header sections**, and the second view ($\tilde{x}\_i$) as the **raw body text**. 
-2. **Negative Pair Formulation**: Pair the title of document $D\_i$ with the body text of document $D\_j$ ($j \neq i$) to act as negative examples.
-3. **Training**: Train the shared text encoder $\phi\_\theta$ on these pairs using the NT-Xent loss to map titles and relevant bodies to nearby points in Euclidean space.
+1. **Positive Pair Formulation**: For a given document $D_i$, define the first view ($\hat{x}_i$) as the document's **Title and Header sections**, and the second view ($\tilde{x}_i$) as the **raw body text**. 
+2. **Negative Pair Formulation**: Pair the title of document $D_i$ with the body text of document $D_j$ ($j \neq i$) to act as negative examples.
+3. **Training**: Train the shared text encoder $\phi_\theta$ on these pairs using the NT-Xent loss to map titles and relevant bodies to nearby points in Euclidean space.
 
 ---
 
 #### B. Semantic Vector Search
 Once trained, the embeddings are used to perform semantic retrieval:
-1. **Precomputation (Offline Phase)**: Take your corpus of documents $\{d\_1, \dots, d\_N\}$ and run them through the frozen encoder to compute and store their embeddings:
+1. **Precomputation (Offline Phase)**: Take your corpus of documents $\{d_1, \dots, d_N\}$ and run them through the frozen encoder to compute and store their embeddings:
 
-$$v\_i = \phi\_\theta(d\_i) \quad \forall i \in \{1, \dots, N\}
+$$
+v_i = \phi_\theta(d_i) \quad \forall i \in \{1, \dots, N\}
 $$
 2. **Query Processing (Online Phase)**: When a user enters a query $q$ at test time, compute its query embedding:
 
-$$u\_q = \phi\_\theta(q)
+$$
+u_q = \phi_\theta(q)
 $$
 3. **Nearest Neighbor Search**: Solve for the document ID $i^*$ that maximizes the inner product:
 
-$$i^* = \text{argmax}\_{i} \left( u\_q^T v\_i \right)
+$$
+i^* = \text{argmax}_{i} \left( u_q^T v_i \right)
 $$
 4. **Systems Scale (ANN)**: For massive corpora ($N > 10^9$), brute-force dot products are too slow. We index the precomputed vectors in a **Vector Database** using **Approximate Nearest Neighbors (ANN)** algorithms to retrieve match candidates in sub-millisecond time.
 
@@ -148,13 +155,13 @@ RAG is the primary mechanism for combining retrieval systems with large language
 <p><em>Figure: RAG system architecture.</em></p>
 
 1. **User Query**: A user submits a query $q$ containing a specialized question.
-2. **Embedding and Match**: The query is mapped to $\phi\_\theta(q)$ and sent to the Vector Database containing pre-embedded enterprise document chunks.
-3. **Context Retrieval**: The database returns the top $k$ (e.g., 5 to 10) most semantically similar documents $\{d\_1, \dots, d\_k\}$.
+2. **Embedding and Match**: The query is mapped to $\phi_\theta(q)$ and sent to the Vector Database containing pre-embedded enterprise document chunks.
+3. **Context Retrieval**: The database returns the top $k$ (e.g., 5 to 10) most semantically similar documents $\{d_1, \dots, d_k\}$.
 4. **Prompt Augmentation**: The system compiles a prompt containing the retrieved context and the user query:
    ```
    [Context Documents]
-   Document 1: [Text of d\_1]
-   Document 2: [Text of d\_2]
+   Document 1: [Text of d_1]
+   Document 2: [Text of d_2]
    ...
    [User Query]
    Based on the context documents above, please answer: q

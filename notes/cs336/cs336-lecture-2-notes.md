@@ -21,45 +21,72 @@
 ### 2.1 Floating-Point Formats & Precision
 Floating-point representations balance dynamic range (controlled by exponent bits) against numerical precision/resolution (controlled by mantissa bits):
 * **FP32 (Single Precision):**
-  $$\text{Bits} = 32 \quad (1 \text{ sign}, 8 \text{ exponent}, 23 \text{ mantissa}) \quad \text{Size} = 4 \text{ bytes}$$
+  $$
+  \text{Bits} = 32 \quad (1 \text{ sign}, 8 \text{ exponent}, 23 \text{ mantissa}) \quad \text{Size} = 4 \text{ bytes}
+  $$
 * **FP16 (Half Precision):**
-  $$\text{Bits} = 16 \quad (1 \text{ sign}, 5 \text{ exponent}, 10 \text{ mantissa}) \quad \text{Size} = 2 \text{ bytes}$$
+  $$
+  \text{Bits} = 16 \quad (1 \text{ sign}, 5 \text{ exponent}, 10 \text{ mantissa}) \quad \text{Size} = 2 \text{ bytes}
+  $$
   * *System Pitfall:* Narrow dynamic range causes frequent underflow/overflow (e.g., $1\text{e-}8$ underflows to $0$), triggering training instability and NaNs.
 * **BF16 (Brain Floating Point):**
-  $$\text{Bits} = 16 \quad (1 \text{ sign}, 8 \text{ exponent}, 7 \text{ mantissa}) \quad \text{Size} = 2 \text{ bytes}$$
+  $$
+  \text{Bits} = 16 \quad (1 \text{ sign}, 8 \text{ exponent}, 7 \text{ mantissa}) \quad \text{Size} = 2 \text{ bytes}
+  $$
   * *Systems Advantage:* Matches the dynamic range of FP32, preventing underflow/overflow issues without requiring complex gradient scaling, at the cost of precision.
 
 ### 2.2 Arithmetic Intensity & Hardware Bottlenecks
-* **Accelerator Arithmetic Intensity ($\text{Intensity}\_{\text{acc}}$):**
-  $$\text{Intensity}\_{\text{acc}} = \frac{\text{Peak FLOPs/sec}}{\text{Memory Bandwidth (Bytes/sec)}} \approx \frac{989.5 \times 10^{12} \text{ FLOPs/sec}}{3.3 \times 10^{12} \text{ Bytes/sec}} \approx 295 \text{ FLOPs/byte} \quad \text{(for NVIDIA H100 dense BF16)}$$
-* **Algorithmic Arithmetic Intensity ($\text{Intensity}\_{\text{algo}}$):**
-  $$\text{Intensity}\_{\text{algo}} = \frac{\text{FLOPs required by operator}}{\text{Bytes moved to/from HBM}}$$
+* **Accelerator Arithmetic Intensity ($\text{Intensity}_{\text{acc}}$):**
+  $$
+  \text{Intensity}_{\text{acc}} = \frac{\text{Peak FLOPs/sec}}{\text{Memory Bandwidth (Bytes/sec)}} \approx \frac{989.5 \times 10^{12} \text{ FLOPs/sec}}{3.3 \times 10^{12} \text{ Bytes/sec}} \approx 295 \text{ FLOPs/byte} \quad \text{(for NVIDIA H100 dense BF16)}
+  $$
+* **Algorithmic Arithmetic Intensity ($\text{Intensity}_{\text{algo}}$):**
+  $$
+  \text{Intensity}_{\text{algo}} = \frac{\text{FLOPs required by operator}}{\text{Bytes moved to/from HBM}}
+  $$
 * **Operational Regimes:**
-  $$\text{Memory Bound if: } \text{Intensity}\_{\text{algo}} < \text{Intensity}\_{\text{acc}} \implies \text{Latency dictated by HBM bandwidth}$$
-  $$\text{Compute Bound if: } \text{Intensity}\_{\text{algo}} > \text{Intensity}\_{\text{acc}} \implies \text{Latency dictated by raw tensor core speed}$$
-
+  $$
+  \text{Memory Bound if: } \text{Intensity}_{\text{algo}} < \text{Intensity}_{\text{acc}} \implies \text{Latency dictated by HBM bandwidth}
+  $$
+  $$
+  \text{Compute Bound if: } \text{Intensity}_{\text{algo}} > \text{Intensity}_{\text{acc}} \implies \text{Latency dictated by raw tensor core speed}
+  $$
 ### 2.3 Mathematical Derivation of $6NT$ FLOPs Accounting
 Consider a forward pass of a linear layer map $Y = XW$ where $X \in \mathbb{R}^{B \times D}$ (batch/sequence dimension $B$, input dimension $D$) and $W \in \mathbb{R}^{D \times K}$ (output dimension $K$):
 * **Forward Pass FLOPs:** For each output element, we compute a dot product of length $D$. This involves $D$ multiplications and $D-1$ additions, which we approximate as $2D$ operations. Doing this for all $B \times K$ elements in $Y$ yields:
-  $$\text{FLOPs}\_{\text{fwd}} = 2 \cdot B \cdot D \cdot K$$
+  $$
+  \text{FLOPs}_{\text{fwd}} = 2 \cdot B \cdot D \cdot K
+  $$
   If $D = K$, and $N = D^2$ (parameters), this reduces to $2 \cdot B \cdot N$.
 
 * **Backward Pass FLOPs:** To backpropagate, we apply the chain rule to compute two gradients:
-  1. **Gradient with respect to inputs ($H\_{1\text{.grad}}$):**
-     $$\frac{\partial \mathcal{L}}{\partial X} = \frac{\partial \mathcal{L}}{\partial Y} W^T \quad \implies \quad X\_{\text{.grad}} \in \mathbb{R}^{B \times D} = Y\_{\text{.grad}} \cdot W^T$$
+  1. **Gradient with respect to inputs ($H_{1\text{.grad}}$):**
+     $$
+     \frac{\partial \mathcal{L}}{\partial X} = \frac{\partial \mathcal{L}}{\partial Y} W^T \quad \implies \quad X_{\text{.grad}} \in \mathbb{R}^{B \times D} = Y_{\text{.grad}} \cdot W^T
+     $$
      This is a matrix multiplication of shapes $(B \times K)$ and $(K \times D)$, requiring:
-     $$\text{FLOPs}\_{\text{grad\_input}} = 2 \cdot B \cdot D \cdot K$$
-  2. **Gradient with respect to parameters ($W\_{\text{.grad}}$):**
-     $$\frac{\partial \mathcal{L}}{\partial W} = X^T \frac{\partial \mathcal{L}}{\partial Y} \quad \implies \quad W\_{\text{.grad}} \in \mathbb{R}^{D \times K} = X^T \cdot Y\_{\text{.grad}}$$
+     $$
+     \text{FLOPs}_{\text{grad_input}} = 2 \cdot B \cdot D \cdot K
+     $$
+  2. **Gradient with respect to parameters ($W_{\text{.grad}}$):**
+     $$
+     \frac{\partial \mathcal{L}}{\partial W} = X^T \frac{\partial \mathcal{L}}{\partial Y} \quad \implies \quad W_{\text{.grad}} \in \mathbb{R}^{D \times K} = X^T \cdot Y_{\text{.grad}}
+     $$
      This is a matrix multiplication of shapes $(D \times B)$ and $(B \times K)$, requiring:
-     $$\text{FLOPs}\_{\text{grad\_param}} = 2 \cdot B \cdot D \cdot K$$
-
+     $$
+     \text{FLOPs}_{\text{grad_param}} = 2 \cdot B \cdot D \cdot K
+     $$
 * **Combined Accounting:**
-  $$\text{FLOPs}\_{\text{bwd}} = \text{FLOPs}\_{\text{grad\_input}} + \text{FLOPs}\_{\text{grad\_param}} = 4 \cdot B \cdot D \cdot K = 2 \cdot \text{FLOPs}\_{\text{fwd}}$$
-  $$\text{Total Training FLOPs} = \text{FLOPs}\_{\text{fwd}} + \text{FLOPs}\_{\text{bwd}} = 6 \cdot B \cdot D \cdot K$$
+  $$
+  \text{FLOPs}_{\text{bwd}} = \text{FLOPs}_{\text{grad_input}} + \text{FLOPs}_{\text{grad_param}} = 4 \cdot B \cdot D \cdot K = 2 \cdot \text{FLOPs}_{\text{fwd}}
+  $$
+  $$
+  \text{Total Training FLOPs} = \text{FLOPs}_{\text{fwd}} + \text{FLOPs}_{\text{bwd}} = 6 \cdot B \cdot D \cdot K
+  $$
   Summing across a training run processing $T$ tokens on a model with $N$ parameters yields the classic resource estimation:
-  $$\text{Total Run FLOPs} = 6 \cdot N \cdot T$$
-
+  $$
+  \text{Total Run FLOPs} = 6 \cdot N \cdot T
+  $$
 ---
 
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
@@ -203,7 +230,9 @@ For mixed precision training using **BF16** for the model and **AdamW** for opti
 
 **Static Training Footprint:** $\approx 12 \text{ to } 16 \text{ bytes}$ per parameter. 
 * *Example (H100 constraint):* 8 H100 GPUs provide $8 \times 80\text{ GB} = 640\text{ GB}$ of High Bandwidth Memory (HBM). Allocating $12 \text{ bytes}$ per parameter leaves a maximum theoretical capacity of:
-  $$\frac{640 \times 10^9 \text{ bytes}}{12 \text{ bytes/parameter}} \approx 53.3 \text{ Billion Parameters}$$
+  $$
+  \frac{640 \times 10^9 \text{ bytes}}{12 \text{ bytes/parameter}} \approx 53.3 \text{ Billion Parameters}
+  $$
   *Note:* This calculation represents a strict upper bound that completely excludes dynamic Activation Memory.
 
 ### 4.2 Arithmetic Intensity Matrix
@@ -265,10 +294,14 @@ This specification outlines how to construct a custom interactive Roofline Model
 ### Conceptual Reflection Questions
 
 1. **Given a model trained on an H100 node with peak dense performance of $989.5 \text{ TFLOPs/s}$ and $3.3 \text{ TB/s}$ memory bandwidth. What is the minimum matrix dimension $n$ for an $n \times n$ matrix-matrix multiplication (GEMM) to theoretically escape the memory-bound regime?**
-   * *Answer:* The algorithm is compute-bound if its arithmetic intensity is greater than the hardware intensity ceiling ($\text{Intensity}\_{\text{acc}}$).
-     $$\text{Intensity}\_{\text{acc}} = \frac{989.5 \times 10^{12} \text{ FLOPs/s}}{3.3 \times 10^{12} \text{ Bytes/s}} \approx 299.85 \text{ FLOPs/byte}$$
+   * *Answer:* The algorithm is compute-bound if its arithmetic intensity is greater than the hardware intensity ceiling ($\text{Intensity}_{\text{acc}}$).
+     $$
+     \text{Intensity}_{\text{acc}} = \frac{989.5 \times 10^{12} \text{ FLOPs/s}}{3.3 \times 10^{12} \text{ Bytes/s}} \approx 299.85 \text{ FLOPs/byte}
+     $$
      The arithmetic intensity of GEMM for $n \times n$ matrices in BF16 is $\approx n/3 \text{ FLOPs/byte}$. Set the two equal:
-     $$\frac{n}{3} \ge 299.85 \implies n \ge 899.55$$
+     $$
+     \frac{n}{3} \ge 299.85 \implies n \ge 899.55
+     $$
      Therefore, the matrix dimension must be at least $900 \times 900$ to transition into the compute-bound regime.
 
 2. **Why does activation checkpointing save a massive amount of memory, and what is the exact computational cost of applying it? Explain the square-root rule.**

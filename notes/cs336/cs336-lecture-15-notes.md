@@ -17,32 +17,37 @@
 ### Bradley-Terry Preference Model
 Given prompt $x$ and completions $y_w, y_l$ (where $y_w$ is preferred over $y_l$), the probability that $y_w \succ y_l$ under reward model $r(x, y)$ is:
 
-$$P(y_w \succ y_l | x) = \sigma(r(x, y_w) - r(x, y_l)) = \frac{1}{1 + \exp(r(x, y_l) - r(x, y_w))}$$
-
+$$
+P(y_w \succ y_l | x) = \sigma(r(x, y_w) - r(x, y_l)) = \frac{1}{1 + \exp(r(x, y_l) - r(x, y_w))}
+$$
 ### KL-Regularized RLHF Objective
-The standard RLHF objective seeks to maximize expected reward while penalizing policy drift from reference model $\pi\_{\text{ref}}$:
+The standard RLHF objective seeks to maximize expected reward while penalizing policy drift from reference model $\pi_{\text{ref}}$:
 
-$$\max\_{\pi_\theta} \mathbb{E}\_{x \sim \mathcal{D}, y \sim \pi_\theta(y | x)} [r(x, y)] - \beta \mathbb{D}\_{\text{KL}}(\pi_\theta(y | x) \| \pi\_{\text{ref}}(y | x))$$
-
+$$
+\max_{\pi_\theta} \mathbb{E}_{x \sim \mathcal{D}, y \sim \pi_\theta(y | x)} [r(x, y)] - \beta \mathbb{D}_{\text{KL}}(\pi_\theta(y | x) \| \pi_{\text{ref}}(y | x))
+$$
 ### DPO Objective Derivation
 The closed-form analytical solution to the KL-regularized objective (for an unconstrained nonparametric policy $\pi^*$) is:
 
-$$\pi^*(y | x) = \frac{1}{Z(x)} \pi\_{\text{ref}}(y | x) \exp\left( \frac{1}{\beta} r(x, y) \right)$$
-
+$$
+\pi^*(y | x) = \frac{1}{Z(x)} \pi_{\text{ref}}(y | x) \exp\left( \frac{1}{\beta} r(x, y) \right)
+$$
 Rearranging to solve for the implicit reward $r(x, y)$:
 
-$$r(x, y) = \beta \ln \frac{\pi^*(y | x)}{\pi\_{\text{ref}}(y | x)} + \beta \ln Z(x)$$
-
+$$
+r(x, y) = \beta \ln \frac{\pi^*(y | x)}{\pi_{\text{ref}}(y | x)} + \beta \ln Z(x)
+$$
 Substituting this implicit reward back into the Bradley-Terry preference loss cancels out the partition function $Z(x)$, resulting in the pure **DPO Loss**:
 
-$$\mathcal{L}\_{\text{DPO}}(\pi_\theta; \pi\_{\text{ref}}) = -\mathbb{E}\_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma \left( \beta \log \frac{\pi_\theta(y_w | x)}{\pi\_{\text{ref}}(y_w | x)} - \beta \log \frac{\pi_\theta(y_l | x)}{\pi\_{\text{ref}}(y_l | x)} \right) \right]$$
-
+$$
+\mathcal{L}_{\text{DPO}}(\pi_\theta; \pi_{\text{ref}}) = -\mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma \left( \beta \log \frac{\pi_\theta(y_w | x)}{\pi_{\text{ref}}(y_w | x)} - \beta \log \frac{\pi_\theta(y_l | x)}{\pi_{\text{ref}}(y_l | x)} \right) \right]
+$$
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### DPO Gradient Step Workflow
 1. Sample a prompt $x$, preferred response $y_w$, and dispreferred response $y_l$ from preference dataset $\mathcal{D}$.
 2. Compute forward pass log-probabilities on the current policy: $\log \pi_\theta(y_w | x)$ and $\log \pi_\theta(y_l | x)$.
-3. Compute forward pass log-probabilities on the frozen reference model: $\log \pi\_{\text{ref}}(y_w | x)$ and $\log \pi\_{\text{ref}}(y_l | x)$.
+3. Compute forward pass log-probabilities on the frozen reference model: $\log \pi_{\text{ref}}(y_w | x)$ and $\log \pi_{\text{ref}}(y_l | x)$.
 4. Compute the implicit rewards and their difference.
 5. Compute Sigmoid loss and backward pass gradients to update $\theta$.
 
@@ -77,7 +82,7 @@ def compute_dpo_loss(policy_model, ref_model, prompt_ids, preferred_ids, dispref
 ```
 
 ## 4. Hardware Realities & Compute/Memory Accounting
-- **Dual-Model Memory Wall**: DPO requires keeping *two* full-scale models (the trainable policy $\pi_\theta$ and the frozen reference model $\pi\_{\text{ref}}$) in active device memory. This doubles the weight memory footprint, making pipeline sharding and parameter offloading (FSDP) essential to prevent Out-Of-Memory (OOM) failures.
+- **Dual-Model Memory Wall**: DPO requires keeping *two* full-scale models (the trainable policy $\pi_\theta$ and the frozen reference model $\pi_{\text{ref}}$) in active device memory. This doubles the weight memory footprint, making pipeline sharding and parameter offloading (FSDP) essential to prevent Out-Of-Memory (OOM) failures.
 
 ## 5. Systems Warnings, Pitfalls, & Reflection Questions
 

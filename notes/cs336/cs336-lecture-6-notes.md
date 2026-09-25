@@ -28,27 +28,33 @@ GPU memory exhibits an inverse relationship between capacity and speed. Managing
 ### Arithmetic Intensity and Operations Accounting
 The **Arithmetic Intensity** ($I$) of an algorithm measures the ratio of floating-point operations performed to bytes of data moved:
 
-$$I = \frac{\text{Flops}}{\text{Bytes Transferred}}$$
+$$
+I = \frac{\text{Flops}}{\text{Bytes Transferred}}
+$$
+An accelerator has an native intensity threshold ($I_{acc}$), calculated from its specifications:
 
-An accelerator has an native intensity threshold ($I\_{acc}$), calculated from its specifications:
-
-$$I\_{acc} = \frac{\text{Peak Flops/sec}}{\text{Memory Bandwidth (Bytes/sec)}}$$
-
-For an H100, $I\_{acc} \approx 295$ FLOPs/byte. If $I\_{algo} < I\_{acc}$, the operation is **memory-bound**; if $I\_{algo} > I\_{acc}$, it is **compute-bound**.
+$$
+I_{acc} = \frac{\text{Peak Flops/sec}}{\text{Memory Bandwidth (Bytes/sec)}}
+$$
+For an H100, $I_{acc} \approx 295$ FLOPs/byte. If $I_{algo} < I_{acc}$, the operation is **memory-bound**; if $I_{algo} > I_{acc}$, it is **compute-bound**.
 
 #### 1. Element-Wise ReLU
 For a vector of size $N$ in 16-bit precision (2 bytes per element):
 - **Bytes Transferred**: Read $X$ ($2N$ bytes) + Write $Y$ ($2N$ bytes) = $4N$ bytes.
 - **Flops**: $N$ comparisons.
 - **Arithmetic Intensity**:
-  $$I\_{\text{ReLU}} = \frac{N}{4N} = 0.25 \text{ FLOPs/byte}$$
+  $$
+  I_{\text{ReLU}} = \frac{N}{4N} = 0.25 \text{ FLOPs/byte}
+  $$
   Since $0.25 \ll 295$, ReLU is heavily memory-bound.
 
 #### 2. Element-Wise Gated Linear Unit (GLU)
 - **Bytes Transferred**: Read inputs ($2N$) + Write output ($2N$) = $4N$ bytes.
 - **Flops**: Highly complex operations (sigmoid, tanh, multiplications), $\approx 20N$ flops.
 - **Arithmetic Intensity**:
-  $$I\_{\text{GLU}} = \frac{20N}{4N} = 5.0 \text{ FLOPs/byte}$$
+  $$
+  I_{\text{GLU}} = \frac{20N}{4N} = 5.0 \text{ FLOPs/byte}
+  $$
   Despite doing 20x more compute than ReLU, $5.0 \ll 295$, meaning GLU remains bottlenecked by the same memory transport speed.
 
 #### 3. Vector Dot Product
@@ -56,7 +62,9 @@ For two vectors of size $N$:
 - **Bytes Transferred**: Read $X$ ($2N$) + Read $W$ ($2N$) + Write scalar output ($2$) $\approx 4N$ bytes.
 - **Flops**: $N$ multiplications + $(N-1)$ additions = $2N - 1$ flops.
 - **Arithmetic Intensity**:
-  $$I\_{\text{Dot}} = \frac{2N}{4N} = 0.5 \text{ FLOPs/byte}$$
+  $$
+  I_{\text{Dot}} = \frac{2N}{4N} = 0.5 \text{ FLOPs/byte}
+  $$
   Memory-bound.
 
 #### 4. Matrix-Vector Multiplication
@@ -64,7 +72,9 @@ For $Y = W X$ where $W \in \mathbb{R}^{N \times N}$ and $X \in \mathbb{R}^N$:
 - **Bytes Transferred**: Read $X$ ($2N$) + Read $W$ ($2N^2$) + Write $Y$ ($2N$) $\approx 2N^2$ bytes.
 - **Flops**: $N$ dot products of size $N \approx 2N^2$ flops.
 - **Arithmetic Intensity**:
-  $$I\_{\text{Mat-Vec}} = \frac{2N^2}{2N^2} = 1.0 \text{ FLOPs/byte}$$
+  $$
+  I_{\text{Mat-Vec}} = \frac{2N^2}{2N^2} = 1.0 \text{ FLOPs/byte}
+  $$
   Memory-bound (explains why decoding in LLM inference is memory-bandwidth bottlenecked).
 
 #### 5. Matrix-Matrix Multiplication (MatMul)
@@ -81,8 +91,10 @@ For square matrices $A, B \in \mathbb{R}^{N \times N}$:
 - **Bytes Transferred (Naive)**: Read $A$ ($2N^2$) + Read $B$ ($2N^2$) + Write $C$ ($2N^2$) = $6N^2$ bytes.
 - **Flops**: $N^2$ dot products of size $N = 2N^3$ flops.
 - **Arithmetic Intensity (Idealized)**:
-  $$I\_{\text{MatMul}} = \frac{2N^3}{6N^2} = \frac{N}{3} \text{ FLOPs/byte}$$
-  As $N$ scales beyond $\approx 1000$, arithmetic intensity surpasses $I\_{acc}$, transitioning the workload into the **compute-bound** regime.
+  $$
+  I_{\text{MatMul}} = \frac{2N^3}{6N^2} = \frac{N}{3} \text{ FLOPs/byte}
+  $$
+  As $N$ scales beyond $\approx 1000$, arithmetic intensity surpasses $I_{acc}$, transitioning the workload into the **compute-bound** regime.
 
 ---
 
@@ -243,7 +255,9 @@ A Streaming Multiprocessor (SM) has strict resource constraints. When registers 
   - Active threads running concurrently = $3 \text{ blocks} \times 128 \text{ threads/block} = 384 \text{ threads}$.
   - Equivalent active warps = $384 / 32 = 12 \text{ warps}$.
   - **Warp Occupancy Ratio**:
-    $$\text{Occupancy} = \frac{12 \text{ warps}}{64 \text{ max warps}} = 18.75\% \text{ occupancy}$$
+    $$
+    \text{Occupancy} = \frac{12 \text{ warps}}{64 \text{ max warps}} = 18.75\% \text{ occupancy}
+    $$
     *Note: Low warp occupancy limits the scheduler's ability to hide long memory latency.*
 
 ### Bank Conflicts in Shared Memory (SRAM)
@@ -302,7 +316,7 @@ NVIDIA DRAM architecture loads data in contiguous chunks of **128 bytes** (one c
    - *Answer*: When row length $V$ is larger than the SM's physical shared memory/register limits, we can no longer load the entire row atomically to perform thread reductions. We must shift to a **hierarchical block-tiling scheme**. Threads must loop iteratively over row sub-tiles, maintaining a local "running max" and "running accumulator" in registers. Finally, threads execute an intra-block tree reduction to combine the sub-tile aggregates, resolving global normalization dynamically.
 
 2. **Recompute saves activation memory by recalculating forward states on the backward pass. For a chain of element-wise operators, under what physical hardware ratio does recomputation become a net latency win rather than a deficit?**
-   - *Answer*: Recomputation is a latency win when the time to recalculate the operation's math is less than the time saved by avoiding global HBM memory bandwidth operations. If the hardware's accelerator intensity $I\_{acc}$ is very high (compute is extremely fast relative to memory transport), we are memory-bandwidth bound. Recalculating an element-wise activation costs almost zero raw execution cycles because the arithmetic registers can compute it faster than DRAM can transport the saved activation forward states.
+   - *Answer*: Recomputation is a latency win when the time to recalculate the operation's math is less than the time saved by avoiding global HBM memory bandwidth operations. If the hardware's accelerator intensity $I_{acc}$ is very high (compute is extremely fast relative to memory transport), we are memory-bandwidth bound. Recalculating an element-wise activation costs almost zero raw execution cycles because the arithmetic registers can compute it faster than DRAM can transport the saved activation forward states.
 
 3. **How does the physical difference in networking topology between TPUs (Toroidal Mesh) and GPUs (Fat Tree) impact their optimal sharding strategies for Mixture of Experts (MoE) vs. Dense Transformers?**
    - *Answer*: Toroidal Mesh networks (TPUs) excel at predictable, structured, neighbor-to-neighbor communication patterns, making them highly efficient for static tensor and pipeline parallel workloads. However, MoE routing requires dynamically dispatching tokens to distant experts, resulting in sparse, unstructured, all-to-all communication. A Fat Tree network (GPUs) provides robust, high-bandwidth all-to-all paths through spine switches, making them far better suited to handle the unpredictable routing congestion of expert parallelism.

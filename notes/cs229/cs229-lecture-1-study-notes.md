@@ -52,11 +52,15 @@ To fit a model using supervised learning, the following pipeline is executed:
 
 1. **Formulate Inputs ($x$) and Outputs ($y$)**: Define what features describe the input and what target needs to be predicted.
 2. **Collect Training Examples**: Construct a dataset of pairs:
-    $$\mathcal{D} = \{ (x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \dots, (x^{(N)}, y^{(N)}) \}$$
+    $$
+    \mathcal{D} = \{ (x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \dots, (x^{(N)}, y^{(N)}) \}
+    $$
 3. **Define Model Architecture**: Select a hypothesis family $h_\theta(x)$ parameterized by parameters $\theta$ (e.g., linear regression, quadratic curve, or neural network).
 4. **Define a Loss Function**: Establish a mathematical function $\mathcal{L}(\theta)$ that penalizes deviations between the predicted output $h_\theta(x)$ and the true label $y$.
 5. **Optimize (Compute Gradients)**: Compute the gradient of the loss function with respect to the parameters $\theta$ and update the parameters using optimizers (e.g., Gradient Descent):
-    $$\theta \leftarrow \theta - \alpha \nabla_\theta \mathcal{L}(\theta)$$
+    $$
+    \theta \leftarrow \theta - \alpha \nabla_\theta \mathcal{L}(\theta)
+    $$
     *For deep neural networks, this is implemented using **backpropagation** to automatically compute gradients across millions/billions of parameters.*
 6. **Evaluate**: Test the trained model $h_{\theta^*}(x)$ on unseen inputs to ensure generalizability.
 
@@ -75,7 +79,9 @@ Unlike supervised learning where data is static, RL involves active, iterative c
 
 1. **Initialize Policy**: Set up a policy $\pi_\theta(a|s)$ that maps current state $s$ to a probability distribution over actions $a$.
 2. **Interact & Collect Trajectories**: Run the policy in the environment to generate sequence data (trajectories $\tau$):
-    $$\tau = (s_1, a_1, r_1, s_2, a_2, r_2, \dots)$$
+    $$
+    \tau = (s_1, a_1, r_1, s_2, a_2, r_2, \dots)
+    $$
 3. **Verify & Reward**: Use a reward model or an automated verifier to evaluate the sequence of actions and return a scalar reward $r_t$.
 4. **Update via Policy Gradient**: Since the sampling of actions is a stochastic, non-differentiable step, use RL algorithms (e.g., Policy Gradient) to update $\theta$, increasing the likelihood of actions that yielded higher rewards.
 5. **Bootstrap**: Use the updated, stronger policy to generate better trial data, and repeat the loop.
@@ -117,8 +123,9 @@ Unlike supervised learning where data is static, RL involves active, iterative c
 
 * Words are represented as continuous vectors in a high-dimensional space (e.g., 1000-D).
 * **Semantic Direction**: Vector differences encode semantic relationships. For example, the difference vector representing "Capital of Country" is consistent across different countries:
-    $$v_{\text{Rome}} - v_{\text{Italy}} \approx v_{\text{Paris}} - v_{\text{France}}$$
-
+    $$
+    v_{\text{Rome}} - v_{\text{Italy}} \approx v_{\text{Paris}} - v_{\text{France}}
+    $$
 ### 6. Reinforcement Learning for Robots and LLMs
 
 * **Robotics Walking**: A quadruped robot's policy outputs joint motor controls at each timestep. At Iteration 10, it cannot walk, but through trial-and-error, it optimizes its walking trajectory over many iterations.

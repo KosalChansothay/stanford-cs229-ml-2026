@@ -1,0 +1,292 @@
+@import './bento-tokens.css';
+
+/* CSS Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Khmer Language & Content Typography (Google Sans strictly for Khmer) */
+html[lang="km"],
+[lang="km"],
+.lang-km,
+.khmer-content,
+.khmer-label,
+:lang(km) {
+  font-family: var(--font-khmer);
+  line-height: 1.8;
+}
+
+/* Platform-wide buttons use standard font (Inter) */
+.desktop-util-btn,
+.lang-pill-btn,
+.lang-switch-btn {
+  font-family: var(--font-sans);
+}
+
+/* App Shell Layout */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 1024px) {
+  .main-content-wrapper {
+    margin-left: 0;
+  }
+}
+
+/* Collapsible Desktop Sidebar System */
+@media (min-width: 1025px) {
+  html.sidebar-collapsed .app-sidebar {
+    transform: translateX(-100%);
+  }
+
+  html.sidebar-collapsed .main-content-wrapper {
+    margin-left: 0;
+  }
+}
+
+/* Desktop Sidebar Toggle Button */
+.sidebar-desktop-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--card-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.sidebar-desktop-toggle-btn:hover {
+  background: var(--card-surface-subtle);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.sidebar-desktop-toggle-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+  .sidebar-desktop-toggle-btn {
+    display: none;
+  }
+}
+
+.content-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 2rem 2.5rem 5rem;
+}
+
+@media (max-width: 768px) {
+  .content-container {
+    padding: 1.25rem 1rem 3rem;
+  }
+}
+
+/* Whisper-Thin Barely Visible Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.12) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45) !important;
+}
+
+/* Math Breathing Room (MathJax & KaTeX Display Equations) */
+.katex-display,
+mjx-container[jax="CHTML"][display="true"] {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 2.35rem 0 !important;
+  padding: 1.6rem 2rem !important;
+  background: var(--card-surface-subtle) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-subtle) !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  text-align: center !important;
+  font-size: 1.18rem !important;
+  line-height: 1.8 !important;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.katex-display:hover,
+mjx-container[jax="CHTML"][display="true"]:hover {
+  border-color: var(--border-strong) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* Internal Display Math Font Sizing & Centering */
+.katex-display > .katex {
+  font-size: 1.18rem !important;
+  white-space: normal !important;
+  line-height: 1.8 !important;
+  text-align: center !important;
+  max-width: 100% !important;
+}
+
+/* Simple Inline Math within Sentences */
+.katex:not(.katex-display .katex),
+mjx-container[jax="CHTML"]:not([display="true"]) {
+  font-size: 1.05em !important;
+  padding: 0.05em 0.25em !important;
+  vertical-align: -0.06em !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Enforce LaTeX / KaTeX Mathematical Typography Across All Locales */
+.katex,
+.katex-display,
+.katex .katex-html {
+  font-family: KaTeX_Main, "Times New Roman", serif !important;
+}
+
+.katex .mathnormal {
+  font-family: KaTeX_Math !important;
+  font-style: italic !important;
+}
+
+.katex .mord:not(.text) {
+  font-family: KaTeX_Main, "Times New Roman", serif !important;
+}
+
+.katex .amsrm,
+.katex .mathbb {
+  font-family: KaTeX_AMS !important;
+}
+
+.katex .mathcal {
+  font-family: KaTeX_Caligraphic, KaTeX_Main !important;
+}
+
+.katex .mathbf {
+  font-family: KaTeX_Main !important;
+  font-weight: bold !important;
+}
+
+/* Allow Khmer text inside \text{} blocks in math formulas */
+.katex .text {
+  font-family: var(--font-khmer), var(--font-sans) !important;
+}
+
+/* Interactive Plotly Visualization Frame */
+.bento-viz-card {
+  margin: 2.5rem 0;
+  background: var(--card-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bento-viz-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-hover);
+}
+
+.viz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.viz-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.plotly-chart {
+  width: 100%;
+  min-height: 420px;
+}
+

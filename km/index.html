@@ -4,28 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stanford CS229 ML — កំណត់ចំណាំមេរៀន និទាឃរដូវ ឆ្នាំ២០២៦</title>
-  <meta name="description" content="កម្រងកំណត់ចំណាំមេរៀន និងឯកសារសិក្សា Stanford CS229 Machine Learning (និទាឃរដូវ ឆ្នាំ២០២៦) ជាភាសាខ្មែរ។">
+  <title>Stanford AI &amp; Machine Learning — កំណត់ចំណាំមេរៀន និទាឃរដូវ ឆ្នាំ២០២៦</title>
+  <meta name="description" content="កម្រងកំណត់ចំណាំមេរៀន ការទាញរូបមន្តគណិតវិទ្យា និងក្រាហ្វិកអន្តរកម្មសម្រាប់ Stanford CS229, CS336, និង CS231N (និទាឃរដូវ ឆ្នាំ២០២៦) ជាភាសាខ្មែរ។">
   <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
   <meta name="author" content="Kosal Chansothay">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Stanford CS229 ML កំណត់ចំណាំមេរៀន — និទាឃរដូវ ឆ្នាំ២០២៦",
+    "name": "Stanford AI & Machine Learning កំណត់ចំណាំមេរៀន — និទាឃរដូវ ឆ្នាំ២០២៦",
     "author": {
       "@type": "Person",
       "name": "Kosal Chansothay",
       "alternateName": ["Sothay", "Chan Sothay", "KosalChansothay"],
       "url": "https://github.com/KosalChansothay"
     },
-    "about": "Stanford CS229 Machine Learning lecture notes and study materials in Khmer (Spring 2026)"
+    "about": "Stanford AI & Machine Learning lecture notes and study materials in Khmer (Spring 2026)"
   }
   </script>
   <link rel="stylesheet" href="../css/style.css">
   <script>
     MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
       svg: { fontCache: 'global' }
     };
   </script>
@@ -37,16 +37,17 @@
   <nav class="sidebar" role="navigation" aria-label="ការរុករកចម្បង">
     <div class="sidebar-profile">
       <img class="sidebar-avatar" src="../img/profile.jpg" alt="រូបសញ្ញាគេហទំព័រ">
-      <div class="sidebar-name">កំណត់ចំណាំ ML</div>
-      <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML</div>
+      <div class="sidebar-profile-text">
+        <div class="sidebar-name">កំណត់ចំណាំ ML</div>
+        <div class="sidebar-role">ស៊េរី Stanford AI &amp; ML &bull; ឆ្នាំ២០២៦</div>
+      </div>
       <div class="sidebar-bio">កំណត់ចំណាំការបង្រៀន និងឯកសារសិក្សាសម្រាប់វគ្គសិក្សា Machine Learning និង AI នៅសាកលវិទ្យាល័យ Stanford។</div>
     </div>
     <ul class="sidebar-nav">
-      <li class="nav-label">គេហទំព័រ</li>
+      <li class="nav-label">ការរុករក</li>
       <li><a href="index.html" class="active">ទំព័រដើម</a></li>
-      <li><a href="about.html">អំពី</a></li>
-      <li><a href="notes.html">កំណត់ចំណាំមេរៀន</a></li>
       <li><a href="courses/index.html">វគ្គសិក្សាទាំងអស់</a></li>
+      <li><a href="notes.html">កំណត់ចំណាំមេរៀន</a></li>
     </ul>
     <div class="sidebar-social">
       <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
@@ -54,151 +55,217 @@
     </div>
     <div class="sidebar-footer">
       បង្កើតឡើងដោយ HTML/CSS/JS ឋិតិវន្ត<br>
-      &copy; 2026
+      &copy; 2026 Kosal Chansothay
     </div>
   </nav>
 
   <main class="main" role="main">
     <header class="page-header">
-      <h1>Stanford CS229: មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន</h1>
-      <p class="subtitle">និទាឃរដូវ ឆ្នាំ២០២៦ — កំណត់ចំណាំមេរៀន &amp; ឯកសារសិក្សា</p>
+      <h1>ស៊េរីកំណត់ចំណាំមេរៀន Stanford AI &amp; Machine Learning</h1>
+      <p class="subtitle">និទាឃរដូវ ឆ្នាំ២០២៦ &mdash; កំណត់ចំណាំសិក្សា ការទាញរូបមន្តគណិតវិទ្យា &amp; ក្រាហ្វិកអន្តរកម្ម</p>
     </header>
 
-    <div class="card">
-      <h2>សូមស្វាគមន៍</h2>
+    <div class="card hero-card">
+      <h2>មជ្ឈមណ្ឌលសិក្សា</h2>
       <p>
-        នេះគឺជាកម្រងកំណត់ចំណាំមេរៀន និងឯកសារសិក្សាសម្រាប់
-        <strong>Stanford CS229</strong> ដែលជាវគ្គសិក្សាមូលដ្ឋានគ្រឹះនៃការរៀនរបស់ម៉ាស៊ីន (Machine Learning)
-        បង្រៀនក្នុងឆមាសនិទាឃរដូវ ឆ្នាំ២០២៦ នៅសាកលវិទ្យាល័យ Stanford។
+        សូមស្វាគមន៍មកកាន់គេហទំព័រប្រមូលផ្តុំកម្រងកំណត់ចំណាំមេរៀនស៊ីជម្រៅ និងការទាញរូបមន្តគណិតវិទ្យាយ៉ាងលម្អិត
+        សម្រាប់វគ្គសិក្សាវិទ្យាសាស្ត្រកុំព្យូទ័រឈានមុខទាំងបីរបស់សាកលវិទ្យាល័យ Stanford លើផ្នែក Machine Learning,
+        Deep Learning, និង Large Language Models។
       </p>
-      <p>
-        កំណត់ចំណាំត្រូវបានរៀបចំតាមមេរៀននីមួយៗ និងគ្របដណ្តប់លើប្រធានបទយ៉ាងទូលំទូលាយ ចាប់ពីការរៀនដោយមានការណែនាំ (Supervised Learning),
-        ការរៀនដោយគ្មានការណែនាំ (Unsupervised Learning), ការរៀនបែបពង្រឹង (Reinforcement Learning)
-        រហូតដល់ទម្រង់នៃការរៀនស៊ីជម្រៅទំនើបៗ (Modern Deep Learning Paradigms)។
-      </p>
-    </div>
-
-    <div class="card">
-      <h2>តំណភ្ជាប់រហ័ស</h2>
-      <p class="quick-links-intro">
-        កម្រងកំណត់ចំណាំមេរៀនទូលំទូលាយដែលគ្របដណ្តប់លើ Stanford CS229 (Machine Learning), CS336 (Language Modeling),
-        និង CS231N (Deep Learning for Computer Vision)។ អ្នកអាចស្វែងរកកំណត់ចំណាំទាំងអស់នៅលើទំព័រ
-        <a href="notes.html">កំណត់ចំណាំមេរៀន</a> ឬជ្រើសរើសមេរៀនខាងក្រោម។
-      </p>
-
-      <div class="quick-links-grid">
-        <div class="quick-links-group">
-          <h3>CS229: មូលដ្ឋានគ្រឹះ</h3>
-          <ul>
-            <li><a href="courses/cs229/lecture-1.html">មេរៀនទី ១ — សេចក្តីផ្តើម (Introduction)</a></li>
-            <li><a href="../courses/cs229/lecture-2.html">មេរៀនទី ២ — Supervised Learning Setup</a></li>
-            <li><a href="../courses/cs229/lecture-3.html">មេរៀនទី ៣ — Logistic Regression</a></li>
-            <li><a href="../courses/cs229/lecture-4.html">មេរៀនទី ៤ — Exponential Family &amp; GLMs</a></li>
-          </ul>
+      
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">៣</div>
+          <div class="stat-label">វគ្គសិក្សាឈានមុខ</div>
         </div>
-
-        <div class="quick-links-group">
-          <h3>CS229: ម៉ូដែលបង្កើត &amp; ការផ្តល់យោបល់</h3>
-          <ul>
-            <li><a href="../courses/cs229/lecture-5.html">មេរៀនទី ៥ — GDA &amp; Naive Bayes</a></li>
-            <li><a href="../courses/cs229/lecture-6.html">មេរៀនទី ៦ — Bias-Variance &amp; ML Advice</a></li>
-          </ul>
+        <div class="stat-item">
+          <div class="stat-number">៥០</div>
+          <div class="stat-label">មេរៀនពេញលេញ</div>
         </div>
-
-        <div class="quick-links-group">
-          <h3>CS229: បណ្តាញញាណ</h3>
-          <ul>
-            <li><a href="../courses/cs229/lecture-7.html">មេរៀនទី ៧ — Architecture</a></li>
-            <li><a href="../courses/cs229/lecture-8.html">មេរៀនទី ៨ — Backpropagation</a></li>
-          </ul>
+        <div class="stat-item">
+          <div class="stat-number">MathJax</div>
+          <div class="stat-label">រូបមន្តគណិតវិទ្យា</div>
         </div>
-
-        <div class="quick-links-group">
-          <h3>CS229: ការរៀនដោយគ្មានការណែនាំ</h3>
-          <ul>
-            <li><a href="../courses/cs229/lecture-9.html">មេរៀនទី ៩ — K-Means &amp; GMM</a></li>
-            <li><a href="../courses/cs229/lecture-10.html">មេរៀនទី ១០ — EM &amp; PCA</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3>CS229: AI បង្កើត &amp; LLMs</h3>
-          <ul>
-            <li><a href="../courses/cs229/lecture-11.html">មេរៀនទី ១១ — Diffusion Models</a></li>
-            <li><a href="../courses/cs229/lecture-12.html">មេរៀនទី ១២ — Foundation Models &amp; LoRA</a></li>
-            <li><a href="../courses/cs229/lecture-13.html">មេរៀនទី ១៣ — Contrastive Learning &amp; RAG</a></li>
-            <li><a href="../courses/cs229/lecture-14.html">មេរៀនទី ១៤ — Transformers &amp; Attention</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="../courses/cs336/index.html" style="color: inherit;">CS336: ស្ថាបត្យកម្ម &amp; ហាដវែរ</a></h3>
-          <ul>
-            <li><a href="../courses/cs336/lecture-1.html">មេរៀនទី ១ — Overview, Tokenization</a></li>
-            <li><a href="../courses/cs336/lecture-2.html">មេរៀនទី ២ — PyTorch &amp; Resource Accounting</a></li>
-            <li><a href="../courses/cs336/lecture-3.html">មេរៀនទី ៣ — Architectures</a></li>
-            <li><a href="../courses/cs336/lecture-4.html">មេរៀនទី ៤ — Attention Alternatives &amp; MoE</a></li>
-            <li><a href="../courses/cs336/lecture-5.html">មេរៀនទី ៥ — GPUs, TPUs &amp; FlashAttention</a></li>
-            <li><a href="../courses/cs336/lecture-6.html">មេរៀនទី ៦ — Kernels, Triton &amp; XLA</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="../courses/cs336/index.html" style="color: inherit;">CS336: ប្រព័ន្ធប៉ារ៉ាឡែល &amp; Scaling</a></h3>
-          <ul>
-            <li><a href="../courses/cs336/lecture-7.html">មេរៀនទី ៧ — Parallelism Foundations</a></li>
-            <li><a href="../courses/cs336/lecture-8.html">មេរៀនទី ៨ — Advanced Parallelism (ZeRO/FSDP)</a></li>
-            <li><a href="../courses/cs336/lecture-9.html">មេរៀនទី ៩ — Scaling Laws Foundations</a></li>
-            <li><a href="../courses/cs336/lecture-10.html">មេរៀនទី ១០ — Inference &amp; KV Cache</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="../courses/cs231n/index.html" style="color: inherit;">CS231N: ចក្ខុវិស័យកុំព្យូទ័រ &amp; CNNs</a></h3>
-          <ul>
-            <li><a href="../courses/cs231n/lecture-1.html">មេរៀនទី ១ — Introduction &amp; History</a></li>
-            <li><a href="../courses/cs231n/lecture-2.html">មេរៀនទី ២ — Linear Classifiers &amp; Loss</a></li>
-            <li><a href="../courses/cs231n/lecture-3.html">មេរៀនទី ៣ — Regularization &amp; Optimization</a></li>
-            <li><a href="../courses/cs231n/lecture-4.html">មេរៀនទី ៤ — Backprop &amp; Neural Nets</a></li>
-            <li><a href="../courses/cs231n/lecture-5.html">មេរៀនទី ៥ — CNNs &amp; Convolutions</a></li>
-          </ul>
+        <div class="stat-item">
+          <div class="stat-number">Plotly</div>
+          <div class="stat-label">ក្រាហ្វិកអន្តរកម្ម</div>
         </div>
       </div>
 
-      <p class="quick-links-more">
-        <a class="btn" href="notes.html">មើលកំណត់ចំណាំមេរៀនទាំងអស់ &rarr;</a>
-      </p>
+      <div class="hero-actions">
+        <a class="btn" href="notes.html">ស្វែងរកមេរៀនទាំងអស់ (៥០ មេរៀន) &rarr;</a>
+        <a class="btn btn-secondary" href="courses/index.html">មើលបញ្ជីវគ្គសិក្សា</a>
+        <a class="btn btn-secondary" href="../index.html">🇺🇸 English Edition</a>
+      </div>
     </div>
 
+    <section class="courses-showcase-section">
+      <h2 class="section-title">វគ្គសិក្សាឈានមុខទាំងបី</h2>
+      
+      <div class="course-showcase-grid">
+        <!-- CS229 Card -->
+        <article class="course-showcase-card">
+          <div class="course-badge-row">
+            <span class="course-code-badge badge-cs229">CS229</span>
+            <span class="course-count-badge">១៤ មេរៀន</span>
+          </div>
+          <h3><a href="courses/cs229/index.html">ការរៀនរបស់ម៉ាស៊ីន៖ មូលដ្ឋានគ្រឹះ និងទម្រង់ទំនើប</a></h3>
+          <p class="course-instructors"><strong>សាស្ត្រាចារ្យ៖</strong> Prof. Christopher R&eacute; &amp; Tengyu Ma &bull; Stanford CS</p>
+          <p class="course-desc">
+            វគ្គសិក្សាមូលដ្ឋានគ្រឹះនៃការរៀនរបស់ម៉ាស៊ីន (Machine Learning)។ គ្របដណ្តប់លើការរៀនដោយមានការណែនាំ,
+            Empirical Risk Minimization, Generalized Linear Models, Generative Learning Algorithms, Neural Backprop,
+            ការរៀនដោយគ្មានការណែនាំ (K-Means, EM, PCA), និងទម្រង់ទំនើបៗដូចជា Diffusion Models និង LoRA។
+          </p>
+          <div class="course-tags">
+            <span class="tag">Linear &amp; Logistic Regression</span>
+            <span class="tag">GLMs</span>
+            <span class="tag">GDA &amp; Naive Bayes</span>
+            <span class="tag">Backpropagation</span>
+            <span class="tag">K-Means &amp; EM</span>
+            <span class="tag">PCA</span>
+            <span class="tag">Diffusion Models</span>
+            <span class="tag">LoRA &amp; RAG</span>
+          </div>
+          <div class="course-card-actions">
+            <a href="courses/cs229/index.html" class="btn">ពិនិត្យ CS229 &rarr;</a>
+            <a href="courses/cs229/lecture-1.html" class="btn btn-outline">មេរៀនទី ១</a>
+          </div>
+        </article>
+
+        <!-- CS336 Card -->
+        <article class="course-showcase-card">
+          <div class="course-badge-row">
+            <span class="course-code-badge badge-cs336">CS336</span>
+            <span class="course-count-badge">១៨ មេរៀន</span>
+          </div>
+          <h3><a href="../courses/cs336/index.html">ការបង្កើតគំរូភាសាពីមូលដ្ឋានគ្រឹះ (LLM Stack)</a></h3>
+          <p class="course-instructors"><strong>ការផ្តោត៖</strong> ប្រព័ន្ធ, GPU Kernels, ការពង្រីកខ្នាត &amp; Post-Training &bull; Stanford 2026</p>
+          <p class="course-desc">
+            ការសិក្សាស្វែងយល់វិស្វកម្មគំរូភាសាធំៗ (LLMs) ពីគោលការណ៍គ្រឹះដំបូង៖ ចាប់ពី BPE Tokenization,
+            ការគណនាធនធាន PyTorch, រចនាសម្ព័ន្ធ Transformer (MoE), FlashAttention-2, Triton GPU kernels,
+            ការបណ្តុះបណ្តាលចែកចាយ (ZeRO/FSDP), ច្បាប់ពង្រីកខ្នាត (Scaling Laws), រហូតដល់ការតម្រឹម Post-Training (SFT, DPO, RLVR, GRPO)។
+          </p>
+          <div class="course-tags">
+            <span class="tag">Tokenization</span>
+            <span class="tag">Transformers &amp; MoE</span>
+            <span class="tag">FlashAttention</span>
+            <span class="tag">Triton GPU Kernels</span>
+            <span class="tag">ZeRO &amp; FSDP</span>
+            <span class="tag">Scaling Laws</span>
+            <span class="tag">SFT &amp; DPO</span>
+            <span class="tag">RLVR &amp; GRPO</span>
+          </div>
+          <div class="course-card-actions">
+            <a href="../courses/cs336/index.html" class="btn">ពិនិត្យ CS336 &rarr;</a>
+            <a href="../courses/cs336/lecture-1.html" class="btn btn-outline">មេរៀនទី ១</a>
+          </div>
+        </article>
+
+        <!-- CS231N Card -->
+        <article class="course-showcase-card">
+          <div class="course-badge-row">
+            <span class="course-code-badge badge-cs231n">CS231N</span>
+            <span class="course-count-badge">១៨ មេរៀន</span>
+          </div>
+          <h3><a href="../courses/cs231n/index.html">ការរៀនស៊ីជម្រៅសម្រាប់គំហើញកុំព្យូទ័រ (Computer Vision)</a></h3>
+          <p class="course-instructors"><strong>ការផ្តោត៖</strong> ការសម្គាល់រូបភាព, Generative Vision &amp; 3D &bull; Stanford 2026</p>
+          <p class="course-desc">
+            ការសិក្សាទូលំទូលាយលើគំហើញកុំព្យូទ័រ ចាប់ពីរចនាសម្ព័ន្ធ Convolutional Neural Networks និង ResNets ដល់
+            Vision Transformers (ViT), ការចាប់ប្លុកវត្ថុ (Object Detection), ការវិភាគវីដេអូ, ការរៀនដោយខ្លួនឯង (Self-Supervised),
+            គំរូបង្កើតរូបភាព (VAEs, GANs, Diffusion), គំហើញ 3D (NeRF), និងការរៀនរបស់មនុស្សយន្ត (Robot Learning)។
+          </p>
+          <div class="course-tags">
+            <span class="tag">CNNs &amp; ResNets</span>
+            <span class="tag">Vision Transformers (ViT)</span>
+            <span class="tag">Detection &amp; Segmentation</span>
+            <span class="tag">Video Understanding</span>
+            <span class="tag">Self-Supervised Learning</span>
+            <span class="tag">Diffusion Models</span>
+            <span class="tag">3D Vision &amp; NeRF</span>
+            <span class="tag">Robot Learning</span>
+          </div>
+          <div class="course-card-actions">
+            <a href="../courses/cs231n/index.html" class="btn">ពិនិត្យ CS231N &rarr;</a>
+            <a href="../courses/cs231n/lecture-1.html" class="btn btn-outline">មេរៀនទី ១</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Curated Pathways -->
+    <div class="card pathways-card">
+      <h2>ទិសដៅសិក្សាតាមប្រធានបទ</h2>
+      <p>
+        តើអ្នកចង់សិក្សាផ្តោតលើជំនាញបច្ចេកទេសណាមួយជាពិសេស? អ្នកអាចចូលទៅកាន់មេរៀនសំខាន់ៗដោយផ្ទាល់៖
+      </p>
+      <div class="pathway-grid">
+        <div class="pathway-item">
+          <h4>📐 មូលដ្ឋានគ្រឹះគណិត &amp; ការបង្កើនប្រសិទ្ធភាព</h4>
+          <p>ទម្រង់អនុគមន៍ខាតបង់, Gradient Descent, Exponential Families, និងលំហូរ Backprop។</p>
+          <p><a href="courses/cs229/lecture-2.html">CS229 មេរៀន ២–៤</a> &bull; <a href="../courses/cs231n/lecture-2.html">CS231N មេរៀន ២–៤</a></p>
+        </div>
+        <div class="pathway-item">
+          <h4>⚡ ប្រព័ន្ធ LLM &amp; GPU Kernels</h4>
+          <p>ស្ថាបត្យកម្ម GPU, កម្រិតអង្គចងចាំ, ការសរសេរកម្មវិធី Triton, និង ZeRO/FSDP Parallelism។</p>
+          <p><a href="../courses/cs336/lecture-5.html">CS336 មេរៀន ៥–៨</a> &bull; <a href="../courses/cs336/lecture-guest.html">CS336 Guest Lecture</a></p>
+        </div>
+        <div class="pathway-item">
+          <h4>🌌 បញ្ញាសិប្បនិម្មិតបង្កើតថ្មី &amp; Diffusion</h4>
+          <p>Score Matching, DDPM, Denoising Score Matching, និង Latent Diffusion Models។</p>
+          <p><a href="courses/cs229/lecture-11.html">CS229 មេរៀន ១១</a> &bull; <a href="../courses/cs231n/lecture-14.html">CS231N មេរៀន ១៤</a></p>
+        </div>
+        <div class="pathway-item">
+          <h4>👁️ Vision Transformers &amp; 3D</h4>
+          <p>យន្តការ Attention លើ Visual Tokens, Patch Embeddings, NeRF, និងគំហើញលំហ 3D។</p>
+          <p><a href="../courses/cs231n/lecture-8.html">CS231N មេរៀន ៨</a> &bull; <a href="../courses/cs231n/lecture-15.html">CS231N មេរៀន ១៥</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Info Table -->
     <div class="card">
-      <h2>ព័ត៌មានវគ្គសិក្សា</h2>
-      <table>
-        <tr>
-          <th>វគ្គសិក្សា</th>
-          <td>CS229: Foundations and Paradigms of Machine Learning (មូលដ្ឋានគ្រឹះ និងទម្រង់នៃការរៀនរបស់ម៉ាស៊ីន)</td>
-        </tr>
-        <tr>
-          <th>ឆមាស</th>
-          <td>និទាឃរដូវ ឆ្នាំ២០២៦ (Spring 2026)</td>
-        </tr>
-        <tr>
-          <th>សាកលវិទ្យាល័យ</th>
-          <td>សាកលវិទ្យាល័យ Stanford (Stanford University)</td>
-        </tr>
-        <tr>
-          <th>សាស្ត្រាចារ្យ</th>
-          <td>Chris Ré (សាស្ត្រាចារ្យ) និង Tengyu Ma (សាស្ត្រាចារ្យរង), ផ្នែកវិទ្យាសាស្ត្រកុំព្យូទ័រ</td>
-        </tr>
-        <tr>
-          <th>គេហទំព័រវគ្គសិក្សា</th>
-          <td><a href="https://cs229.stanford.edu/index.html-spr26" target="_blank"
-              rel="noopener">cs229.stanford.edu</a> (គ្រោងមេរៀន និងឯកសារសិក្សា)</td>
-        </tr>
+      <h2>តារាងប្រៀបធៀបវគ្គសិក្សា</h2>
+      <table class="course-matrix-table">
+        <thead>
+          <tr>
+            <th>វគ្គសិក្សា</th>
+            <th>ការផ្តោតចម្បង</th>
+            <th>ចំនួនមេរៀន</th>
+            <th>សាស្ត្រាចារ្យ / ប្រភព</th>
+            <th>គេហទំព័រផ្លូវការ Stanford</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CS229</strong></td>
+            <td>មូលដ្ឋានគ្រឹះ, ការរៀនមាន/គ្មានការណែនាំ, ទម្រង់ទំនើបៗ</td>
+            <td>១៤ មេរៀន</td>
+            <td>Prof. Christopher R&eacute;, Tengyu Ma</td>
+            <td><a href="https://cs229.stanford.edu/index.html-spr26" target="_blank" rel="noopener">cs229.stanford.edu</a></td>
+          </tr>
+          <tr>
+            <td><strong>CS336</strong></td>
+            <td>ការបង្កើតគំរូភាសាពីមូលដ្ឋានគ្រឹះ (ប្រព័ន្ធ, Kernels, Post-Training)</td>
+            <td>១៨ មេរៀន</td>
+            <td>សាកលវិទ្យាល័យ Stanford</td>
+            <td><a href="../courses/cs336/index.html">ទំព័រ CS336</a></td>
+          </tr>
+          <tr>
+            <td><strong>CS231N</strong></td>
+            <td>ការរៀនស៊ីជម្រៅសម្រាប់គំហើញកុំព្យូទ័រ (CNNs, ViTs, Diffusion, 3D)</td>
+            <td>១៨ មេរៀន</td>
+            <td>សាកលវិទ្យាល័យ Stanford</td>
+            <td><a href="https://cs231n.stanford.edu/" target="_blank" rel="noopener">cs231n.stanford.edu</a></td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
     <footer class="site-footer">
-      <p>Stanford CS229 ML កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+      <p>Stanford AI &amp; Machine Learning កំណត់ចំណាំមេរៀន &mdash; និទាឃរដូវ ឆ្នាំ២០២៦</p>
+      <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.35rem;">
+        រៀបចំ និងគ្រប់គ្រងដោយ Kosal Chansothay &bull; Pure Vanilla HTML/CSS/JS &bull; MathJax &bull; Plotly Interactive
+      </p>
     </footer>
   </main>
 

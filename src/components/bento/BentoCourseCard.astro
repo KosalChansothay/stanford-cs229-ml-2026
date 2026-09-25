@@ -1,0 +1,335 @@
+---
+// Bento Course Card Component (Direct 1-to-1 Translation of Reference Image, Strict Zero-Emoji)
+interface Props {
+  courseCode: string;
+  title: string;
+  instructors: string;
+  lectureCount: number;
+  thumbnailUrl: string;
+  trackBadge: string;
+  overviewUrl: string;
+  firstLectureUrl: string;
+  technicalChips?: string[];
+  institution?: string;
+}
+
+const {
+  courseCode,
+  title,
+  instructors,
+  lectureCount,
+  thumbnailUrl,
+  trackBadge,
+  overviewUrl,
+  firstLectureUrl,
+  technicalChips = ['MathJax & Plotly'],
+  institution = 'STANFORD CS'
+} = Astro.props;
+---
+
+<article class={`bento-tour-card card-${courseCode.toLowerCase()}`}>
+  <!-- 1. Top Aspect-Ratio Thumbnail with Floating Badges -->
+  <div class="card-media-wrapper">
+    <img src={thumbnailUrl} alt={`${courseCode} Course Thumbnail`} class="card-thumbnail" loading="lazy" />
+    
+    <!-- Top-Left Floating Capsule Badge (No Emoji) -->
+    <div class="floating-pill-badge">
+      <svg class="pill-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+      </svg>
+      <span>{trackBadge}</span>
+    </div>
+
+    <!-- Bottom-Right Floating Circular Bookmark Button -->
+    <a href={overviewUrl} class="floating-circle-btn" aria-label={`View ${courseCode} syllabus`} title="Course Syllabus">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </a>
+  </div>
+
+  <!-- 2. Card Content Area -->
+  <div class="card-body">
+    <!-- Academic Eyebrow -->
+    <div class="card-eyebrow">{institution} • SPRING 2026</div>
+
+    <!-- Main Title with Verified SVG Badge -->
+    <div class="card-title-row">
+      <h3 class="card-title">
+        <a href={overviewUrl}>{courseCode}: {title}</a>
+      </h3>
+      <svg class="verified-badge-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" title={`${institution} Verified Curriculum`}>
+        <circle cx="12" cy="8" r="7"></circle>
+        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+      </svg>
+    </div>
+
+    <!-- 3. Inline Metadata Chips (Monochromatic SVGs, Zero Emojis) -->
+    <div class="chips-row">
+      <div class="meta-chip">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span>{lectureCount} Lectures</span>
+      </div>
+
+      <div class="meta-chip">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>{instructors}</span>
+      </div>
+
+      {technicalChips.map((chip) => (
+        <div class="meta-chip">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>{chip}</span>
+        </div>
+      ))}
+    </div>
+
+    <!-- 4. Bottom Action & Highlight Row -->
+    <div class="card-footer-row">
+      <div class="highlight-block">
+        <div class="highlight-main">Free &amp; Open</div>
+        <div class="highlight-sub">Full Study Notes &amp; Derivations</div>
+      </div>
+
+      <!-- Circular Directional Action Button (→) -->
+      <a href={firstLectureUrl} class="circle-action-btn" aria-label={`Start ${courseCode} Lecture 1`} title={`Start ${courseCode} Lecture 1`}>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  /* Card Container */
+  .bento-tour-card {
+    background: var(--card-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .bento-tour-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-strong);
+  }
+
+  /* Media Thumbnail Container (16:10 aspect ratio matching reference) */
+  .card-media-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0f172a;
+  }
+
+  .card-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .bento-tour-card:hover .card-thumbnail {
+    transform: scale(1.04);
+  }
+
+  /* Floating Capsule Pill Badge (Top-Left) */
+  .floating-pill-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.32rem 0.8rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent-lime);
+    color: var(--accent-lime-dark);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+  }
+
+  .pill-icon {
+    stroke: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Floating Circular Bookmark Button (Bottom-Right of Image) */
+  .floating-circle-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-circle);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e293b;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    z-index: 2;
+  }
+
+  :global([data-theme="dark"]) .floating-circle-btn {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+  }
+
+  .floating-circle-btn:hover {
+    transform: scale(1.1);
+    background: #ffffff;
+    color: var(--brand-accent);
+  }
+
+  /* Card Body */
+  .card-body {
+    padding: 1.25rem 1.4rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /* Eyebrow */
+  .card-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  /* Title & Badge */
+  .card-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .card-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card-title a:hover {
+    color: var(--brand-accent);
+  }
+
+  .verified-badge-icon {
+    color: var(--brand-accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Capsule Metadata Chips */
+  .chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .meta-chip svg {
+    stroke: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* Footer Row */
+  .card-footer-row {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .highlight-main {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+
+  .highlight-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  /* Circular Directional Button (→) */
+  .circle-action-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-circle);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .circle-action-btn:hover {
+    background: var(--brand-accent);
+    color: #ffffff;
+    border-color: var(--brand-accent);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .circle-action-btn:hover svg {
+    transform: translateX(2px);
+  }
+</style>

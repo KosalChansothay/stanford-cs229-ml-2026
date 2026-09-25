@@ -23,52 +23,71 @@
 ##### Pretext Task Formulations
 *   **Rotation Prediction Loss:**
     Given a dataset of unlabeled images, each image $X_i$ is rotated by an angle $\theta_c \in \{0^\circ, 90^\circ, 180^\circ, 270^\circ\}$. The network parameters $W$ are optimized via standard 4-way cross-entropy loss:
-    $$L\_{rot} = -\frac{1}{N} \sum\_{i=1}^N \sum\_{c=0}^3 \mathbb{I}(y_i = c) \log P(y_i = c | X_i^{\theta_c}; W)$$
+    $$
+    L_{rot} = -\frac{1}{N} \sum_{i=1}^N \sum_{c=0}^3 \mathbb{I}(y_i = c) \log P(y_i = c | X_i^{\theta_c}; W)
+    $$
     where $\mathbb{I}(\cdot)$ is the indicator function and $P(y_i = c | X_i^{\theta_c}; W)$ represents the predicted probability of rotation class $c$.
 
 *   **Jigsaw Puzzle Classification Loss:**
     Images are divided into a $3\times3$ grid of patches, yielding $9! = 362,880$ possible permutations. To simplify optimization, the label space is restricted to a subset of $C = 64$ highly dissimilar permutations. The model predicts the active permutation index using a 64-way softmax loss:
-    $$L\_{jigsaw} = -\log \frac{\exp(s_y)}{\sum\_{j=1}^{64} \exp(s_j)}$$
+    $$
+    L_{jigsaw} = -\log \frac{\exp(s_y)}{\sum_{j=1}^{64} \exp(s_j)}
+    $$
     where $s_y$ is the logit score for the ground-truth permutation.
 
 *   **Inpainting Reconstruction Loss:**
     A binary mask $M \in \{0, 1\}^{H \times W \times C}$ zeroes out parts of the input image $X$. The encoder-decoder network $f_\theta$ reconstructs the missing pixels. The reconstruction loss is formulated as a masked $L_2$ distance:
-    $$L\_{rec} = \|M \odot (X - f_\theta((1 - M) \odot X))\|_2^2$$
-    where $\odot$ represents the element-wise (Hadamard) product. This is often combined with an adversarial loss $L\_{adv}$ to reduce blurry outputs.
+    $$
+    L_{rec} = \|M \odot (X - f_\theta((1 - M) \odot X))\|_2^2
+    $$
+    where $\odot$ represents the element-wise (Hadamard) product. This is often combined with an adversarial loss $L_{adv}$ to reduce blurry outputs.
 
 *   **Split-Brain Autoencoder:**
     An image is split into two disjoint sets of channels, e.g., lightness channel $X_1 = L$ and color channels $X_2 = (A, B)$ in $Lab$ color space. Two independent sub-networks $f_1$ and $f_2$ are trained to cross-predict each other's channels:
-    $$L\_{split} = L\_{dist}(f_1(X_1), X_2) + L\_{dist}(f_2(X_2), X_1)$$
-    where $L\_{dist}$ represents either an element-wise regression loss or cross-entropy over binned colors.
+    $$
+    L_{split} = L_{dist}(f_1(X_1), X_2) + L_{dist}(f_2(X_2), X_1)
+    $$
+    where $L_{dist}$ represents either an element-wise regression loss or cross-entropy over binned colors.
 
 ##### Masked Autoencoders (MAE) Formulation
 *   **Asymmetric Data Flow:**
-    The original image $X$ is split into non-overlapping patches $\{x_p\}\_{p=1}^P$. A random binary mask selects $75\%$ of the patches to be discarded. The remaining unmasked patches ($25\%$) are embedded and processed by a deep ViT encoder to obtain latents $Z\_{unmasked}$.
+    The original image $X$ is split into non-overlapping patches $\{x_p\}_{p=1}^P$. A random binary mask selects $75\%$ of the patches to be discarded. The remaining unmasked patches ($25\%$) are embedded and processed by a deep ViT encoder to obtain latents $Z_{unmasked}$.
     
-    Before entering the lightweight ViT decoder, the unmasked latents are aligned with learnable, shared **mask tokens** $e\_{mask} \in \mathbb{R}^D$ and restored to their original sequence positions. Position embeddings $E\_{pos}$ are added to preserve spatial coordinates:
-    $$H\_{dec} = [Z\_{unmasked}; \text{placeholder}(e\_{mask})] + E\_{pos}$$
+    Before entering the lightweight ViT decoder, the unmasked latents are aligned with learnable, shared **mask tokens** $e_{mask} \in \mathbb{R}^D$ and restored to their original sequence positions. Position embeddings $E_{pos}$ are added to preserve spatial coordinates:
+    $$
+    H_{dec} = [Z_{unmasked}; \text{placeholder}(e_{mask})] + E_{pos}
+    $$
     The loss is a Mean Squared Error (MSE) computed **only** on the reconstructed pixels of the masked patches:
-    $$L\_{MAE} = \frac{1}{|M\_{patches}|} \sum\_{i \in M\_{patches}} \|x_i - \hat{x}_i\|_2^2$$
-    where $x_i$ and $\hat{x}_i$ are the true and reconstructed pixel values of patch $i$, and $M\_{patches}$ is the set of masked indices.
+    $$
+    L_{MAE} = \frac{1}{|M_{patches}|} \sum_{i \in M_{patches}} \|x_i - \hat{x}_i\|_2^2
+    $$
+    where $x_i$ and $\hat{x}_i$ are the true and reconstructed pixel values of patch $i$, and $M_{patches}$ is the set of masked indices.
 
 ##### Contrastive Learning & InfoNCE
 *   **Cosine Similarity Metric:**
     The alignment between query representation $q$ and key representation $k$ is measured using cosine similarity:
-    $$\text{sim}(q, k) = \frac{q^T k}{\|q\|_2 \|k\|_2}$$
-
+    $$
+    \text{sim}(q, k) = \frac{q^T k}{\|q\|_2 \|k\|_2}
+    $$
 *   **InfoNCE Loss Function:**
-    For a given query representation $q$, let $k^+$ be the positive key representation (e.g., from an alternate crop of the same image), and $\{k^-_i\}\_{i=1}^K$ be the set of $K$ negative key representations (from other images). The InfoNCE loss is defined as:
-    $$L\_{InfoNCE} = -\log \frac{\exp(\text{sim}(q, k^+) / \tau)}{\exp(\text{sim}(q, k^+) / \tau) + \sum\_{i=1}^{K} \exp(\text{sim}(q, k^-_i) / \tau)}$$
+    For a given query representation $q$, let $k^+$ be the positive key representation (e.g., from an alternate crop of the same image), and $\{k^-_i\}_{i=1}^K$ be the set of $K$ negative key representations (from other images). The InfoNCE loss is defined as:
+    $$
+    L_{InfoNCE} = -\log \frac{\exp(\text{sim}(q, k^+) / \tau)}{\exp(\text{sim}(q, k^+) / \tau) + \sum_{i=1}^{K} \exp(\text{sim}(q, k^-_i) / \tau)}
+    $$
     where $\tau$ is a temperature hyperparameter controlling the scaling of similarity scores.
 
 *   **Mutual Information Lower Bound:**
-    Minimizing $L\_{InfoNCE}$ maximizes the mutual information $I(X, X^+)$ between similar views $X$ and $X^+$. The mathematical bound is expressed as:
-    $$I(X, X^+) \geq \log(K) - L\_{InfoNCE}$$
+    Minimizing $L_{InfoNCE}$ maximizes the mutual information $I(X, X^+)$ between similar views $X$ and $X^+$. The mathematical bound is expressed as:
+    $$
+    I(X, X^+) \geq \log(K) - L_{InfoNCE}
+    $$
     where $K$ is the number of negative samples. As $K \rightarrow \infty$, the bound on mutual information becomes tighter, explaining why large batch sizes or memory queues are mathematically necessary.
 
 *   **MoCo Momentum Weight Update:**
     To maintain a continuous dictionary queue $Q$ of negative keys without backpropagating through earlier iterations, MoCo uses a **momentum key encoder** parameterized by $\theta_k$, which is updated via an exponential moving average (EMA) of the active encoder weights $\theta_q$:
-    $$\theta_k \leftarrow m \theta_k + (1-m) \theta_q$$
+    $$
+    \theta_k \leftarrow m \theta_k + (1-m) \theta_q
+    $$
     where $m \in [0.99, 1.0)$ is the momentum coefficient.
 
 ---

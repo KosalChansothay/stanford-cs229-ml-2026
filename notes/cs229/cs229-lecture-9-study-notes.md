@@ -12,7 +12,7 @@ This lecture introduces the paradigm of **Unsupervised Learning**, shifting the 
 - **Soft Clustering**: A probabilistic assignment scheme where each data point has a fractional membership (or posterior probability) across all $k$ components (e.g., GMMs).
 - **Centroid ($\mu_j$)**: The mathematical mean or center of a cluster in a $d$-dimensional space.
 - **Latent Variable ($z$)**: A hidden, unobserved variable that explains the structure of the observed data (e.g., the true hidden mixture component that generated a given sample).
-- **Mixture Weight ($\phi_j$)**: The prior probability $P(z = j)$ that a randomly sampled data point belongs to the $j$-th mixture component, satisfying $\phi_j \ge 0$ and $\sum\_{j=1}^k \phi_j = 1$.
+- **Mixture Weight ($\phi_j$)**: The prior probability $P(z = j)$ that a randomly sampled data point belongs to the $j$-th mixture component, satisfying $\phi_j \ge 0$ and $\sum_{j=1}^k \phi_j = 1$.
 - **Convex and Concave Functions**: A function $f$ is convex if its chord lies above or on its graph. A function is concave if its chord lies below or on its graph (such as the $\log$ function).
 - **Jensen's Inequality**: A mathematical theorem stating that for any convex function $f$ and random variable $X$, $\mathbb{E}[f(X)] \ge f(\mathbb{E}[X])$. For a concave function, the inequality is reversed: $\mathbb{E}[f(X)] \le f(\mathbb{E}[X])$.
 
@@ -21,27 +21,38 @@ This lecture introduces the paradigm of **Unsupervised Learning**, shifting the 
 ### 3. Mathematical Formulations & Derivations
 
 #### A. K-Means Distortion Function (Objective Function)
-K-Means optimizes a coordinate-descent objective known as the **distortion function** (or reconstruction error), which measures the sum of squared Euclidean distances between each point $x^{(i)}$ and its assigned centroid $\mu\_{c^{(i)}}$:
-$$J(c, \mu) = \sum\_{i=1}^n \|x^{(i)} - \mu\_{c^{(i)}}\|^2$$
+K-Means optimizes a coordinate-descent objective known as the **distortion function** (or reconstruction error), which measures the sum of squared Euclidean distances between each point $x^{(i)}$ and its assigned centroid $\mu_{c^{(i)}}$:
+$$
+J(c, \mu) = \sum_{i=1}^n \|x^{(i)} - \mu_{c^{(i)}}\|^2
+$$
 where $c^{(i)} \in \{1, \dots, k\}$ is the index of the cluster assigned to the $i$-th training example, and $\mu_j$ is the centroid of cluster $j$.
 
 #### B. Gaussian Mixture Models Generative Process
 A GMM models the joint distribution of observed features $x^{(i)} \in \mathbb{R}^d$ and a latent discrete variable $z^{(i)} \in \{1, \dots, k\}$:
 1. **Sample the latent component** $z^{(i)}$ from a Multinomial (prior) distribution:
-   $$z^{(i)} \sim \text{Multinomial}(\phi), \quad \text{where } P(z^{(i)} = j) = \phi_j$$
+   $$
+   z^{(i)} \sim \text{Multinomial}(\phi), \quad \text{where } P(z^{(i)} = j) = \phi_j
+   $$
 2. **Sample the observed features** $x^{(i)}$ from a multivariate Gaussian conditioned on $z^{(i)}$:
-   $$x^{(i)} \mid z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)$$
-
+   $$
+   x^{(i)} \mid z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)
+   $$
 The probability density function for a single component $j$ is:
-$$P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) = \frac{1}{(2\pi)^{d/2} |\Sigma_j|^{1/2}} \exp\left( -\frac{1}{2} (x^{(i)} - \mu_j)^T \Sigma_j^{-1} (x^{(i)} - \mu_j) \right)$$
-
+$$
+P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) = \frac{1}{(2\pi)^{d/2} |\Sigma_j|^{1/2}} \exp\left( -\frac{1}{2} (x^{(i)} - \mu_j)^T \Sigma_j^{-1} (x^{(i)} - \mu_j) \right)
+$$
 #### C. soft Clustering Membership: The Posteriors (w_j^{(i)})
 Since $z^{(i)}$ is unobserved, we calculate the posterior probability of a point $x^{(i)}$ belonging to cluster $j$ using Bayes' Rule:
-$$w_j^{(i)} = P(z^{(i)} = j \mid x^{(i)}; \phi, \mu, \Sigma)$$
-$$w_j^{(i)} = \frac{P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) P(z^{(i)} = j; \phi)}{\sum\_{l=1}^k P(x^{(i)} \mid z^{(i)} = l; \mu_l, \Sigma_l) P(z^{(i)} = l; \phi)}$$
-$$w_j^{(i)} = \frac{\phi_j \cdot \mathcal{N}(x^{(i)}; \mu_j, \Sigma_j)}{\sum\_{l=1}^k \phi_l \cdot \mathcal{N}(x^{(i)}; \mu_l, \Sigma_l)}$$
-
-These soft weights $w_j^{(i)}$ serve as fractional cluster memberships, where $\sum\_{j=1}^k w_j^{(i)} = 1$.
+$$
+w_j^{(i)} = P(z^{(i)} = j \mid x^{(i)}; \phi, \mu, \Sigma)
+$$
+$$
+w_j^{(i)} = \frac{P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) P(z^{(i)} = j; \phi)}{\sum_{l=1}^k P(x^{(i)} \mid z^{(i)} = l; \mu_l, \Sigma_l) P(z^{(i)} = l; \phi)}
+$$
+$$
+w_j^{(i)} = \frac{\phi_j \cdot \mathcal{N}(x^{(i)}; \mu_j, \Sigma_j)}{\sum_{l=1}^k \phi_l \cdot \mathcal{N}(x^{(i)}; \mu_l, \Sigma_l)}
+$$
+These soft weights $w_j^{(i)}$ serve as fractional cluster memberships, where $\sum_{j=1}^k w_j^{(i)} = 1$.
 
 ---
 
@@ -52,9 +63,13 @@ K-Means uses a coordinate descent optimization process that alternates between a
 1. **Initialize**: Randomly choose $k$ cluster centroids $\mu_1, \mu_2, \dots, \mu_k \in \mathbb{R}^d$.
 2. **Repeat until convergence**:
    - **Step 1 (Cluster Assignment / Expectation-like)**: For each training example $i \in \{1, \dots, n\}$, assign $x^{(i)}$ to its closest centroid:
-     $$c^{(i)} := \arg\min_j \|x^{(i)} - \mu_j\|^2$$
+     $$
+     c^{(i)} := \arg\min_j \|x^{(i)} - \mu_j\|^2
+     $$
    - **Step 2 (Centroid Update / Maximization-like)**: For each cluster $j \in \{1, \dots, k\}$, update its centroid to be the arithmetic mean of all points assigned to it:
-     $$\mu_j := \frac{\sum\_{i=1}^n \mathbb{I}\{c^{(i)} = j\} x^{(i)}}{\sum\_{i=1}^n \mathbb{I}\{c^{(i)} = j\}}$$
+     $$
+     \mu_j := \frac{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\} x^{(i)}}{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\}}
+     $$
 3. **Convergence**: Stop when the cluster assignments $c^{(i)}$ do not change between successive steps.
 
 <div id="plotly-kmeans-steps" class="plotly-chart" aria-label="Interactive Plotly chart: K-Means iteration steps with a slider to advance assignment and centroid-update phases"></div>
@@ -72,20 +87,28 @@ Since K-Means is non-convex and sensitive to initialization, K-Means++ spread th
 ### 5. Transition to EM: General Latent Variable Setup & Jensen's Inequality
 
 For models with latent variables (like GMMs), we want to maximize the marginal log-likelihood of the observed data:
-$$\ell(\theta) = \sum\_{i=1}^n \log P(x^{(i)}; \theta) = \sum\_{i=1}^n \log \sum\_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta)$$
+$$
+\ell(\theta) = \sum_{i=1}^n \log P(x^{(i)}; \theta) = \sum_{i=1}^n \log \sum_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta)
+$$
 However, the summation over the latent variable $z^{(i)}$ inside the $\log$ breaks the analytical structure and makes direct optimization non-convex and highly difficult. 
 
 #### Mathematical Form of Jensen's Inequality
 Jensen's Inequality provides the tool to construct a tractable lower bound for this marginal log-likelihood.
 - **For a concave function** $g$ (such as $g(t) = \log(t)$):
-  $$g(\mathbb{E}[t]) \ge \mathbb{E}[g(t)]$$
-- If we construct a probability distribution $Q_i(z^{(i)})$ over the latent variables such that $\sum\_{z^{(i)}} Q_i(z^{(i)}) = 1$, we can rewrite the log-likelihood of a single example as an expectation:
-  $$\log P(x^{(i)}; \theta) = \log \sum\_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta) = \log \sum\_{z^{(i)}} Q_i(z^{(i)}) \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$$
-  $$\log P(x^{(i)}; \theta) = \log \mathbb{E}\_{z^{(i)} \sim Q_i} \left[ \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right]$$
-
+  $$
+  g(\mathbb{E}[t]) \ge \mathbb{E}[g(t)]
+  $$
+- If we construct a probability distribution $Q_i(z^{(i)})$ over the latent variables such that $\sum_{z^{(i)}} Q_i(z^{(i)}) = 1$, we can rewrite the log-likelihood of a single example as an expectation:
+  $$
+  \log P(x^{(i)}; \theta) = \log \sum_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta) = \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+  $$
+  $$
+  \log P(x^{(i)}; \theta) = \log \mathbb{E}_{z^{(i)} \sim Q_i} \left[ \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right]
+  $$
 Applying Jensen's Inequality, we pull the expectation outside of the concave $\log$ function:
-$$\ell(\theta) \ge \sum\_{i=1}^n \sum\_{z^{(i)}} Q_i(z^{(i)}) \log \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$$
-
+$$
+\ell(\theta) \ge \sum_{i=1}^n \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+$$
 This lower-bound function $L_t(\theta)$ is constructed to be tight (equal) to $\ell(\theta)$ at the current parameter estimate $\theta^{(t)}$, allowing us to optimize $L_t$ iteratively to climb the true likelihood surface.
 
 <div id="plotly-em-bound" class="plotly-chart" aria-label="Interactive Plotly chart: the EM lower bound touching the log-likelihood tangentially, with a slider to advance EM iterations"></div>

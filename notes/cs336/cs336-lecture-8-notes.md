@@ -25,17 +25,23 @@ For a model with $N$ parameters trained under standard mixed precision (BF16/FP3
 
 Under **ZeRO / FSDP Sharding** with $M$ ranks:
 - **ZeRO Stage 1** (Shard Optimizer States): 
-  $$\text{Memory per rank} = 4N + \frac{12N}{M} \text{ bytes}$$
+  $$
+  \text{Memory per rank} = 4N + \frac{12N}{M} \text{ bytes}
+  $$
 - **ZeRO Stage 2** (Shard States + Gradients): 
-  $$\text{Memory per rank} = 2N + \frac{14N}{M} \text{ bytes}$$
+  $$
+  \text{Memory per rank} = 2N + \frac{14N}{M} \text{ bytes}
+  $$
 - **ZeRO Stage 3 / FSDP** (Shard States + Gradients + Parameters): 
-  $$\text{Memory per rank} = \frac{16N}{M} \text{ bytes}$$
-
+  $$
+  \text{Memory per rank} = \frac{16N}{M} \text{ bytes}
+  $$
 ### Activation Memory Accounting (Transformer Layer)
 The total activation memory overhead per transformer layer (excluding attention softmax matrices) is modeled as:
 
-$$A = 34 \cdot S \cdot B \cdot H + 5 \cdot \left(\frac{a \cdot S^2}{H}\right) \text{ bytes}$$
-
+$$
+A = 34 \cdot S \cdot B \cdot H + 5 \cdot \left(\frac{a \cdot S^2}{H}\right) \text{ bytes}
+$$
 Where:
 - $S$: Sequence length (tokens)
 - $B$: Batch size
@@ -43,23 +49,25 @@ Where:
 - $a$: Number of attention heads
 
 1. **Megatron-LM Tensor Parallelism (TP)**: Only reduces the MLP and attention projection activations (the first term) by the TP size $T$. Pointwise layer norms and dropouts ($10 \cdot S \cdot B \cdot H$ bytes) remain duplicated across all $T$ ranks:
-   $$A\_{\text{TP}} = \frac{24 \cdot S \cdot B \cdot H}{T} + 10 \cdot S \cdot B \cdot H \text{ bytes}$$
-
+   $$
+   A_{\text{TP}} = \frac{24 \cdot S \cdot B \cdot H}{T} + 10 \cdot S \cdot B \cdot H \text{ bytes}
+   $$
 2. **Sequence Parallelism (SP) + TP**: Shards the pointwise layer norm and dropout activations along the sequence dimension ($S$), unlocking full linear memory reduction:
-   $$A\_{\text{TP+SP}} = \frac{34 \cdot S \cdot B \cdot H}{T} \text{ bytes}$$
-
+   $$
+   A_{\text{TP+SP}} = \frac{34 \cdot S \cdot B \cdot H}{T} \text{ bytes}
+   $$
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### Fully Sharded Data Parallel (FSDP / ZeRO-3) Step
-1. **Initialize**: Shard the model weights $W$ uniformly across $M$ ranks. Each rank $i$ stores $W\_{\text{sharded}, i} = \frac{W}{M}$.
-2. **Forward Pass Loop (Layer $L = 1 \dots L\_{\text{max}}$)**:
+1. **Initialize**: Shard the model weights $W$ uniformly across $M$ ranks. Each rank $i$ stores $W_{\text{sharded}, i} = \frac{W}{M}$.
+2. **Forward Pass Loop (Layer $L = 1 \dots L_{\text{max}}$)**:
    - Rank $i$ performs an **All-Gather** to materialize the full layer weights $W_L$ in local registers/SRAM.
-   - Compute forward activation $Y_L = f(X\_{L-1}, W_L)$.
+   - Compute forward activation $Y_L = f(X_{L-1}, W_L)$.
    - **Immediately discard** the non-local parameters of $W_L$, reclaiming HBM space.
-3. **Backward Pass Loop (Layer $L = L\_{\text{max}} \dots 1$)**:
+3. **Backward Pass Loop (Layer $L = L_{\text{max}} \dots 1$)**:
    - All-Gather $W_L$ to reconstruct full weights.
-   - Compute layer gradients $\nabla\_{X\_{L-1}}$ and $\nabla\_{W_L}$.
-   - **Reduce-Scatter** the parameter gradients $\nabla\_{W_L}$ to distribute the gradient shards across ranks.
+   - Compute layer gradients $\nabla_{X_{L-1}}$ and $\nabla_{W_L}$.
+   - **Reduce-Scatter** the parameter gradients $\nabla_{W_L}$ to distribute the gradient shards across ranks.
    - Discard full weights $W_L$ and local un-sharded gradients.
 4. **Update**: Optimizer steps locally on sharded states using sharded gradients.
 
@@ -116,7 +124,7 @@ class EducationalFSDPLayer(torch.nn.Module):
 Hiding communication latency is essential. FSDP utilizes dedicated CUDA streams to pipeline operations:
 - **Stream 1 (Computation)**: Performs the forward MatMul for layer $L$ on the GPU.
 - **Stream 2 (Communication)**: Asynchronously runs the `All-Gather` collective to fetch the sharded weights for layer $L+1$ from remote nodes.
-If computation time $T\_{\text{compute}}(L) \ge T\_{\text{comm}}(L+1)$, communication overhead is completely hidden ("free" distributed training).
+If computation time $T_{\text{compute}}(L) \ge T_{\text{comm}}(L+1)$, communication overhead is completely hidden ("free" distributed training).
 
 ## 5. Hyperparameter Heuristics for Parallelism
 
@@ -126,7 +134,7 @@ If computation time $T\_{\text{compute}}(L) \ge T\_{\text{comm}}(L+1)$, communic
 
 <div id="plotly-cs336-8-pipeline-bubble" class="plotly-chart" aria-label="Interactive Plotly chart: Pipeline Parallelism 1F1B Bubble Overhead"></div>
 
-<p><em>Figure: Pipeline Parallelism (1F1B) Bubble Overhead $F\_{\text{bubble}} = \frac{p-1}{m}$ drops rapidly as micro-batch count $m$ increases.</em></p>
+<p><em>Figure: Pipeline Parallelism (1F1B) Bubble Overhead $F_{\text{bubble}} = \frac{p-1}{m}$ drops rapidly as micro-batch count $m$ increases.</em></p>
 
 
 ### The 4D Parallelism Layout

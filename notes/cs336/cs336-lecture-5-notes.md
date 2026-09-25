@@ -21,28 +21,34 @@
 ### Arithmetic Intensity & Roofline Boundary
 The arithmetic intensity $I$ of an algorithm is defined as:
 
-$$I = \frac{\text{FLOPs}}{\text{Bytes Transferred}}$$
+$$
+I = \frac{\text{FLOPs}}{\text{Bytes Transferred}}
+$$
+If $I < I_{\text{accelerator}} = \frac{\text{Peak FLOPs/sec}}{\text{Memory Bandwidth (Bytes/sec)}}$, the kernel is memory-bound; otherwise, it is compute-bound. For an NVIDIA H100, the accelerator intensity is:
 
-If $I < I\_{\text{accelerator}} = \frac{\text{Peak FLOPs/sec}}{\text{Memory Bandwidth (Bytes/sec)}}$, the kernel is memory-bound; otherwise, it is compute-bound. For an NVIDIA H100, the accelerator intensity is:
-
-$$I\_{\text{H100}} = \frac{1979 \times 10^{12} / 2 \text{ FLOPs/sec}}{3.3 \times 10^{12} \text{ Bytes/sec}} \approx 295 \text{ FLOPs/Byte} \quad [\sim104:00]$$
-
+$$
+I_{\text{H100}} = \frac{1979 \times 10^{12} / 2 \text{ FLOPs/sec}}{3.3 \times 10^{12} \text{ Bytes/sec}} \approx 295 \text{ FLOPs/Byte} \quad [\sim104:00]
+$$
 ### Tiling Memory Access Reduction
 In a naive $N \times N$ matrix multiplication, each input element is read from global memory $N$ times. With a square tile size $T$ loaded into shared SRAM, each element is read only $\frac{N}{T}$ times from global memory, achieving a $T$-times reduction:
 
-$$\text{Global memory reads reduction factor} = T \quad [\sim371:00]$$
-
+$$
+\text{Global memory reads reduction factor} = T \quad [\sim371:00]
+$$
 ### Online Softmax Algorithm (FlashAttention Foundation)
 Instead of a global softmax which requires materializing the entire matrix $x$:
 
-$$m = \max_i x_i, \quad d = \sum_i e^{x_i - m}, \quad a_i = \frac{e^{x_i - m}}{d}$$
-
+$$
+m = \max_i x_i, \quad d = \sum_i e^{x_i - m}, \quad a_i = \frac{e^{x_i - m}}{d}
+$$
 The online softmax updates running maximums and denominators block-by-block. For two blocks $A$ and $B$, let the local maximum of block $A$ be $m^{(A)}$ and normalizer sum be $d^{(A)}$, and block $B$ be $m^{(B)}$ and normalizer sum be $d^{(B)}$. The merged state is:
 
-$$m^{\text{new}} = \max(m^{(A)}, m^{(B)}) \quad [\sim385:00, \sim386:00]$$
-
-$$d^{\text{new}} = d^{(A)} \cdot e^{m^{(A)} - m^{\text{new}}} + d^{(B)} \cdot e^{m^{(B)} - m^{\text{new}}} \quad [\sim385:00, \sim386:00]$$
-
+$$
+m^{\text{new}} = \max(m^{(A)}, m^{(B)}) \quad [\sim385:00, \sim386:00]
+$$
+$$
+d^{\text{new}} = d^{(A)} \cdot e^{m^{(A)} - m^{\text{new}}} + d^{(B)} \cdot e^{m^{(B)} - m^{\text{new}}} \quad [\sim385:00, \sim386:00]
+$$
 This mathematical reformulation allows computing softmax block-by-block without storing intermediate $N \times N$ matrices in HBM.
 
 ---

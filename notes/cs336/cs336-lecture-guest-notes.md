@@ -16,10 +16,11 @@
 
 ### Recurrent State Loop Transformer (Parse)
 Standard transformers pass activations sequentially through distinct layers. Parse routes inputs $x$ repeatedly through a shared recurrent block.
-Naively looping activations $x_t \leftarrow R(x\_{t-1})$ is highly unstable and triggers catastrophic loss spikes. Parse models the residual progression as a structured dynamic system:
+Naively looping activations $x_t \leftarrow R(x_{t-1})$ is highly unstable and triggers catastrophic loss spikes. Parse models the residual progression as a structured dynamic system:
 
-$$x\_{t+1} = A x_t + B \cdot r(x_t)$$
-
+$$
+x_{t+1} = A x_t + B \cdot r(x_t)
+$$
 Where:
 - $r(x_t)$: The highly non-linear transformer/attention layer block (treated as a bounded perturbation).
 - $A, B$: Parameter matrices governing residual feedback and injection scaling.
@@ -27,7 +28,9 @@ Where:
 ### SSM Stability Constraint
 To guarantee mathematical stability and prevent the activations from blowing up to $10^{19}$ over $k$ iterations, Parse enforces:
 1. **The $A$ Matrix**: Constrained to be a negative diagonal matrix:
-   $$A = -\text{diag}(\lambda_1, \lambda_2, \dots, \lambda_D) \quad \text{with} \quad \lambda_d > 0$$
+   $$
+   A = -\text{diag}(\lambda_1, \lambda_2, \dots, \lambda_D) \quad \text{with} \quad \lambda_d > 0
+   $$
    This forces the powers of $A$ to decay asymptotically to zero.
 2. **The $B$ Matrix**: Scaled with a strict linear normalization constraint.
 This bounds the spectral radius of the system to strictly less than 1, ensuring absolute convergence and stable loss curves under high learning rates.

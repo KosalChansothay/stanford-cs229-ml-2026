@@ -19,34 +19,42 @@ For a matrix-vector product $y = xW$ (where $x \in \mathbb{R}^{1 \times D}$ and 
 - **Flops**: $2 \times D \times F$
 - **Bytes transferred**: $2 \times (D + D \times F + F) \text{ bytes}$
 - **Arithmetic Intensity**:
-  $$I = \frac{2 \cdot D \cdot F}{2 \cdot (D + D \cdot F + F)} \approx 1 \text{ Flop/byte}$$
-
+  $$
+  I = \frac{2 \cdot D \cdot F}{2 \cdot (D + D \cdot F + F)} \approx 1 \text{ Flop/byte}
+  $$
 Since modern accelerators (like the A100/H100) require $I \ge 150-300$ to saturate compute cores, generation is completely memory-bandwidth bound.
 
 ### KV Cache Memory Footprint
-For batch size $B$, sequence length $S$, layer count $L$, number of KV heads $k\_{\text{heads}}$, and head dimension $H$ under BF16:
+For batch size $B$, sequence length $S$, layer count $L$, number of KV heads $k_{\text{heads}}$, and head dimension $H$ under BF16:
 
-$$\text{Memory}\_{\text{KV}} = 2 \times 2 \times (B \times S \times L \times k\_{\text{heads}} \times H) \text{ bytes}$$
-
+$$
+\text{Memory}_{\text{KV}} = 2 \times 2 \times (B \times S \times L \times k_{\text{heads}} \times H) \text{ bytes}
+$$
 Where the initial factor of 2 accounts for storing both Keys and Values, and the second factor of 2 is for BF16 bytes.
 
 ### Latency vs. Throughput Calculations
 Given memory bandwidth $BW$ (bytes/sec) and a model with $P$ parameters:
 - **Latency (seconds per token)**:
-  $$\text{Latency} \approx \frac{2 \cdot P + \text{Memory}\_{\text{KV}}}{BW}$$
+  $$
+  \text{Latency} \approx \frac{2 \cdot P + \text{Memory}_{\text{KV}}}{BW}
+  $$
 - **Throughput (tokens per second)**:
-  $$\text{Throughput} \approx \frac{B}{\text{Latency}} = \frac{B \cdot BW}{2 \cdot P + \text{Memory}\_{\text{KV}}}$$
-
+  $$
+  \text{Throughput} \approx \frac{B}{\text{Latency}} = \frac{B \cdot BW}{2 \cdot P + \text{Memory}_{\text{KV}}}
+  $$
 As batch size $B$ increases, parameter memory overhead is amortized, increasing throughput at the expense of generation latency.
 
 ### Speculative Decoding Acceptance Criterion
 To preserve exact sampling from the target model distribution $q(x)$ given candidate tokens proposed by the draft model $p(x)$:
 1. Draw sample $x$ from $p(x)$.
 2. Accept $x$ with probability:
-   $$\alpha = \min\left(1, \frac{q(x)}{p(x)}\right)$$
+   $$
+   \alpha = \min\left(1, \frac{q(x)}{p(x)}\right)
+   $$
 3. If rejected, sample $x$ from the residual distribution:
-   $$r(x) = \max\left(0, q(x) - p(x)\right)$$
-
+   $$
+   r(x) = \max\left(0, q(x) - p(x)\right)
+   $$
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### Speculative Decoding Engine Logic
@@ -121,7 +129,7 @@ def speculative_decode_step(draft_model, target_model, prompt_ids, K=4):
 
 <p><em>Figure: Speculative Decoding achieves 2x–3x serving speedups when the draft model acceptance rate $\alpha$ exceeds 70%.</em></p>
 
-- **MLA (Multi-Latent Attention) Parameters**: DeepSeek-V2 replaces standard multi-head attention with MLA. By projecting the keys and values down to a compressed latent space of $d_c = 512$ (compressing the keys and values from 16,384 dimensions), the physical KV cache size per layer scales with $d_c$ instead of $n \cdot d\_{\text{head}}$, allowing the serving batch size $B$ to scale by over **30x**.
+- **MLA (Multi-Latent Attention) Parameters**: DeepSeek-V2 replaces standard multi-head attention with MLA. By projecting the keys and values down to a compressed latent space of $d_c = 512$ (compressing the keys and values from 16,384 dimensions), the physical KV cache size per layer scales with $d_c$ instead of $n \cdot d_{\text{head}}$, allowing the serving batch size $B$ to scale by over **30x**.
 
 ## 6. Systems Warnings, Pitfalls, & Reflection Questions
 
@@ -133,4 +141,4 @@ def speculative_decode_step(draft_model, target_model, prompt_ids, K=4):
    **Answer**: The acceptance probability $\alpha = \min(1, q(x)/p(x))$ combined with sampling from the residual distribution $r(x) = \max(0, q(x) - p(x))$ on rejection is a form of Rejection Sampling. By scaling the acceptance threshold precisely by the ratio of target-to-draft densities, the probability of any token sequence being output is shown mathematically to converge exactly to the target distribution $q(x)$, ensuring zero quality degradation.
 
 2. *Why is GQA (Grouped Query Attention) highly superior to MQA (Multi-Query Attention) in practice?*
-   **Answer**: Multi-Query Attention collapses all key and value heads down to a single head ($k\_{\text{heads}} = 1$), representing an extreme compression ratio. While this yields optimal memory bandwidth savings, it causes severe, irreversible hits to model expressiveness and accuracy. GQA groups multiple query heads into a moderate number of key-value head groups (e.g., 8 groups), establishing an adjustable trade-off that recovers nearly all the performance of MHA while retaining most of the systems gains of MQA.
+   **Answer**: Multi-Query Attention collapses all key and value heads down to a single head ($k_{\text{heads}} = 1$), representing an extreme compression ratio. While this yields optimal memory bandwidth savings, it causes severe, irreversible hits to model expressiveness and accuracy. GQA groups multiple query heads into a moderate number of key-value head groups (e.g., 8 groups), establishing an adjustable trade-off that recovers nearly all the performance of MHA while retaining most of the systems gains of MQA.

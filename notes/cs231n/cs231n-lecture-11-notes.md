@@ -22,10 +22,13 @@
 
 ##### Gradient Linearity & Synchronous DP Updates
 In synchronous Data Parallelism (DP), the total loss $L$ over a macro-batch composed of $M$ GPUs with a local batch size of $N$ is the average of individual sample losses:
-$$L = \frac{1}{M \cdot N} \sum\_{g=1}^{M} \sum\_{i=1}^{N} \mathcal{L}\left(f(X\_{i,g}; W), y\_{i,g}\right)$$
-
+$$
+L = \frac{1}{M \cdot N} \sum_{g=1}^{M} \sum_{i=1}^{N} \mathcal{L}\left(f(X_{i,g}; W), y_{i,g}\right)
+$$
 By the linearity of the gradient operator, the global weight update gradient is computed independently in local blocks and averaged:
-$$\nabla_W L = \frac{1}{M} \sum\_{g=1}^{M} \left( \frac{1}{N} \sum\_{i=1}^{N} \nabla_W \mathcal{L}\left(f(X\_{i,g}; W), y\_{i,g}\right) \right)$$
+$$
+\nabla_W L = \frac{1}{M} \sum_{g=1}^{M} \left( \frac{1}{N} \sum_{i=1}^{N} \nabla_W \mathcal{L}\left(f(X_{i,g}; W), y_{i,g}\right) \right)
+$$
 This proves that sharded data parallel training is mathematically equivalent to single-device training on the full macro-batch, without approximation.
 
 ##### Sharded Memory Footprint Math (Standard Adam Optimizer)
@@ -37,37 +40,56 @@ For a model with $P$ parameters trained using mixed-precision FP16/BF16 weights 
     *   *First Moment / Momentum vector $m$ (FP32):* $4P$ bytes
     *   *Second Moment / Variance vector $v$ (FP32):* $4P$ bytes
 
-$$\text{Total Memory per Parameter} = 2P + 2P + (4P + 4P + 4P) = 16P \text{ bytes}$$
+$$
+\text{Total Memory per Parameter} = 2P + 2P + (4P + 4P + 4P) = 16P \text{ bytes}
+$$
 Under a model sharding scheme (FSDP) distributed across $M$ GPUs, the local device memory overhead scales as:
-$$\text{Local Memory}\_{\text{FSDP}} = \frac{16P}{M} \text{ bytes}$$
-
+$$
+\text{Local Memory}_{\text{FSDP}} = \frac{16P}{M} \text{ bytes}
+$$
 ##### Mathematical Optimization of Activation Checkpointing
 Let $N$ be the number of layers in a neural network.
 1.  **Standard Backpropagation:**
-    $$\text{Memory} = O(N) \quad \text{Compute} = O(N)$$
+    $$
+    \text{Memory} = O(N) \quad \text{Compute} = O(N)
+    $$
 2.  **Activation Recomputation (Checkpointing every $C$ layers):**
     For a block size of $C$, we retain exactly one activation checkpoint every $C$ layers. To perform backward passes inside a block of size $C$, we run local forward passes on-demand:
-    $$\text{Memory}(N, C) = \underbrace{O\left(\frac{N}{C}\right)}\_{\text{Stored Checkpoints}} + \underbrace{O(C)}\_{\text{Intra-block Forward Activations}}$$
-    $$\text{Compute}(N, C) = \underbrace{O(N)}\_{\text{Initial Forward}} + \underbrace{O\left(\frac{N^2}{C}\right)}\_{\text{Quadratic Block-wise Recomputation}}$$
+    $$
+    \text{Memory}(N, C) = \underbrace{O\left(\frac{N}{C}\right)}_{\text{Stored Checkpoints}} + \underbrace{O(C)}_{\text{Intra-block Forward Activations}}
+    $$
+    $$
+    \text{Compute}(N, C) = \underbrace{O(N)}_{\text{Initial Forward}} + \underbrace{O\left(\frac{N^2}{C}\right)}_{\text{Quadratic Block-wise Recomputation}}
+    $$
     To find the optimal checkpoint interval $C^*$ that minimizes memory, we solve:
-    $$\frac{d}{dC} \left( \frac{N}{C} + C \right) = 0 \implies -\frac{N}{C^2} + 1 = 0 \implies C^* = \sqrt{N}$$
+    $$
+    \frac{d}{dC} \left( \frac{N}{C} + C \right) = 0 \implies -\frac{N}{C^2} + 1 = 0 \implies C^* = \sqrt{N}
+    $$
     Substituting $C^* = \sqrt{N}$ back into the memory and compute bounds yields:
-    $$\text{Optimal Memory} = O(\sqrt{N}) \quad \text{Compute} = O(N\sqrt{N})$$
-
+    $$
+    \text{Optimal Memory} = O(\sqrt{N}) \quad \text{Compute} = O(N\sqrt{N})
+    $$
 ##### Megatron-LM Block Matrix Parallelism (Tensor Parallelism)
 Inside a Transformer's multi-layer perceptron (MLP) block, the data tensor $X$ undergoes two successive linear projection layers with weights $W_1$ and $W_2$ and activation function $\sigma$:
-$$\text{Output} = \sigma(X W_1) W_2$$
-
+$$
+\text{Output} = \sigma(X W_1) W_2
+$$
 To parallelize this across $M$ GPUs without communication between layers:
 1.  **First Layer (Column-Parallel sharding of $W_1$):**
-    We split $W_1$ vertically into column slices: $W_1 = [W\_{1,1}, W\_{1,2}, \dots, W\_{1,M}]$. Each GPU $i$ holds slice $W\_{1,i}$ and computes:
-    $$Y_i = \sigma(X W\_{1,i})$$
+    We split $W_1$ vertically into column slices: $W_1 = [W_{1,1}, W_{1,2}, \dots, W_{1,M}]$. Each GPU $i$ holds slice $W_{1,i}$ and computes:
+    $$
+    Y_i = \sigma(X W_{1,i})
+    $$
 2.  **Second Layer (Row-Parallel sharding of $W_2$):**
-    We split $W_2$ horizontally into row slices: $W_2 = [W\_{2,1}^T, W\_{2,2}^T, \dots, W\_{2,M}^T]^T$. Each GPU $i$ holds $W\_{2,i}$ and computes a partial block matrix product locally:
-    $$Z_i = Y_i W\_{2,i}$$
+    We split $W_2$ horizontally into row slices: $W_2 = [W_{2,1}^T, W_{2,2}^T, \dots, W_{2,M}^T]^T$. Each GPU $i$ holds $W_{2,i}$ and computes a partial block matrix product locally:
+    $$
+    Z_i = Y_i W_{2,i}
+    $$
 3.  **Fusing Output (Mathematical Identity):**
     Using the algebraic identity of block matrix multiplication:
-    $$\text{Output} = \sum\_{i=1}^{M} Z_i = \sum\_{i=1}^{M} \sigma(X W\_{1,i}) W\_{2,i}$$
+    $$
+    \text{Output} = \sum_{i=1}^{M} Z_i = \sum_{i=1}^{M} \sigma(X W_{1,i}) W_{2,i}
+    $$
     Thus, GPUs only perform an **All-Reduce sum** at the very end of the second linear layer, completely bypassing any synchronization step in between.
 
 ---
@@ -147,7 +169,7 @@ class ShardedMLPBlock(nn.Module):
 
 ##### Pipeline Parallelism (PP) "Bubble" Dynamics
 *   **Idle GPU Bubbles:** Distributing layers sequentially across devices (e.g. GPU 1 gets Layers 1-10, GPU 2 gets Layers 11-20) introduces severe stall delays because GPU $K+1$ must wait for GPU $K$ to complete its forward pass.
-*   **Micro-batch Interleaving:** Injecting multiple independent micro-batches concurrently into the pipeline (the 1F1B schedule) minimizes this idle "bubble" time. Each GPU alternates between computing a forward step for micro-batch $B_i$ and a backward step for micro-batch $B\_{i-k}$, forcing high overall cluster utilization.
+*   **Micro-batch Interleaving:** Injecting multiple independent micro-batches concurrently into the pipeline (the 1F1B schedule) minimizes this idle "bubble" time. Each GPU alternates between computing a forward step for micro-batch $B_i$ and a backward step for micro-batch $B_{i-k}$, forcing high overall cluster utilization.
 
 ```
 Naive PP (No micro-batches):
@@ -203,8 +225,9 @@ As models scale, researchers chain multiple sharding strategies to match cluster
 2.  **FSDP + Activation Checkpointing:** Crucial for models between 1B and 10B parameters.
 3.  **HSDP (FSDP + DP):** Essential above 256/512 GPUs to group sharding within high-bandwidth servers and use standard data parallelism across slower network rack routers.
 4.  **4D Hybrid Parallelism:** For extreme models ($>100\text{B}$ parameters, sequence length $>100,000$), combine all four axes simultaneously (e.g., Llama 3 405B configuration):
-    $$\text{Total GPUs } (16,384) = \underbrace{8}\_{\text{Tensor Parallel}} \times \underbrace{16}\_{\text{Context Parallel}} \times \underbrace{16}\_{\text{Pipeline Parallel}} \times \underbrace{8}\_{\text{Data Parallel}}$$
-
+    $$
+    \text{Total GPUs } (16,384) = \underbrace{8}_{\text{Tensor Parallel}} \times \underbrace{16}_{\text{Context Parallel}} \times \underbrace{16}_{\text{Pipeline Parallel}} \times \underbrace{8}_{\text{Data Parallel}}
+    $$
 ---
 
 #### 7. Pitfalls, Debugging Tips & Reflection Questions

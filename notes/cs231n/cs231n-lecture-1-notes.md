@@ -21,16 +21,21 @@
 #### 2. Mathematical Foundations
 *   **Linear/Parametric Mapping (Introductory Formalism):**
     While Lecture 1 is a high-level conceptual introduction, it introduces the core parametric mapping of computer vision:
-    $$f(x, W, b) = W x + b$$
+    $$
+    f(x, W, b) = W x + b
+    $$
     where $x$ represents the raw pixel tensor flattened into a vector, $W$ represents the weight matrix (parameters), and $b$ is the bias vector.
 *   **Top-1 vs. Top-5 Error Rate:**
     The historical benchmark metric used in the ImageNet Large Scale Visual Recognition Challenge (ILSVRC):
-    $$\text{Top-5 Error Rate} = \frac{1}{N} \sum\_{i=1}^{N} \mathbb{I}(y_i \notin \hat{Y}\_{i, 1..5})$$
-    where $y_i$ is the ground-truth label, $\hat{Y}\_{i, 1..5}$ represents the five most confident class predictions from the model, and $\mathbb{I}(\cdot)$ is the indicator function.
+    $$
+    \text{Top-5 Error Rate} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{I}(y_i \notin \hat{Y}_{i, 1..5})
+    $$
+    where $y_i$ is the ground-truth label, $\hat{Y}_{i, 1..5}$ represents the five most confident class predictions from the model, and $\mathbb{I}(\cdot)$ is the indicator function.
 *   **The Calculus of Backpropagation (Conceptual):**
     First introduced mathematically in 1986 (Rumelhart, Hinton, Williams), backpropagation utilizes the derivative chain rule to compute parameter updates based on an error-correcting objective function:
-    $$\frac{\partial L}{\partial W} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial W}$$
-
+    $$
+    \frac{\partial L}{\partial W} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial W}
+    $$
 ---
 
 #### 3. Architecture / Algorithm Walkthrough

@@ -22,54 +22,88 @@
 
 #### A. Spatiotemporal Input Dimensions
 A video clip is represented as a 4D tensor:
-$$X \in \mathbb{R}^{C \times T \times H \times W}$$
+$$
+X \in \mathbb{R}^{C \times T \times H \times W}
+$$
 where $C$ is the number of color channels, $T$ is the temporal length (number of frames), and $H, W$ are the spatial height and width.
 
 #### B. Late Fusion Architectures
 For $T$ frames, features are extracted independently per frame using a shared 2D CNN:
-$$u_t = \text{CNN}\_{2D}(X_t) \in \mathbb{R}^{H' \times W' \times D} \quad \forall t \in \{1, \dots, T\}$$
-
+$$
+u_t = \text{CNN}_{2D}(X_t) \in \mathbb{R}^{H' \times W' \times D} \quad \forall t \in \{1, \dots, T\}
+$$
 1.  **Late Fusion by Concatenation:**
     Feature maps are flattened and concatenated across time:
-    $$u\_{concat} = [u_1, u_2, \dots, u_T] \in \mathbb{R}^{T \cdot H' \cdot W' \cdot D}$$
-    $$y = \text{MLP}(u\_{concat}) \in \mathbb{R}^C \quad (\text{High parameter footprint})$$
+    $$
+    u_{concat} = [u_1, u_2, \dots, u_T] \in \mathbb{R}^{T \cdot H' \cdot W' \cdot D}
+    $$
+    $$
+    y = \text{MLP}(u_{concat}) \in \mathbb{R}^C \quad (\text{High parameter footprint})
+    $$
 2.  **Late Fusion by Temporal Pooling:**
     Temporal aggregation is performed via average or max pooling across the temporal dimension:
-    $$u\_{pool} = \frac{1}{T} \sum\_{t=1}^T u_t \in \mathbb{R}^{H' \times W' \times D}$$
-    $$y = \text{Linear}(\text{Flatten}(u\_{pool})) \in \mathbb{R}^C$$
-
+    $$
+    u_{pool} = \frac{1}{T} \sum_{t=1}^T u_t \in \mathbb{R}^{H' \times W' \times D}
+    $$
+    $$
+    y = \text{Linear}(\text{Flatten}(u_{pool})) \in \mathbb{R}^C
+    $$
 #### C. Early Fusion Architectures
 The temporal sequence is collapsed directly into the channel dimension in the very first layer:
-$$X\_{early} = \text{Reshape}(X) \in \mathbb{R}^{(C \cdot T) \times H \times W}$$
-The first 2D convolution kernel $W\_{early} \in \mathbb{R}^{D \times (C \cdot T) \times K_h \times K_w}$ processes the entire temporal window at once:
-$$h_1 = W\_{early} * X\_{early} + b \in \mathbb{R}^{D \times H' \times W'}$$
+$$
+X_{early} = \text{Reshape}(X) \in \mathbb{R}^{(C \cdot T) \times H \times W}
+$$
+The first 2D convolution kernel $W_{early} \in \mathbb{R}^{D \times (C \cdot T) \times K_h \times K_w}$ processes the entire temporal window at once:
+$$
+h_1 = W_{early} * X_{early} + b \in \mathbb{R}^{D \times H' \times W'}
+$$
 This destroys the temporal dimension immediately, preventing the model from achieving *temporal shift invariance*.
 
 #### D. 3D Convolution (Slow Fusion)
-A 3D convolution layer uses kernels that extend across both spatial and temporal dimensions. Let $K_t$ be the temporal kernel size, and $K_h, K_w$ be the spatial kernel sizes. For an input $X \in \mathbb{R}^{C\_{in} \times T \times H \times W}$, the pre-activation at a specific coordinate $(t, y, x)$ for output channel $c\_{out}$ is:
-$$A(c\_{out}, t, y, x) = \sum\_{c=1}^{C\_{in}} \sum\_{i=-K'_t}^{K'_t} \sum\_{j=-K'_h}^{K'_h} \sum\_{k=-K'_w}^{K'_w} W(c\_{out}, c, i, j, k) \cdot X(c, t+i, y+j, x+k) + b(c\_{out})$$
+A 3D convolution layer uses kernels that extend across both spatial and temporal dimensions. Let $K_t$ be the temporal kernel size, and $K_h, K_w$ be the spatial kernel sizes. For an input $X \in \mathbb{R}^{C_{in} \times T \times H \times W}$, the pre-activation at a specific coordinate $(t, y, x)$ for output channel $c_{out}$ is:
+$$
+A(c_{out}, t, y, x) = \sum_{c=1}^{C_{in}} \sum_{i=-K'_t}^{K'_t} \sum_{j=-K'_h}^{K'_h} \sum_{k=-K'_w}^{K'_w} W(c_{out}, c, i, j, k) \cdot X(c, t+i, y+j, x+k) + b(c_{out})
+$$
 where $K'_t = \frac{K_t - 1}{2}$, $K'_h = \frac{K_h - 1}{2}$, and $K'_w = \frac{K_w - 1}{2}$ (assuming odd kernel dimensions).
-The output tensor has shape $C\_{out} \times T' \times H' \times W'$.
+The output tensor has shape $C_{out} \times T' \times H' \times W'$.
 
 #### E. Dense Optical Flow
-Optical flow measures the displacement vector field $(dx, dy)$ of pixels between two adjacent frames $I_t$ and $I\_{t+1}$:
-$$I(x, y, t) = I(x + dx, y + dy, t + 1)$$
+Optical flow measures the displacement vector field $(dx, dy)$ of pixels between two adjacent frames $I_t$ and $I_{t+1}$:
+$$
+I(x, y, t) = I(x + dx, y + dy, t + 1)
+$$
 Assuming brightness constancy, the linearized optical flow constraint is:
-$$\frac{\partial I}{\partial x} \frac{dx}{dt} + \frac{\partial I}{\partial y} \frac{dy}{dt} + \frac{\partial I}{\partial t} = 0$$
+$$
+\frac{\partial I}{\partial x} \frac{dx}{dt} + \frac{\partial I}{\partial y} \frac{dy}{dt} + \frac{\partial I}{\partial t} = 0
+$$
 The horizontal flow component $d_x$ and vertical flow component $d_y$ are extracted as separate spatial channels and stacked across a sequence of $L$ frames to form a motion volume $F \in \mathbb{R}^{2L \times H \times W}$ which acts as input to the temporal stream.
 
 #### F. Non-Local Block (Spatiotemporal Self-Attention)
 Given an input feature map $X \in \mathbb{R}^{C \times T \times H \times W}$, queries $Q$, keys $K$, and values $V$ are computed via $1 \times 1 \times 1$ 3D convolutions:
-$$Q(X) = W_q * X \in \mathbb{R}^{C' \times T \times H \times W}$$
-$$K(X) = W_k * X \in \mathbb{R}^{C' \times T \times H \times W}$$
-$$V(X) = W_v * X \in \mathbb{R}^{C' \times T \times H \times W}$$
+$$
+Q(X) = W_q * X \in \mathbb{R}^{C' \times T \times H \times W}
+$$
+$$
+K(X) = W_k * X \in \mathbb{R}^{C' \times T \times H \times W}
+$$
+$$
+V(X) = W_v * X \in \mathbb{R}^{C' \times T \times H \times W}
+$$
 The feature maps are reshaped into 2D matrices where $N = T \cdot H \cdot W$ is the total spatiotemporal position index:
-$$\bar{Q} \in \mathbb{R}^{C' \times N}, \quad \bar{K} \in \mathbb{R}^{C' \times N}, \quad \bar{V} \in \mathbb{R}^{C' \times N}$$
+$$
+\bar{Q} \in \mathbb{R}^{C' \times N}, \quad \bar{K} \in \mathbb{R}^{C' \times N}, \quad \bar{V} \in \mathbb{R}^{C' \times N}
+$$
 The pairwise spatiotemporal affinity matrix is:
-$$E = \bar{Q}^T \bar{K} \in \mathbb{R}^{N \times N}$$
-$$\text{Attention}(X) = \text{Softmax}\left( \frac{\bar{Q}^T \bar{K}}{\sqrt{C'}} \right) \in \mathbb{R}^{N \times N}$$
+$$
+E = \bar{Q}^T \bar{K} \in \mathbb{R}^{N \times N}
+$$
+$$
+\text{Attention}(X) = \text{Softmax}\left( \frac{\bar{Q}^T \bar{K}}{\sqrt{C'}} \right) \in \mathbb{R}^{N \times N}
+$$
 The output $Y \in \mathbb{R}^{C \times T \times H \times W}$ incorporates a residual connection and a linear projection $W_z$:
-$$Y = W_z * \text{Reshape}\left( \bar{V} \cdot \text{Attention}(X)^T \right) + X$$
+$$
+Y = W_z * \text{Reshape}\left( \bar{V} \cdot \text{Attention}(X)^T \right) + X
+$$
 where $W_z \in \mathbb{R}^{C \times C' \times 1 \times 1 \times 1}$ maps the channel dimension back to $C$.
 
 ---

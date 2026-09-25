@@ -17,15 +17,17 @@
 ### Empirical Loss Power Laws
 Under resource-constrained scaling (where only one bottleneck is active at a time), validation loss $L$ is modeled as a power-law function:
 
-$$L(N) \approx \left(\frac{N_c}{N}\right)^{\alpha_N}, \quad L(D) \approx \left(\frac{D_c}{D}\right)^{\alpha_D}, \quad L(C) \approx \left(\frac{C_c}{C}\right)^{\alpha_C}$$
-
+$$
+L(N) \approx \left(\frac{N_c}{N}\right)^{\alpha_N}, \quad L(D) \approx \left(\frac{D_c}{D}\right)^{\alpha_D}, \quad L(C) \approx \left(\frac{C_c}{C}\right)^{\alpha_C}
+$$
 Where $N_c, D_c, C_c$ are constant intercepts, and $\alpha_N, \alpha_D, \alpha_C$ are scaling exponents.
 
 ### Joint Parametric Fitting (Chinchilla)
 The loss surface as a joint function of parameter count $N$ and token count $D$ is modeled as:
 
-$$L(N, D) = E + \frac{A}{N^\alpha} + \frac{B}{D^\beta}$$
-
+$$
+L(N, D) = E + \frac{A}{N^\alpha} + \frac{B}{D^\beta}
+$$
 Where:
 - $E$: Irreducible loss of the data distribution.
 - $A, B$: Constant amplitudes.
@@ -34,16 +36,19 @@ Where:
 ### Optimization under Flops Constraint
 Given a training FLOPs budget $C \approx 6ND$, we solve the constrained optimization problem:
 
-$$\min\_{N, D} L(N, D) \quad \text{subject to} \quad 6ND = C$$
-
+$$
+\min_{N, D} L(N, D) \quad \text{subject to} \quad 6ND = C
+$$
 Using Lagrange multipliers, the optimal parameter and token scales are derived as:
 
-$$N(C) = a C^a, \quad D(C) = b C^b$$
-
+$$
+N(C) = a C^a, \quad D(C) = b C^b
+$$
 Where:
 
-$$a = \frac{\beta}{\alpha + \beta}, \quad b = \frac{\alpha}{\alpha + \beta}$$
-
+$$
+a = \frac{\beta}{\alpha + \beta}, \quad b = \frac{\alpha}{\alpha + \beta}
+$$
 ### Kaplan vs. Chinchilla Parameters
 - **Kaplan (Suboptimal)**: $a \approx 0.73$, $b \approx 0.27$. This implies that for a 10x compute increase, model parameters should scale by 5.4x and data tokens by only 1.8x.
 - **Chinchilla (Optimal)**: $\alpha \approx 0.34$, $\beta \approx 0.28$, resulting in $a \approx 0.45$, $b \approx 0.55$. This dictates near-symmetric scaling ($N \propto C^{0.5}$, $D \propto C^{0.5}$), leading to the **20:1 token-to-parameter ratio** at optimal convergence.
@@ -53,10 +58,10 @@ $$a = \frac{\beta}{\alpha + \beta}, \quad b = \frac{\alpha}{\alpha + \beta}$$
 ### The IsoFLOP Profile Sweep (Method 2)
 1. Select $K$ target FLOP budgets $C_1, C_2, \dots, C_K$.
 2. For each budget $C_k$:
-   - Choose $J$ different model sizes $N\_{k,1}, N\_{k,2}, \dots, N\_{k,J}$.
-   - Compute corresponding token budgets: $D\_{k,j} = \frac{C_k}{6 N\_{k,j}}$.
-   - Train each model and record terminal validation loss $L(N\_{k,j}, D\_{k,j})$.
-3. Fit a quadratic curve to the loss data points $(N\_{k,j}, L\_{k,j})$ to find the optimal parameter size $N^*_k$ that minimizes the loss for budget $C_k$.
+   - Choose $J$ different model sizes $N_{k,1}, N_{k,2}, \dots, N_{k,J}$.
+   - Compute corresponding token budgets: $D_{k,j} = \frac{C_k}{6 N_{k,j}}$.
+   - Train each model and record terminal validation loss $L(N_{k,j}, D_{k,j})$.
+3. Fit a quadratic curve to the loss data points $(N_{k,j}, L_{k,j})$ to find the optimal parameter size $N^*_k$ that minimizes the loss for budget $C_k$.
 4. Fit a power-law line through the coordinates $(C_k, N^*_k)$ in log-log space to derive the scaling exponents $a$ and $b$.
 
 ### PyTorch/Pythonic Blueprint (Educational IsoFLOP Fitting)
@@ -108,5 +113,5 @@ def fit_chinchilla_parameters(N_runs, D_runs, loss_runs):
 1. *Why does modern LLM training deliberately violate the Chinchilla compute-optimal ratio of 20:1?*
    **Answer**: Chinchilla optimizes for **training compute** efficiency. However, at serving time, model operators care about **inference compute**. A smaller model trained far past its Chinchilla-optimal token count (e.g., 100:1) costs slightly more to train, but requires significantly fewer active parameters and memory bandwidth during sequential decoding, generating massive savings in inference cost.
 
-2. *Explain why the aspect ratio of depth to width ($L/d\_{\text{model}}$) of a transformer converges to a stable minima of ~100 across different compute budgets.*
+2. *Explain why the aspect ratio of depth to width ($L/d_{\text{model}}$) of a transformer converges to a stable minima of ~100 across different compute budgets.*
    **Answer**: According to empirical evaluations, depth is more expensive for parallelization because deeper networks introduce strict serial sequential dependencies, increasing pipeline parallelism overhead. Conversely, extremely wide networks are easier to parallelize via tensor parallel weight splitting. This trade-off between parallelization constraints and representation depth converges stably onto an optimal aspect ratio of approximately 100.

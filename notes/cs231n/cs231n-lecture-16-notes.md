@@ -22,26 +22,43 @@
 
 ##### Symmetric Multimodal InfoNCE Loss (CLIP)
 CLIP trains an image encoder $f_I$ and a text encoder $f_T$. Given a mini-batch of $N$ paired images and text descriptions, let $x_i$ represent the $i$-th image and $y_i$ represent its matching text caption. The normalized projection embeddings are:
-$$v_i = \frac{f_I(x_i)}{\|f_I(x_i)\|_2}, \quad u_i = \frac{f_T(y_i)}{\|f_T(y_i)\|_2}$$
-The scaled cosine similarity matrix elements $s\_{i, j}$ are defined as:
-$$s\_{i, j} = \frac{v_i^T u_j}{\tau}$$
+$$
+v_i = \frac{f_I(x_i)}{\|f_I(x_i)\|_2}, \quad u_i = \frac{f_T(y_i)}{\|f_T(y_i)\|_2}
+$$
+The scaled cosine similarity matrix elements $s_{i, j}$ are defined as:
+$$
+s_{i, j} = \frac{v_i^T u_j}{\tau}
+$$
 where $\tau$ is a learnable temperature parameter. 
 
 CLIP minimizes the sum of two complementary cross-entropy losses (Image-to-Text and Text-to-Image):
-$$L\_{I2T} = -\frac{1}{N} \sum\_{i=1}^N \log \frac{\exp(s\_{i,i})}{\sum\_{j=1}^N \exp(s\_{i,j})}$$
-$$L\_{T2I} = -\frac{1}{N} \sum\_{i=1}^N \log \frac{\exp(s\_{i,i})}{\sum\_{j=1}^N \exp(s\_{j,i})}$$
-$$L\_{CLIP} = \frac{1}{2} (L\_{I2T} + L\_{T2I})$$
-
+$$
+L_{I2T} = -\frac{1}{N} \sum_{i=1}^N \log \frac{\exp(s_{i,i})}{\sum_{j=1}^N \exp(s_{i,j})}
+$$
+$$
+L_{T2I} = -\frac{1}{N} \sum_{i=1}^N \log \frac{\exp(s_{i,i})}{\sum_{j=1}^N \exp(s_{j,i})}
+$$
+$$
+L_{CLIP} = \frac{1}{2} (L_{I2T} + L_{T2I})
+$$
 ##### Gated Cross-Attention Gating (Flamingo)
-Flamingo integrates visual features $h\_{vis}$ into a frozen language model's hidden states $x$ at layer $l$ using a gated cross-attention mechanism. The gate uses a learnable scalar parameter $\alpha_l$, initialized to $0$:
-$$x\_{atten} = \text{CrossAttention}(x, h\_{vis})$$
-$$x\_{gated} = x + \tanh(\beta_l) \cdot \text{FFN}(x + \tanh(\alpha_l) \cdot x\_{atten})$$
+Flamingo integrates visual features $h_{vis}$ into a frozen language model's hidden states $x$ at layer $l$ using a gated cross-attention mechanism. The gate uses a learnable scalar parameter $\alpha_l$, initialized to $0$:
+$$
+x_{atten} = \text{CrossAttention}(x, h_{vis})
+$$
+$$
+x_{gated} = x + \tanh(\beta_l) \cdot \text{FFN}(x + \tanh(\alpha_l) \cdot x_{atten})
+$$
 Initializing $\alpha_l = 0$ and $\beta_l = 0$ guarantees that the original behavior of the pre-trained, frozen language model is strictly preserved at the onset of training.
 
 ##### SAM Ambiguity Resolution Loss
 To solve point-prompt semantic ambiguity, SAM outputs $K=3$ masks (Part, Sub-part, Whole). Let $M_k$ be the predicted mask logits for granularity $k \in \{1, 2, 3\}$, and let $Y$ be the ground-truth mask. The loss is computed only on the mask $k^*$ that achieves the minimum cross-entropy with the ground-truth:
-$$k^* = \arg\min\_{k} \mathcal{H}(M_k, Y)$$
-$$L\_{SAM} = \mathcal{H}(M\_{k^*}, Y)$$
+$$
+k^* = \arg\min_{k} \mathcal{H}(M_k, Y)
+$$
+$$
+L_{SAM} = \mathcal{H}(M_{k^*}, Y)
+$$
 This prevents conflicting gradients from penalizing valid visual interpretations.
 
 ---

@@ -1,0 +1,136 @@
+---
+// Bento Filter Bar & Eyebrow Header (Directly inspired by reference UI top section)
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  totalNotesLink?: string;
+}
+
+const {
+  eyebrow = 'FRONTIER ARTIFICIAL INTELLIGENCE & MACHINE LEARNING',
+  title = 'Core Curriculum Tracks',
+  totalNotesLink = '/notes/'
+} = Astro.props;
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<header class="bento-tracks-header">
+  <div class="header-top-row">
+    <div>
+      <div class="header-eyebrow">{eyebrow}</div>
+      <h2 class="header-title">{title}</h2>
+    </div>
+
+    <a href={`${baseUrl}${totalNotesLink}`} class="show-all-link">
+      <span>View All 50+ Notes</span>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Pill Filter Toggles (Capsule shape like reference image) -->
+  <div class="filter-pills-row" id="filter-pills-container">
+    <button class="filter-pill active" data-filter="all">
+      <span>All 3 Tracks</span>
+    </button>
+    <button class="filter-pill" data-filter="foundations">
+      <span>Foundational Theory</span>
+    </button>
+    <button class="filter-pill" data-filter="frontier">
+      <span>LLMs &amp; 3D Vision</span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .bento-tracks-header {
+    margin-bottom: 2rem;
+  }
+
+  .header-top-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .header-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .header-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  @media (max-width: 640px) {
+    .header-title {
+      font-size: 1.75rem;
+    }
+    .header-top-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+  }
+
+  .show-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  .show-all-link:hover {
+    color: var(--brand-accent);
+    transform: translateX(2px);
+  }
+
+  .filter-pills-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-pill {
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .filter-pill:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+
+  /* Active Lime Pill matching reference image */
+  .filter-pill.active {
+    background: var(--accent-lime);
+    color: var(--accent-lime-dark);
+    border-color: var(--accent-lime);
+    box-shadow: 0 4px 12px rgba(163, 230, 53, 0.3);
+  }
+</style>

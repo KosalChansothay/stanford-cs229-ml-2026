@@ -11,7 +11,9 @@
 ### ២. គោលគំនិតសំខាន់ៗ & និយមន័យ (Key Concepts & Definitions)
 - **ក្បួនដោះស្រាយបែបវិនិច្ឆ័យ (Discriminative Algorithms)**: ជាក្បួនចាត់ថ្នាក់ដែលរៀនស្វែងរកការផ្គូផ្គងដោយផ្ទាល់ ឬស្វែងរកព្រំដែនសម្រេចចិត្ត (Decision Boundary) ពីលំហធាតុចូល $\mathcal{X}$ ទៅកាន់លំហស្លាក $\mathcal{Y}$ ដើម្បីប៉ាន់ស្មានប្រូបាប៊ីលីតេ $P(y|x)$។
 - **ក្បួនដោះស្រាយបែបបង្កើត (Generative Algorithms)**: ជាក្បួនចាត់ថ្នាក់ដែលកសាងម៉ូដែលបង្ហាញពីរបៀបដែលទិន្នន័យត្រូវបានបង្កើតឡើងសម្រាប់ថ្នាក់នីមួយៗ ដោយប៉ាន់ស្មាន $P(x|y)$ និង $P(y)$។ ការទស្សន៍ទាយលើស្លាកទិន្នន័យថ្មីត្រូវបានធ្វើឡើងតាមរយៈការត្រឡប់សមីការទស្សន៍ទាយទៅមុខ ដោយប្រើវិធានបាយេស (Bayes' Rule) ដើម្បីគណនា $P(y|x)$៖
-  $$P(y|x) = \frac{P(x|y)P(y)}{P(x)} = \frac{P(x|y)P(y)}{\sum_{y'} P(x|y')P(y')}$$
+  $$
+  P(y|x) = \frac{P(x|y)P(y)}{P(x)} = \frac{P(x|y)P(y)}{\sum_{y'} P(x|y')P(y')}
+  $$
 - **បំណែងចែកហ្គោសពហុវិមាត្រ (Multivariate Gaussian Distribution)**: ការពង្រីកលក្ខណៈពហុវិមាត្រនៃបំណែងចែកប្រក្រតី (Normal Distribution) សម្រាប់អថេរចៃដន្យជាវ៉ិចទ័រ $x \in \mathbb{R}^d$។ វាត្រូវបានកំណត់លក្ខណៈពេញលេញដោយវ៉ិចទ័រមធ្យម $\mu \in \mathbb{R}^d$ និងម៉ាទ្រីសកូវ៉ារ្យ៉ង់ស៊ីមេទ្រី កំណត់វិជ្ជមាន $\Sigma \in \mathbb{R}^{d \times d}$ (Symmetric, Positive Definite Covariance Matrix)។
 - **ម៉ាទ្រីសកូវ៉ារ្យ៉ង់ ($\Sigma$ - Covariance Matrix)**: ម៉ាទ្រីសស៊ីមេទ្រីដែលតំណាងឱ្យកូវ៉ារ្យ៉ង់គូៗរវាងលក្ខណៈទិន្នន័យ (Features) នីមួយៗ។ ដោយសារវាជាម៉ាទ្រីសកំណត់វិជ្ជមាន (Positive Definite) តម្លៃផ្ទាល់ (Eigenvalues) របស់វាសុទ្ធតែវិជ្ជមានដាច់ខាត ដែលកំណត់ទំហំ រូបរាងពងក្រពើ និងទិសដៅនៃខ្សែវណ្ឌប្រូបាប៊ីលីតេ (Elliptical Probability Contours)។
 - **ម៉ាទ្រីសភាពជាក់លាក់ ($\Sigma^{-1}$ - Precision Matrix)**: ច្រាសនៃម៉ាទ្រីសកូវ៉ារ្យ៉ង់ ($\Sigma^{-1}$ Inverse of Covariance Matrix)។ ក្នុងម៉ូដែលក្រាហ្វិកប្រូបាប៊ីលីតេ (Probabilistic Graphical Models) តម្លៃសូន្យក្នុងម៉ាទ្រីសភាពជាក់លាក់ ($\Sigma^{-1}_{ij} = 0$) បញ្ជាក់ថាលក្ខណៈទិន្នន័យទី $i$ និងទី $j$ មានភាពឯករាជ្យតាមលក្ខខណ្ឌ (Conditionally Independent) ពីគ្នា ដោយដឹងលក្ខណៈទិន្នន័យដទៃទៀតទាំងអស់។
@@ -26,59 +28,85 @@
 
 #### អនុគមន៍ដង់ស៊ីតេប្រូបាប៊ីលីតេហ្គោសពហុវិមាត្រ (Multivariate Gaussian PDF)
 សម្រាប់អថេរចៃដន្យវិមាត្រ $d$ គឺ $x \in \mathbb{R}^d$៖
-$$p(x; \mu, \Sigma) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu)^T \Sigma^{-1} (x - \mu) \right)$$
+$$
+p(x; \mu, \Sigma) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu)^T \Sigma^{-1} (x - \mu) \right)
+$$
 ដែល $|\Sigma|$ តំណាងឱ្យដេទែរមីណង់នៃម៉ាទ្រីសកូវ៉ារ្យ៉ង់ ហើយ $(x - \mu)^T \Sigma^{-1} (x - \mu)$ ដើរតួជារង្វាស់ចម្ងាយម៉ាហាឡាណូប៊ីស (Mahalanobis Distance Metric)។
 
 #### ការរៀបចំប្រូបាប៊ីលីតេនៃ GDA (The GDA Probabilistic Setup)
 សម្រាប់ការធ្វើចំណាត់ថ្នាក់ទ្វេភាគ (Binary Classification) ដែល $y \in \{0, 1\}$ និងលក្ខណៈទិន្នន័យ $x \in \mathbb{R}^d$ មានតម្លៃបន្តបន្ទាប់៖
 1. **ប្រូបាប៊ីលីតេមុននៃថ្នាក់ ($P(y)$ - Class Prior)**:
-   $$P(y) = \phi^y (1 - \phi)^{1 - y}$$
+   $$
+   P(y) = \phi^y (1 - \phi)^{1 - y}
+   $$
 2. **ដង់ស៊ីតេតាមលក្ខខណ្ឌថ្នាក់ ($P(x|y)$ - Class-Conditional Densities)**:
-   $$P(x|y=0) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu_0)^T \Sigma^{-1} (x - \mu_0) \right)$$
-   $$P(x|y=1) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu_1)^T \Sigma^{-1} (x - \mu_1) \right)$$
-
+   $$
+   P(x|y=0) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu_0)^T \Sigma^{-1} (x - \mu_0) \right)
+   $$
+   $$
+   P(x|y=1) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp \left( -\frac{1}{2} (x - \mu_1)^T \Sigma^{-1} (x - \mu_1) \right)
+   $$
 #### ការប៉ាន់ស្មានប៉ារ៉ាម៉ែត្រ GDA ទម្រង់បិទជិត (Closed-Form Joint MLE)
 ផ្ទុយពីម៉ូដែលបែបវិនិច្ឆ័យដែលធ្វើអតិបរមាកម្មលើលទ្ធភាពតាមលក្ខខណ្ឌ $P(y|x)$ ម៉ូដែលបែបបង្កើតធ្វើអតិបរមាកម្មលើ **លោការីតលទ្ធភាពរួម (Joint Log-Likelihood)** នៃទិន្នន័យបង្វឹក៖
-$$\ell(\phi, \mu_0, \mu_1, \Sigma) = \ln \prod_{i=1}^n P(x^{(i)}, y^{(i)}) = \sum_{i=1}^n \left( \ln P(x^{(i)} | y^{(i)}) + \ln P(y^{(i)}) \right)$$
-
+$$
+\ell(\phi, \mu_0, \mu_1, \Sigma) = \ln \prod_{i=1}^n P(x^{(i)}, y^{(i)}) = \sum_{i=1}^n \left( \ln P(x^{(i)} | y^{(i)}) + \ln P(y^{(i)}) \right)
+$$
 តាមរយៈការកំណត់ដេរីវេដោយផ្នែកនៃលោការីតលទ្ធភាពរួមឱ្យស្មើនឹងសូន្យ យើងទទួលបានរូបមន្តប៉ាន់ស្មានក្នុងទម្រង់បិទជិត (Closed-form Estimators) ដោយពុំចាំបាច់ធ្វើ Iteration ឡើយ៖
 1. **ប្រូបាប៊ីលីតេមុន ($\phi$)**:
-   $$\phi = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)$$
+   $$
+   \phi = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)
+   $$
 2. **មធ្យមនៃថ្នាក់នីមួយៗ ($\mu_0, \mu_1$)**:
-   $$\mu_0 = \frac{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0) x^{(i)}}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0)}$$
-   $$\mu_1 = \frac{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1) x^{(i)}}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)}$$
+   $$
+   \mu_0 = \frac{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0) x^{(i)}}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0)}
+   $$
+   $$
+   \mu_1 = \frac{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1) x^{(i)}}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)}
+   $$
 3. **ម៉ាទ្រីសកូវ៉ារ្យ៉ង់រួម ($\Sigma$)**:
-   $$\Sigma = \frac{1}{n} \sum_{i=1}^n (x^{(i)} - \mu_{y^{(i)}}) (x^{(i)} - \mu_{y^{(i)}})^T$$
-
+   $$
+   \Sigma = \frac{1}{n} \sum_{i=1}^n (x^{(i)} - \mu_{y^{(i)}}) (x^{(i)} - \mu_{y^{(i)}})^T
+   $$
 ---
 
 ### ៤. ការពន្យល់លម្អិតជាជំហានៗ & លំហូរការងារក្បួនដោះស្រាយ (Step-by-Step Explanations & Workflows)
 
 #### ក. ការទាញរកព្រំដែនសម្រេចចិត្តលីនេអ៊ែរនៃ GDA (Derivation of Linear Boundary)
 ដើម្បីបញ្ជាក់ថា GDA ដែលមានម៉ាទ្រីសកូវ៉ារ្យ៉ង់រួមបង្កើតបានជាព្រំដែនសម្រេចចិត្តលីនេអ៊ែរ យើងស្វែងរកផ្ទៃដែលមានប្រូបាប៊ីលីតេស្មើគ្នា ដែលអនុបាតលោការីតអត្រាឆ្លើយតប (Log-odds Ratio) ស្មើនឹងសូន្យ៖
-$$\ln \frac{P(y=1|x)}{P(y=0|x)} = \ln \frac{P(x|y=1)P(y=1)}{P(x|y=0)P(y=0)} = 0$$
-
+$$
+\ln \frac{P(y=1|x)}{P(y=0|x)} = \ln \frac{P(x|y=1)P(y=1)}{P(x|y=0)P(y=0)} = 0
+$$
 ជំនួសអនុគមន៍ដង់ស៊ីតេហ្គោស និងប្រូបាប៊ីលីតេមុនចូល៖
-$$\ln \left( \frac{\exp \left( -\frac{1}{2} (x-\mu_1)^T \Sigma^{-1} (x-\mu_1) \right) \cdot \phi}{\exp \left( -\frac{1}{2} (x-\mu_0)^T \Sigma^{-1} (x-\mu_0) \right) \cdot (1-\phi)} \right) = 0$$
-
+$$
+\ln \left( \frac{\exp \left( -\frac{1}{2} (x-\mu_1)^T \Sigma^{-1} (x-\mu_1) \right) \cdot \phi}{\exp \left( -\frac{1}{2} (x-\mu_0)^T \Sigma^{-1} (x-\mu_0) \right) \cdot (1-\phi)} \right) = 0
+$$
 ពន្លាតកន្សោមនេះ៖
-$$-\frac{1}{2}(x-\mu_1)^T \Sigma^{-1} (x-\mu_1) + \ln \phi + \frac{1}{2}(x-\mu_0)^T \Sigma^{-1} (x-\mu_0) - \ln(1-\phi) = 0$$
-
+$$
+-\frac{1}{2}(x-\mu_1)^T \Sigma^{-1} (x-\mu_1) + \ln \phi + \frac{1}{2}(x-\mu_0)^T \Sigma^{-1} (x-\mu_0) - \ln(1-\phi) = 0
+$$
 ពន្លាតតួនីមួយៗនៃទម្រង់ការ៉េ (Quadratic Terms)៖
-$$(x-\mu)^T \Sigma^{-1} (x-\mu) = x^T \Sigma^{-1} x - 2 \mu^T \Sigma^{-1} x + \mu^T \Sigma^{-1} \mu$$
-
+$$
+(x-\mu)^T \Sigma^{-1} (x-\mu) = x^T \Sigma^{-1} x - 2 \mu^T \Sigma^{-1} x + \mu^T \Sigma^{-1} \mu
+$$
 ជំនួសការទាញនេះចូលទៅក្នុងសមីការដើមវិញ៖
-$$-\frac{1}{2} \left[ x^T \Sigma^{-1} x - 2 \mu_1^T \Sigma^{-1} x + \mu_1^T \Sigma^{-1} \mu_1 \right] + \frac{1}{2} \left[ x^T \Sigma^{-1} x - 2 \mu_0^T \Sigma^{-1} x + \mu_0^T \Sigma^{-1} \mu_0 \right] + \ln \frac{\phi}{1-\phi} = 0$$
-
+$$
+-\frac{1}{2} \left[ x^T \Sigma^{-1} x - 2 \mu_1^T \Sigma^{-1} x + \mu_1^T \Sigma^{-1} \mu_1 \right] + \frac{1}{2} \left[ x^T \Sigma^{-1} x - 2 \mu_0^T \Sigma^{-1} x + \mu_0^T \Sigma^{-1} \mu_0 \right] + \ln \frac{\phi}{1-\phi} = 0
+$$
 តួការ៉េ $x^T \Sigma^{-1} x$ ត្រូវបាន **សម្រួលកាត់ចោលអស់ទាំងស្រុង** ពីអង្គសងខាងដោយសារម៉ាទ្រីសកូវ៉ារ្យ៉ង់ $\Sigma$ ត្រូវបានចែករំលែករួមគ្នា។ សម្រួលតួលីនេអ៊ែរ និងតួថេរដែលនៅសល់ នាំឱ្យយើងទទួលបាន៖
-$$(\mu_1 - \mu_0)^T \Sigma^{-1} x - \frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_0^T \Sigma^{-1} \mu_0 + \ln \frac{\phi}{1-\phi} = 0$$
-
+$$
+(\mu_1 - \mu_0)^T \Sigma^{-1} x - \frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_0^T \Sigma^{-1} \mu_0 + \ln \frac{\phi}{1-\phi} = 0
+$$
 សមីការនេះអាចសរសេរបានក្នុងទម្រង់លីនេអ៊ែរអាហ្វីនស្តង់ដារ (Standard Affine/Linear Form)៖
-$$\theta^T x + \theta_0 = 0$$
+$$
+\theta^T x + \theta_0 = 0
+$$
 ដែល៖
-$$\theta = \Sigma^{-1} (\mu_1 - \mu_0)$$
-$$\theta_0 = -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_0^T \Sigma^{-1} \mu_0 + \ln \frac{\phi}{1-\phi}$$
-
+$$
+\theta = \Sigma^{-1} (\mu_1 - \mu_0)
+$$
+$$
+\theta_0 = -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_0^T \Sigma^{-1} \mu_0 + \ln \frac{\phi}{1-\phi}
+$$
 <div id="plotly-gda-vs-qda" class="plotly-chart" aria-label="Interactive Plotly chart: GDA versus QDA decision boundaries with Gaussian class contours"></div>
 
 <p><em>រូបភាព៖ ព្រំដែនសម្រេចចិត្ត GDA ទល់នឹង QDA — នៅពេលប្រើប្រាស់ម៉ាទ្រីសកូវ៉ារ្យ៉ង់រួម (GDA) តួការ៉េត្រូវបានសម្រួលកាត់ចោល ហើយព្រំដែនសម្រេចចិត្តក្លាយជាបន្ទាត់ត្រង់។ នៅពេលបន្ធូរបន្ថយដោយប្រើម៉ាទ្រីសកូវ៉ារ្យ៉ង់ផ្ទាល់ខ្លួនតាមថ្នាក់នីមួយៗ (QDA) ព្រំដែនសម្រេចចិត្តក្លាយជាខ្សែកោងការ៉េ ដែលអាចរុំព័ទ្ធជុំវិញបណ្តុំទិន្នន័យរាងពងក្រពើបានយ៉ាងប្រសើរ។</em></p>
@@ -86,23 +114,33 @@ $$\theta_0 = -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_0^T \Sigma
 #### ខ. ការធ្វើចំណាត់ថ្នាក់ណៃវបាយេសជាមួយការធ្វើឱ្យរលូនឡាផ្លាស (Naive Bayes with Laplace Smoothing)
 សម្រាប់ឯកសារអត្ថបទដែលត្រូវបានតំណាងដោយវ៉ិចទ័រលក្ខណៈទិន្នន័យទ្វេភាគ $x \in \{0, 1\}^d$ លើវចនានុក្រមទំហំ $d$៖
 1. **ការសន្មតបែបណៃវបាយេស (The Naive Bayes Assumption)**:
-   $$P(x_1, \dots, x_d | y) = \prod_{j=1}^d P(x_j | y)$$
+   $$
+   P(x_1, \dots, x_d | y) = \prod_{j=1}^d P(x_j | y)
+   $$
 2. **ការប៉ាន់ស្មានប្រូបាប៊ីលីតេមុន (Prior Estimation)**:
-   $$\phi_y = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)$$
+   $$
+   \phi_y = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(y^{(i)} = 1)
+   $$
 3. **ការប៉ាន់ស្មានប៉ារ៉ាម៉ែត្រតាមលក្ខខណ្ឌ (ជាមួយ Laplace $+1$ Smoothing)**:
-   $$\phi_{j|y=1} = P(x_j = 1 | y=1) = \frac{\sum_{i=1}^n \mathbb{I}(x_j^{(i)} = 1 \land y^{(i)} = 1) + 1}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1) + 2}$$
-   $$\phi_{j|y=0} = P(x_j = 1 | y=0) = \frac{\sum_{i=1}^n \mathbb{I}(x_j^{(i)} = 1 \land y^{(i)} = 0) + 1}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0) + 2}$$
+   $$
+   \phi_{j|y=1} = P(x_j = 1 | y=1) = \frac{\sum_{i=1}^n \mathbb{I}(x_j^{(i)} = 1 \land y^{(i)} = 1) + 1}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 1) + 2}
+   $$
+   $$
+   \phi_{j|y=0} = P(x_j = 1 | y=0) = \frac{\sum_{i=1}^n \mathbb{I}(x_j^{(i)} = 1 \land y^{(i)} = 0) + 1}{\sum_{i=1}^n \mathbb{I}(y^{(i)} = 0) + 2}
+   $$
    *(កំណត់សម្គាល់៖ តម្លៃ $+2$ ក្នុងភាគបែងគឺដោយសារតែលក្ខណៈទិន្នន័យនីមួយៗ $x_j \in \{0, 1\}$ មានតម្លៃទ្វេភាគដែលអាចកើតឡើងបាន ២ ករណី។)*
 4. **វិធានទស្សន៍ទាយ (Prediction)**:
-   $$\hat{y} = \arg\max_{y \in \{0,1\}} P(y) \prod_{j=1}^d P(x_j | y)$$
-
+   $$
+   \hat{y} = \arg\max_{y \in \{0,1\}} P(y) \prod_{j=1}^d P(x_j | y)
+   $$
 ---
 
 ### ៥. ការប្រៀបធៀប GDA និង Logistic Regression: ការប្តូរផលប្រយោជន៍តាមរចនាសម្ព័ន្ធ (Structural Trade-offs)
 
 ទំនាក់ទំនងគណិតវិទ្យាដ៏ប្រណីតមួយបានភ្ជាប់ការកសាងម៉ូដែលបែបបង្កើត និងបែបវិនិច្ឆ័យ។ ប្រសិនបើ $P(x|y)$ ត្រូវបានកសាងជាបំណែងចែកហ្គោសពហុវិមាត្រដែលមានម៉ាទ្រីសកូវ៉ារ្យ៉ង់រួម (GDA) នោះបំណែងចែកប្រូបាប៊ីលីតេក្រោយ $P(y=1|x)$ នឹងមានទម្រង់ជាក់លាក់ជាអនុគមន៍ឡូជីស្ទីក (Logistic / Sigmoid Function) ដោយស្វ័យប្រវត្តិ៖
-$$P(y=1|x) = \frac{1}{1 + \exp(-\theta^T x - \theta_0)}$$
-
+$$
+P(y=1|x) = \frac{1}{1 + \exp(-\theta^T x - \theta_0)}
+$$
 លក្ខណៈនេះក៏ពិតផងដែរ ប្រសិនបើ $P(x|y)$ ចេញមកពីបំណែងចែកដទៃទៀតក្នុង **អម្បូរបំណែងចែកអិចស្ប៉ូណង់ស្យែល (Exponential Family)** (ដូចជា Poisson ឬ Multinomial) ដែលមានប៉ារ៉ាម៉ែត្ររួម។ ទោះជាយ៉ាងណា ច្រាសមកវិញមិនពិតនោះទេ ពោលគឺ ប្រសិនបើ $P(y=1|x)$ ជាអនុគមន៍ឡូជីស្ទីក មិនប្រាកដថា $P(x|y)$ ត្រូវតែជាបំណែងចែកហ្គោសនោះឡើយ។ ការណ៍នេះនាំឱ្យមានការប្តូរផលប្រយោជន៍សំខាន់ៗ៖
 
 | រង្វាស់ / វិមាត្រ (Dimension) | ការវិភាគវិនិច្ឆ័យហ្គោស (GDA) | ការវិភាគតម្រែតម្រង់ឡូជីស្ទីក (Logistic Regression) |

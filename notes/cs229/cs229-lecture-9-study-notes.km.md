@@ -24,25 +24,36 @@ K-Means ធ្វើការបែងចែកទិន្នន័យទៅជ
 
 #### ក. អនុគមន៍បំភ្លៃ K-Means (K-Means Distortion Function)
 K-Means បង្កើនប្រសិទ្ធភាពលើអនុគមន៍គោលដៅចុះតាមកូអរដោនេ ដែលហៅថា **អនុគមន៍បំភ្លៃ (Distortion Function)** ឬកំហុសកសាងឡើងវិញ (Reconstruction Error) ដែលវាស់វែងផលបូកនៃចម្ងាយអឺគ្លីដការ៉េរវាងចំណុចនីមួយៗ $x^{(i)}$ និងសង់ត្រូអ៊ីតដែលត្រូវបានចាត់តាំងឱ្យវា $\mu_{c^{(i)}}$៖
-$$J(c, \mu) = \sum_{i=1}^n \|x^{(i)} - \mu_{c^{(i)}}\|^2$$
+$$
+J(c, \mu) = \sum_{i=1}^n \|x^{(i)} - \mu_{c^{(i)}}\|^2
+$$
 ដែល $c^{(i)} \in \{1, \dots, k\}$ គឺជាសន្ទស្សន៍នៃចង្កោមដែលត្រូវបានចាត់តាំងឱ្យគំរូបង្វឹកទី $i$ ហើយ $\mu_j$ គឺជាសង់ត្រូអ៊ីតនៃចង្កោមទី $j$។
 
 #### ខ. ដំណើរការបង្កើតទិន្នន័យនៃម៉ូដែលល្បាយហ្គោស (GMM Generative Process)
 GMM កសាងម៉ូដែលលើបំណែងចែករួមគ្នានៃលក្ខណៈទិន្នន័យដែលសង្កេតឃើញ $x^{(i)} \in \mathbb{R}^d$ និងអថេរលាក់កំបាំងដាច់ៗពីគ្នា $z^{(i)} \in \{1, \dots, k\}$៖
 1. **ទាញយកសមាសភាគលាក់កំបាំង** $z^{(i)}$ ពីបំណែងចែកពហុធា (Multinomial Prior)៖
-   $$z^{(i)} \sim \text{Multinomial}(\phi), \quad \text{ដែល } P(z^{(i)} = j) = \phi_j$$
+   $$
+   z^{(i)} \sim \text{Multinomial}(\phi), \quad \text{ដែល } P(z^{(i)} = j) = \phi_j
+   $$
 2. **ទាញយกลក្ខណៈទិន្នន័យដែលសង្កេតឃើញ** $x^{(i)}$ ពីបំណែងចែកហ្គោសពហុវិមាត្រតាមលក្ខខណ្ឌ $z^{(i)}$៖
-   $$x^{(i)} \mid z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)$$
-
+   $$
+   x^{(i)} \mid z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)
+   $$
 អនុគមន៍ដង់ស៊ីតេប្រូបាប៊ីលីតេសម្រាប់សមាសភាគទោលទី $j$ គឺ៖
-$$P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) = \frac{1}{(2\pi)^{d/2} |\Sigma_j|^{1/2}} \exp\left( -\frac{1}{2} (x^{(i)} - \mu_j)^T \Sigma_j^{-1} (x^{(i)} - \mu_j) \right)$$
-
+$$
+P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) = \frac{1}{(2\pi)^{d/2} |\Sigma_j|^{1/2}} \exp\left( -\frac{1}{2} (x^{(i)} - \mu_j)^T \Sigma_j^{-1} (x^{(i)} - \mu_j) \right)
+$$
 #### គ. សមាជិកភាពចង្កោមបែបប្រូបាប៊ីលីតេ៖ ប្រូបាប៊ីលីតេក្រោយ ($w_j^{(i)}$)
 ដោយសារ $z^{(i)}$ មិនត្រូវបានសង្កេតឃើញ យើងគណនាប្រូបាប៊ីលីតេក្រោយ (Posterior Probability) ដែលចំណុច $x^{(i)}$ ជាកម្មសិទ្ធិរបស់ចង្កោមទី $j$ ដោយប្រើវិធានបាយេស (Bayes' Rule)៖
-$$w_j^{(i)} = P(z^{(i)} = j \mid x^{(i)}; \phi, \mu, \Sigma)$$
-$$w_j^{(i)} = \frac{P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) P(z^{(i)} = j; \phi)}{\sum_{l=1}^k P(x^{(i)} \mid z^{(i)} = l; \mu_l, \Sigma_l) P(z^{(i)} = l; \phi)}$$
-$$w_j^{(i)} = \frac{\phi_j \cdot \mathcal{N}(x^{(i)}; \mu_j, \Sigma_j)}{\sum_{l=1}^k \phi_l \cdot \mathcal{N}(x^{(i)}; \mu_l, \Sigma_l)}$$
-
+$$
+w_j^{(i)} = P(z^{(i)} = j \mid x^{(i)}; \phi, \mu, \Sigma)
+$$
+$$
+w_j^{(i)} = \frac{P(x^{(i)} \mid z^{(i)} = j; \mu_j, \Sigma_j) P(z^{(i)} = j; \phi)}{\sum_{l=1}^k P(x^{(i)} \mid z^{(i)} = l; \mu_l, \Sigma_l) P(z^{(i)} = l; \phi)}
+$$
+$$
+w_j^{(i)} = \frac{\phi_j \cdot \mathcal{N}(x^{(i)}; \mu_j, \Sigma_j)}{\sum_{l=1}^k \phi_l \cdot \mathcal{N}(x^{(i)}; \mu_l, \Sigma_l)}
+$$
 ទម្ងន់ស្រទន់ $w_j^{(i)}$ ទាំងនេះដើរតួជាសមាជិកភាពចង្កោមជាប្រភាគ ដោយធានាថាផលបូកសមាជិកភាពលើគ្រប់ចង្កោមទាំងអស់គឺស្មើ ១ ជានិច្ច៖ $\sum_{j=1}^k w_j^{(i)} = 1$។
 
 ---
@@ -54,9 +65,13 @@ K-Means ប្រើប្រាស់ដំណើរការបង្កើន
 1. **កំណត់តម្លៃដំបូង**: ជ្រើសរើសសង់ត្រូអ៊ីតចង្កោមចំនួន $k$ ដោយចៃដន្យ $\mu_1, \mu_2, \dots, \mu_k \in \mathbb{R}^d$។
 2. **ធ្វើសារឡើងវិញរហូតដល់រួមចំណុះ (Convergence)**៖
    - **ជំហានទី ១ (ការចាត់តាំងចង្កោម / Expectation-like)**: សម្រាប់គំរូបង្វឹកនីមួយៗ $i \in \{1, \dots, n\}$ ចាត់តាំង $x^{(i)}$ ទៅកាន់សង់ត្រូអ៊ីតដែលនៅជិតបំផុត៖
-     $$c^{(i)} := \arg\min_j \|x^{(i)} - \mu_j\|^2$$
+     $$
+     c^{(i)} := \arg\min_j \|x^{(i)} - \mu_j\|^2
+     $$
    - **ជំហានទី ២ (ការធ្វើបច្ចុប្បន្នភាពសង់ត្រូអ៊ីត / Maximization-like)**: សម្រាប់ចង្កោមនីមួយៗ $j \in \{1, \dots, k\}$ ធ្វើបច្ចុប្បន្នភាពសង់ត្រូអ៊ីតរបស់វាឱ្យស្មើនឹងមធ្យមនព្វន្ធនៃចំណុចទាំងអស់ដែលត្រូវបានចាត់តាំងឱ្យវា៖
-     $$\mu_j := \frac{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\} x^{(i)}}{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\}}$$
+     $$
+     \mu_j := \frac{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\} x^{(i)}}{\sum_{i=1}^n \mathbb{I}\{c^{(i)} = j\}}
+     $$
 3. **លក្ខខណ្ឌឈប់ (Convergence)**: ឈប់ដំណើរការនៅពេលការចាត់តាំងចង្កោម $c^{(i)}$ មិនមានការប្រែប្រួលរវាងជំហានបន្តបន្ទាប់។
 
 <div id="plotly-kmeans-steps" class="plotly-chart" aria-label="Interactive Plotly chart: K-Means iteration steps with a slider to advance assignment and centroid-update phases"></div>
@@ -74,20 +89,28 @@ K-Means ប្រើប្រាស់ដំណើរការបង្កើន
 ### ៥. ការផ្លាស់ប្តូរទៅកាន់ EM៖ គ្រោងការណ៍អថេរលាក់កំបាំងទូទៅ & វិសមភាពហ្សង់សែន
 
 សម្រាប់ម៉ូដែលដែលមានអថេរលាក់កំបាំង (ដូចជា GMMs) គោលដៅរបស់យើងគឺធ្វើអតិបរមាកម្មលើលោការីតលទ្ធភាពរឹម (Marginal Log-Likelihood) នៃទិន្នន័យដែលសង្កេតឃើញ៖
-$$\ell(\theta) = \sum_{i=1}^n \log P(x^{(i)}; \theta) = \sum_{i=1}^n \log \sum_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta)$$
+$$
+\ell(\theta) = \sum_{i=1}^n \log P(x^{(i)}; \theta) = \sum_{i=1}^n \log \sum_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta)
+$$
 ក៏ប៉ុន្តែ វត្តមាននៃផលបូកលើអថេរលាក់កំបាំង $z^{(i)}$ នៅខាងក្នុងអនុគមន៍ $\log$ បានបំបែករចនាសម្ព័ន្ធវិភាគ និងធ្វើឱ្យការបង្កើនប្រសិទ្ធភាពដោយផ្ទាល់ក្លាយជាបញ្ហាមិនប៉ោងដ៏លំបាកបំផុត។
 
 #### ទម្រង់គណិតវិទ្យានៃវិសមភាពហ្សង់សែន (Jensen's Inequality)
 វិសមភាពហ្សង់សែនផ្តល់នូវឧបករណ៍ដ៏មានឥទ្ធិពលក្នុងការកសាង **ព្រំដែនក្រោម (Surrogate Lower Bound)** ដ៏ងាយស្រួលសម្រាប់លោការីតលទ្ធភាពរឹមនេះ។
 - **សម្រាប់អនុគមន៍ផត** $g$ (ដូចជា $g(t) = \log(t)$)៖
-  $$g(\mathbb{E}[t]) \ge \mathbb{E}[g(t)]$$
+  $$
+  g(\mathbb{E}[t]) \ge \mathbb{E}[g(t)]
+  $$
 - ប្រសិនបើយើងបង្កើតបំណែងចែកប្រូបាប៊ីលីតេ $Q_i(z^{(i)})$ លើអថេរលាក់កំបាំង ដែល $\sum_{z^{(i)}} Q_i(z^{(i)}) = 1$ យើងអាចសរសេរលោការីតលទ្ធភាពនៃគំរូទោលមួយជាតម្លៃរំពឹងទុក៖
-  $$\log P(x^{(i)}; \theta) = \log \sum_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta) = \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$$
-  $$\log P(x^{(i)}; \theta) = \log \mathbb{E}_{z^{(i)} \sim Q_i} \left[ \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right]$$
-
+  $$
+  \log P(x^{(i)}; \theta) = \log \sum_{z^{(i)}} P(x^{(i)}, z^{(i)}; \theta) = \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+  $$
+  $$
+  \log P(x^{(i)}; \theta) = \log \mathbb{E}_{z^{(i)} \sim Q_i} \left[ \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right]
+  $$
 អនុវត្តវិសមភាពហ្សង់សែន យើងទាញតម្លៃរំពឹងទុកចេញមកក្រៅអនុគមន៍ផត $\log$៖
-$$\ell(\theta) \ge \sum_{i=1}^n \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$$
-
+$$
+\ell(\theta) \ge \sum_{i=1}^n \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{P(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+$$
 អនុគមន៍ព្រំដែនក្រោម $L_t(\theta)$ នេះត្រូវបានកសាងឡើងដើម្បីឱ្យប៉ះស្មើគ្នា (Tight) ទៅនឹង $\ell(\theta)$ នៅត្រង់ការប៉ាន់ស្មានប៉ារ៉ាម៉ែត្របច្ចុប្បន្ន $\theta^{(t)}$ ដែលអនុញ្ញាតឱ្យយើងបង្កើនប្រសិទ្ធភាពលើ $L_t$ ជាបន្តបន្ទាប់ដើម្បីឡើងទៅកាន់ផ្ទៃលទ្ធភាពពិតប្រាកដ។
 
 <div id="plotly-em-bound" class="plotly-chart" aria-label="Interactive Plotly chart: the EM lower bound touching the log-likelihood tangentially, with a slider to advance EM iterations"></div>

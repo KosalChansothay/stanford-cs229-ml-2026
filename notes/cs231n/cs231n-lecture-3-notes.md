@@ -22,49 +22,80 @@
 
 ##### The Generalized Loss Formulation
 The total loss $L(W)$ is composed of a data loss term (measuring model fit) and a regularization term (measuring model complexity), balanced by the regularization strength hyperparameter $\lambda$:
-$$L(W) = \frac{1}{N} \sum\_{i=1}^{N} L_i\left(f(x_i, W), y_i\right) + \lambda R(W)$$
-
+$$
+L(W) = \frac{1}{N} \sum_{i=1}^{N} L_i\left(f(x_i, W), y_i\right) + \lambda R(W)
+$$
 ##### Weight Regularization Techniques
 1.  **$L2$ Regularization (Weight Decay / Tikhonov Regularization):**
     Penalizes the squared Euclidean norm of the weight matrix, driving weights smoothly toward zero:
-    $$R(W) = \sum\_{k} \sum\_{l} W\_{k,l}^2$$
+    $$
+    R(W) = \sum_{k} \sum_{l} W_{k,l}^2
+    $$
 2.  **$L1$ Regularization:**
     Penalizes the absolute values of the weight matrix, structurally enforcing sparsity:
-    $$R(W) = \sum\_{k} \sum\_{l} |W\_{k,l}|$$
+    $$
+    R(W) = \sum_{k} \sum_{l} |W_{k,l}|
+    $$
 3.  **Elastic Net Regularization (Hybrid):**
     Combines both penalties to balance sparsity and weight group diffuse-sharing:
-    $$R(W) = \sum\_{k} \sum\_{l} \left( \beta W\_{k,l}^2 + (1 - \beta) |W\_{k,l}| \right)$$
-
+    $$
+    R(W) = \sum_{k} \sum_{l} \left( \beta W_{k,l}^2 + (1 - \beta) |W_{k,l}| \right)
+    $$
 ##### Gradient Calculations & Calculus Foundations
 *   **1D Numerical Derivative:**
-    $$\frac{df(x)}{dx} = \lim\_{h \to 0} \frac{f(x + h) - f(x)}{h}$$
+    $$
+    \frac{df(x)}{dx} = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}
+    $$
 *   **Multidimensional Analytical Gradient (Jacobian/Vector of Partial Derivatives):**
-    $$\nabla_W L = \left[ \frac{\partial L}{\partial W\_{1,1}}, \frac{\partial L}{\partial W\_{1,2}}, \dots, \frac{\partial L}{\partial W\_{R,C}} \right]^T$$
-
+    $$
+    \nabla_W L = \left[ \frac{\partial L}{\partial W_{1,1}}, \frac{\partial L}{\partial W_{1,2}}, \dots, \frac{\partial L}{\partial W_{R,C}} \right]^T
+    $$
 ##### Optimization Formulations
 1.  **Stochastic Gradient Descent (SGD):**
-    $$W\_{t+1} = W_t - \alpha \nabla\_{W_t} L(W_t)$$
+    $$
+    W_{t+1} = W_t - \alpha \nabla_{W_t} L(W_t)
+    $$
 2.  **SGD with Momentum:**
     Introduces a friction-dampened velocity term $v$ with momentum decay coefficient $\rho$ (typically $0.9$ or $0.99$):
-    $$v\_{t+1} = \rho v_t + \nabla_W L(W_t)$$
-    $$W\_{t+1} = W_t - \alpha v\_{t+1}$$
+    $$
+    v_{t+1} = \rho v_t + \nabla_W L(W_t)
+    $$
+    $$
+    W_{t+1} = W_t - \alpha v_{t+1}
+    $$
 3.  **RMSprop:**
     Maintains a decay-filtered running average of squared gradients ($s$) to normalize step size element-wise:
-    $$s\_{t+1} = \gamma s_t + (1 - \gamma) (\nabla_W L(W_t))^2$$
-    $$W\_{t+1} = W_t - \frac{\alpha}{\sqrt{s\_{t+1} + \epsilon}} \odot \nabla_W L(W_t)$$
+    $$
+    s_{t+1} = \gamma s_t + (1 - \gamma) (\nabla_W L(W_t))^2
+    $$
+    $$
+    W_{t+1} = W_t - \frac{\alpha}{\sqrt{s_{t+1} + \epsilon}} \odot \nabla_W L(W_t)
+    $$
 4.  **Adam (Adaptive Moment Estimation):**
     Combines first moment tracking (momentum) and second moment tracking (RMSprop), utilizing time-step $t$ bias correction to scale down initial steps:
-    $$m\_{t+1} = \beta_1 m_t + (1 - \beta_1) \nabla_W L(W_t) \quad \text{(First Moment)}$$
-    $$v\_{t+1} = \beta_2 v_t + (1 - \beta_2) (\nabla_W L(W_t))^2 \quad \text{(Second Moment)}$$
-    $$\hat{m}\_{t+1} = \frac{m\_{t+1}}{1 - \beta_1^t} \quad \text{(Unbiased First Moment)}$$
-    $$\hat{v}\_{t+1} = \frac{v\_{t+1}}{1 - \beta_2^t} \quad \text{(Unbiased Second Moment)}$$
-    $$W\_{t+1} = W_t - \frac{\alpha}{\sqrt{\hat{v}\_{t+1}} + \epsilon} \odot \hat{m}\_{t+1}$$
+    $$
+    m_{t+1} = \beta_1 m_t + (1 - \beta_1) \nabla_W L(W_t) \quad \text{(First Moment)}
+    $$
+    $$
+    v_{t+1} = \beta_2 v_t + (1 - \beta_2) (\nabla_W L(W_t))^2 \quad \text{(Second Moment)}
+    $$
+    $$
+    \hat{m}_{t+1} = \frac{m_{t+1}}{1 - \beta_1^t} \quad \text{(Unbiased First Moment)}
+    $$
+    $$
+    \hat{v}_{t+1} = \frac{v_{t+1}}{1 - \beta_2^t} \quad \text{(Unbiased Second Moment)}
+    $$
+    $$
+    W_{t+1} = W_t - \frac{\alpha}{\sqrt{\hat{v}_{t+1}} + \epsilon} \odot \hat{m}_{t+1}
+    $$
     *Note: Standard defaults are $\beta_1 = 0.9$, $\beta_2 = 0.999$, and $\epsilon = 10^{-8}$.*
 
 ##### Second-Order Optimization (Newton-Raphson Step)
 Utilizes the inverse Hessian matrix $H^{-1}$ to calculate the exact quadratic minimum step:
-$$W\_{t+1} = W_t - H^{-1} \nabla_W L(W_t)$$
-where $H\_{i,j} = \frac{\partial^2 L}{\partial W_i \partial W_j}$ is the $N \times N$ Hessian matrix.
+$$
+W_{t+1} = W_t - H^{-1} \nabla_W L(W_t)
+$$
+where $H_{i,j} = \frac{\partial^2 L}{\partial W_i \partial W_j}$ is the $N \times N$ Hessian matrix.
 
 ---
 
@@ -187,7 +218,7 @@ Poor Conditioning (SGD wild oscillation)     Saddle Point Stall (Zero-gradient t
    ───►    /    \    ◄─── Oscillation                        ( \/ )  ◄── upward curve
           /   /\ \                                            \  /
          /   /  \ \                                           (  )   ◄── flat center (g = 0)
-        /___/    \_\                                          /        Valley Floor (Flat lateral path)                       /    \  ◄── downward slope
+        /___/    _\                                          /        Valley Floor (Flat lateral path)                       /    \  ◄── downward slope
 ```
 
 ---
@@ -229,7 +260,7 @@ To build a deep visual understanding of optimizer trajectory differences, we pro
 
 ##### Graduate-Level Reflection Questions
 1.  **Adam vs. AdamW Dynamics:**
-    Standard $L2$ regularization adds $\lambda W$ directly to the gradient term before moment calculations: $\nabla\_{W} L\_{total} = \nabla\_{W} L\_{data} + \lambda W$. In Adam, this means the weight decay penalty gets scaled by the running second moment $v_t$, which divides the penalty by the historical magnitude of the gradients. Why does this scaling mathematically alter the intentionality of weight decay, and how does AdamW’s decoupled weight decay formulation ($W\_{t+1} = W_t(1 - \alpha \lambda) - \text{AdamStep}$) restore true scale-invariant weight decay?
+    Standard $L2$ regularization adds $\lambda W$ directly to the gradient term before moment calculations: $\nabla_{W} L_{total} = \nabla_{W} L_{data} + \lambda W$. In Adam, this means the weight decay penalty gets scaled by the running second moment $v_t$, which divides the penalty by the historical magnitude of the gradients. Why does this scaling mathematically alter the intentionality of weight decay, and how does AdamW’s decoupled weight decay formulation ($W_{t+1} = W_t(1 - \alpha \lambda) - \text{AdamStep}$) restore true scale-invariant weight decay?
 2.  **Saddle Point Frequency vs. Model Dimensionality:**
     In low-dimensional 1D/2D spaces, local minima (bowls) are highly common. However, why does the ratio of saddle points to local minima grow exponentially as we scale neural network capacity from millions to billions of parameters, and how does the Hessian matrix's eigenvalue distribution mathematically explain this shift?
 3.  **The Physics of Momentum vs. RMSprop in Ravines:**

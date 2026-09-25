@@ -17,8 +17,9 @@
 ### Web Crawling Graph Traversal
 Web crawling is modeled as a parallel graph traversal over the web-link structure:
 
-$$G = (V, E)$$
-
+$$
+G = (V, E)
+$$
 Where:
 - $V$: Web page URLs (documents).
 - $E$: Hyperlinks.

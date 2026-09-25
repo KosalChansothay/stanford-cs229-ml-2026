@@ -17,37 +17,46 @@
 ### Collective Communication Duality
 An All-Reduce operation is mathematically and systems-wise equivalent to a sequential composition of a Reduce-Scatter and an All-Gather:
 
-$$\text{All-Reduce}(X) = \text{All-Gather}(\text{Reduce-Scatter}(X))$$
-
+$$
+\text{All-Reduce}(X) = \text{All-Gather}(\text{Reduce-Scatter}(X))
+$$
 ### Column & Row Tensor Parallelism
 For a standard fully connected layer $Y = XW$, we can shard the weight matrix $W$ by column or by row across $M$ devices (ranks).
 
 1. **Column Parallel**:
    - Split weight $W = [W_1, W_2, \dots, W_M]$ along columns.
    - Each rank $i$ computes a slice of the activation:
-     $$Y_i = X W_i$$
+     $$
+     Y_i = X W_i
+     $$
    - To reconstruct the full $Y$, we execute an **All-Gather** primitive on the activations:
-     $$Y = \text{All-Gather}(Y_1, Y_2, \dots, Y_M)$$
-
+     $$
+     Y = \text{All-Gather}(Y_1, Y_2, \dots, Y_M)
+     $$
 2. **Row Parallel**:
    - Split weight $W$ along rows: $W = [W_1^T, W_2^T, \dots, W_M^T]^T$ and shard input $X = [X_1, X_2, \dots, X_M]$.
    - Each rank computes a partial product:
-     $$Z_i = X_i W_i$$
+     $$
+     Z_i = X_i W_i
+     $$
    - The full output $Y$ is reconstructed by an **All-Reduce (Sum)** primitive:
-     $$Y = \text{All-Reduce}(\sum\_{i=1}^M Z_i)$$
-
+     $$
+     Y = \text{All-Reduce}(\sum_{i=1}^M Z_i)
+     $$
 ### Duality of Forward and Backward Passes
 In tensor parallelism, the forward and backward communication operators are duals:
-- **Column Parallel**: Forward = $\text{All-Gather}(Y_i)$; Backward = $\text{Reduce-Scatter}(\nabla\_{Y_i})$
+- **Column Parallel**: Forward = $\text{All-Gather}(Y_i)$; Backward = $\text{Reduce-Scatter}(\nabla_{Y_i})$
 - **Row Parallel**: Forward = $\text{All-Reduce}(Z_i)$; Backward = $\text{Identity}$ (split gradients)
 
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### Distributed Data Parallel (DDP) Logic
-1. Shard input batch along the batch dimension: each rank $i$ gets a local slice $X\_{\text{local}, i}$.
+1. Shard input batch along the batch dimension: each rank $i$ gets a local slice $X_{\text{local}, i}$.
 2. Perform forward and backward passes locally to compute parameters and their gradients $\nabla_W^{(i)}$.
 3. Average gradients globally across all ranks via an All-Reduce sum:
-   $$\nabla_W = \frac{1}{M} \text{All-Reduce}\left(\sum\_{i=1}^M \nabla_W^{(i)}\right)$$
+   $$
+   \nabla_W = \frac{1}{M} \text{All-Reduce}\left(\sum_{i=1}^M \nabla_W^{(i)}\right)
+   $$
 4. Update local replicas of weights using the synchronized averaged gradients: $W^{(i)} \leftarrow \text{Optimizer}(W^{(i)}, \nabla_W)$.
 
 ### PyTorch/Pythonic Blueprint (Educational DDP, Column & Row Parallelism)
@@ -118,7 +127,9 @@ class ColumnParallelLinear(torch.nn.Module):
 ### Memory Communication Costs
 For an All-Reduce synchronization on $N$ parameters across $M$ ranks:
 - **Total volume of data sent/received per rank**:
-  $$\text{Data Transferred} = 2 \times \left(\frac{M - 1}{M}\right) \times N \times \text{bytes-per-element}$$
+  $$
+  \text{Data Transferred} = 2 \times \left(\frac{M - 1}{M}\right) \times N \times \text{bytes-per-element}
+  $$
 - This scales flatly with $M$ as $M \to \infty$, allowing scaling to massive clusters without blowing up communication volumes per node.
 
 ## 5. Empirical Scaling Constraints & Topology Routing

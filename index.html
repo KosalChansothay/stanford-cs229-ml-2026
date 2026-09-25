@@ -4,28 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stanford CS229 ML — Spring 2026 Lecture Notes</title>
-  <meta name="description" content="Static portfolio of Stanford CS229 Machine Learning lecture notes (Spring 2026).">
+  <title>Stanford AI &amp; Machine Learning Lecture Series — Spring 2026 Notes</title>
+  <meta name="description" content="Comprehensive academic study notes, mathematical derivations, and interactive visualizations for Stanford CS229, CS336, and CS231N (Spring 2026).">
   <meta name="keywords" content="Kosal Chansothay, Sothay, Chan Sothay, KosalChansothay">
   <meta name="author" content="Kosal Chansothay">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Stanford CS229 ML Lecture Notes — Spring 2026",
+    "name": "Stanford AI & Machine Learning Lecture Series — Spring 2026",
     "author": {
       "@type": "Person",
       "name": "Kosal Chansothay",
       "alternateName": ["Sothay", "Chan Sothay", "KosalChansothay"],
       "url": "https://github.com/KosalChansothay"
     },
-    "about": "Stanford CS229 Machine Learning lecture notes and study materials (Spring 2026)"
+    "about": "Comprehensive study notes, mathematical derivations, and interactive charts for Stanford CS229, CS336, and CS231N (Spring 2026)"
   }
   </script>
   <link rel="stylesheet" href="css/style.css">
   <script>
     MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
       svg: { fontCache: 'global' }
     };
   </script>
@@ -37,16 +37,17 @@
   <nav class="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-profile">
       <img class="sidebar-avatar" src="img/profile.jpg" alt="Site logo">
-      <div class="sidebar-name">ML Notes</div>
-      <div class="sidebar-role">Stanford AI &amp; ML Series</div>
-      <div class="sidebar-bio">Lecture notes and study materials for Stanford machine learning and artificial intelligence courses.</div>
+      <div class="sidebar-profile-text">
+        <div class="sidebar-name">Stanford ML Notes</div>
+        <div class="sidebar-role">AI &amp; ML Series &bull; Spring 2026</div>
+      </div>
+      <div class="sidebar-bio">Academic study notes, derivations, and interactive visualizations for Stanford CS229, CS336, and CS231N.</div>
     </div>
     <ul class="sidebar-nav">
-      <li class="nav-label">Site</li>
+      <li class="nav-label">Navigation</li>
       <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="notes.html">Lecture Notes</a></li>
       <li><a href="courses/index.html">All Courses</a></li>
+      <li><a href="notes.html">Lecture Notes</a></li>
     </ul>
     <div class="sidebar-social">
       <a href="https://github.com/KosalChansothay/stanford-cs229-ml-2026" title="GitHub" target="_blank"
@@ -54,190 +55,217 @@
     </div>
     <div class="sidebar-footer">
       Built with static HTML/CSS/JS<br>
-      &copy; 2026
+      &copy; 2026 Kosal Chansothay
     </div>
   </nav>
 
   <main class="main" role="main">
     <header class="page-header">
-      <h1>Stanford CS229: Foundations and Paradigms of Machine Learning</h1>
-      <p class="subtitle">Spring 2026 — Lecture Notes &amp; Study Materials</p>
+      <h1>Stanford AI &amp; Machine Learning Lecture Series</h1>
+      <p class="subtitle">Spring 2026 &mdash; Academic Study Notes, Derivations &amp; Interactive Visualizations</p>
     </header>
 
-    <div class="card">
-      <h2>Welcome</h2>
+    <div class="card hero-card">
+      <h2>Curriculum Hub</h2>
       <p>
-        This is a static portfolio of lecture notes and study materials for
-        <strong>Stanford CS229</strong>, the foundational machine learning course
-        taught in Spring 2026.
+        Welcome to the central portal for comprehensive, mathematically rigorous lecture notes covering
+        three of Stanford University's premier computer science curriculums in machine learning, deep learning,
+        and natural language systems.
       </p>
-      <p>
-        Notes are organized by lecture and cover topics from supervised learning,
-        unsupervised learning, reinforcement learning, and modern deep learning
-        paradigms.
-      </p>
-    </div>
-
-    <div class="card">
-      <h2>Quick Links</h2>
-      <p class="quick-links-intro">
-        Comprehensive lecture notes spanning Stanford CS229 (Machine Learning), CS336 (Language Modeling),
-        and CS231N (Deep Learning for Computer Vision). Browse everything with search on the
-        <a href="notes.html">Lecture Notes</a> page, or jump straight to a course below.
-      </p>
-
-      <div class="quick-links-grid">
-        <div class="quick-links-group">
-          <h3>Foundations</h3>
-          <ul>
-            <li><a href="courses/cs229/lecture-1.html">Lecture 1 — Introduction</a></li>
-            <li><a href="courses/cs229/lecture-2.html">Lecture 2 — Supervised Learning Setup</a></li>
-            <li><a href="courses/cs229/lecture-3.html">Lecture 3 — Logistic Regression</a></li>
-            <li><a href="courses/cs229/lecture-4.html">Lecture 4 — Exponential Family &amp; GLMs</a></li>
-          </ul>
+      
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Flagship Courses</div>
         </div>
-
-        <div class="quick-links-group">
-          <h3>Generative Models &amp; Advice</h3>
-          <ul>
-            <li><a href="courses/cs229/lecture-5.html">Lecture 5 — GDA &amp; Naive Bayes</a></li>
-            <li><a href="courses/cs229/lecture-6.html">Lecture 6 — Bias-Variance &amp; ML Advice</a></li>
-          </ul>
+        <div class="stat-item">
+          <div class="stat-number">50</div>
+          <div class="stat-label">In-depth Lectures</div>
         </div>
-
-        <div class="quick-links-group">
-          <h3>Neural Networks</h3>
-          <ul>
-            <li><a href="courses/cs229/lecture-7.html">Lecture 7 — Architecture</a></li>
-            <li><a href="courses/cs229/lecture-8.html">Lecture 8 — Backpropagation</a></li>
-          </ul>
+        <div class="stat-item">
+          <div class="stat-number">MathJax</div>
+          <div class="stat-label">Full Derivations</div>
         </div>
-
-        <div class="quick-links-group">
-          <h3>Unsupervised Learning</h3>
-          <ul>
-            <li><a href="courses/cs229/lecture-9.html">Lecture 9 — K-Means &amp; GMM</a></li>
-            <li><a href="courses/cs229/lecture-10.html">Lecture 10 — EM &amp; PCA</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3>Generative AI &amp; LLMs</h3>
-          <ul>
-            <li><a href="courses/cs229/lecture-11.html">Lecture 11 — Diffusion Models</a></li>
-            <li><a href="courses/cs229/lecture-12.html">Lecture 12 — Foundation Models &amp; LoRA</a></li>
-            <li><a href="courses/cs229/lecture-13.html">Lecture 13 — Contrastive Learning &amp; RAG</a></li>
-            <li><a href="courses/cs229/lecture-14.html">Lecture 14 — Transformers &amp; Attention</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="courses/cs336/index.html" style="color: inherit;">CS336: Architecture &amp; Hardware</a></h3>
-          <ul>
-            <li><a href="courses/cs336/lecture-1.html">Lecture 1 — Overview, Tokenization</a></li>
-            <li><a href="courses/cs336/lecture-2.html">Lecture 2 — PyTorch &amp; Resource Accounting</a></li>
-            <li><a href="courses/cs336/lecture-3.html">Lecture 3 — Architectures</a></li>
-            <li><a href="courses/cs336/lecture-4.html">Lecture 4 — Attention Alternatives &amp; MoE</a></li>
-            <li><a href="courses/cs336/lecture-5.html">Lecture 5 — GPUs, TPUs &amp; FlashAttention</a></li>
-            <li><a href="courses/cs336/lecture-6.html">Lecture 6 — Kernels, Triton &amp; XLA</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="courses/cs336/index.html" style="color: inherit;">CS336: Parallelism &amp; Systems</a></h3>
-          <ul>
-            <li><a href="courses/cs336/lecture-7.html">Lecture 7 — Parallelism Foundations</a></li>
-            <li><a href="courses/cs336/lecture-8.html">Lecture 8 — Advanced Parallelism (ZeRO/FSDP)</a></li>
-            <li><a href="courses/cs336/lecture-10.html">Lecture 10 — Inference &amp; KV Cache</a></li>
-            <li><a href="courses/cs336/lecture-guest.html">Guest Lecture — Systems &amp; Architectures</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="courses/cs336/index.html" style="color: inherit;">CS336: Scaling, Data &amp; Alignment</a></h3>
-          <ul>
-            <li><a href="courses/cs336/lecture-9.html">Lecture 9 — Scaling Laws Foundations</a></li>
-            <li><a href="courses/cs336/lecture-11.html">Lecture 11 — Scaling &amp; Advanced Optimizers</a></li>
-            <li><a href="courses/cs336/lecture-12.html">Lecture 12 — Evaluation &amp; Contamination</a></li>
-            <li><a href="courses/cs336/lecture-13.html">Lecture 13 — Pre-training Data Sources</a></li>
-            <li><a href="courses/cs336/lecture-14.html">Lecture 14 — Data Preprocessing &amp; Mixing</a></li>
-            <li><a href="courses/cs336/lecture-15.html">Lecture 15 — Post-Training (SFT &amp; DPO)</a></li>
-            <li><a href="courses/cs336/lecture-16.html">Lecture 16 — Post-Training (RLVR &amp; GRPO)</a></li>
-            <li><a href="courses/cs336/lecture-17.html">Lecture 17 — Alignment &amp; Multimodality</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="courses/cs231n/index.html" style="color: inherit;">CS231N: Vision &amp; CNNs</a></h3>
-          <ul>
-            <li><a href="courses/cs231n/lecture-1.html">Lecture 1 — Introduction &amp; History</a></li>
-            <li><a href="courses/cs231n/lecture-2.html">Lecture 2 — Linear Classifiers &amp; Loss</a></li>
-            <li><a href="courses/cs231n/lecture-3.html">Lecture 3 — Regularization &amp; Optimization</a></li>
-            <li><a href="courses/cs231n/lecture-4.html">Lecture 4 — Backprop &amp; Neural Nets</a></li>
-            <li><a href="courses/cs231n/lecture-5.html">Lecture 5 — CNNs &amp; Convolutions</a></li>
-            <li><a href="courses/cs231n/lecture-6.html">Lecture 6 — CNN Architectures &amp; ResNets</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="courses/cs231n/index.html" style="color: inherit;">CS231N: Sequence, Detection &amp; Distributed</a></h3>
-          <ul>
-            <li><a href="courses/cs231n/lecture-7.html">Lecture 7 — RNNs &amp; LSTMs</a></li>
-            <li><a href="courses/cs231n/lecture-8.html">Lecture 8 — Attention &amp; Vision Transformers</a></li>
-            <li><a href="courses/cs231n/lecture-9.html">Lecture 9 — Detection, Segmentation</a></li>
-            <li><a href="courses/cs231n/lecture-10.html">Lecture 10 — Video Understanding</a></li>
-            <li><a href="courses/cs231n/lecture-11.html">Lecture 11 — Distributed Training</a></li>
-            <li><a href="courses/cs231n/lecture-12.html">Lecture 12 — Self-Supervised Learning</a></li>
-          </ul>
-        </div>
-
-        <div class="quick-links-group">
-          <h3><a href="courses/cs231n/index.html" style="color: inherit;">CS231N: Generative, 3D &amp; Robotics</a></h3>
-          <ul>
-            <li><a href="courses/cs231n/lecture-13.html">Lecture 13 — Generative Models (VAEs, GANs)</a></li>
-            <li><a href="courses/cs231n/lecture-14.html">Lecture 14 — Generative Models (Diffusion)</a></li>
-            <li><a href="courses/cs231n/lecture-15.html">Lecture 15 — 3D Vision &amp; NeRF</a></li>
-            <li><a href="courses/cs231n/lecture-16.html">Lecture 16 — Vision-Language (CLIP)</a></li>
-            <li><a href="courses/cs231n/lecture-17.html">Lecture 17 — Robot Learning</a></li>
-            <li><a href="courses/cs231n/lecture-18.html">Lecture 18 — Human-Centered AI</a></li>
-          </ul>
+        <div class="stat-item">
+          <div class="stat-number">Plotly</div>
+          <div class="stat-label">Interactive Charts</div>
         </div>
       </div>
 
-      <p class="quick-links-more">
-        <a class="btn" href="notes.html">Browse all lecture notes &rarr;</a>
-      </p>
+      <div class="hero-actions">
+        <a class="btn" href="notes.html">Search All 50 Lectures &rarr;</a>
+        <a class="btn btn-secondary" href="courses/index.html">View Courses Directory</a>
+        <a class="btn btn-secondary" href="km/index.html">🇰🇭 ភាសាខ្មែរ (Khmer Edition)</a>
+      </div>
     </div>
 
+    <section class="courses-showcase-section">
+      <h2 class="section-title">The Three Flagship Curriculums</h2>
+      
+      <div class="course-showcase-grid">
+        <!-- CS229 Card -->
+        <article class="course-showcase-card">
+          <div class="course-badge-row">
+            <span class="course-code-badge badge-cs229">CS229</span>
+            <span class="course-count-badge">14 Lectures</span>
+          </div>
+          <h3><a href="courses/cs229/index.html">Machine Learning: Foundations &amp; Modern Paradigms</a></h3>
+          <p class="course-instructors"><strong>Instructors:</strong> Prof. Christopher R&eacute; &amp; Tengyu Ma &bull; Stanford CS</p>
+          <p class="course-desc">
+            The canonical foundational machine learning curriculum. Rigorously covers supervised learning,
+            empirical risk minimization, generalized linear models, generative learning algorithms, neural backprop,
+            unsupervised learning (clustering, EM, PCA), and contemporary paradigms including Diffusion Models and LoRA.
+          </p>
+          <div class="course-tags">
+            <span class="tag">Linear &amp; Logistic Regression</span>
+            <span class="tag">GLMs</span>
+            <span class="tag">GDA &amp; Naive Bayes</span>
+            <span class="tag">Backpropagation</span>
+            <span class="tag">K-Means &amp; EM</span>
+            <span class="tag">PCA</span>
+            <span class="tag">Diffusion Models</span>
+            <span class="tag">LoRA &amp; RAG</span>
+          </div>
+          <div class="course-card-actions">
+            <a href="courses/cs229/index.html" class="btn">Explore CS229 &rarr;</a>
+            <a href="courses/cs229/lecture-1.html" class="btn btn-outline">Lecture 1</a>
+          </div>
+        </article>
+
+        <!-- CS336 Card -->
+        <article class="course-showcase-card">
+          <div class="course-badge-row">
+            <span class="course-code-badge badge-cs336">CS336</span>
+            <span class="course-count-badge">18 Lectures</span>
+          </div>
+          <h3><a href="courses/cs336/index.html">Language Modeling from Scratch: The Full LLM Stack</a></h3>
+          <p class="course-instructors"><strong>Focus:</strong> Systems, Kernels, Scaling &amp; Post-Training &bull; Stanford Spring 2026</p>
+          <p class="course-desc">
+            A first-principles engineering journey into modern Large Language Models: from BPE tokenization,
+            PyTorch resource accounting, and Transformer variants (MoE, RoPE) through FlashAttention-2, Triton GPU kernels,
+            distributed training (ZeRO/FSDP), scaling laws, data mixtures, and post-training alignment (SFT, DPO, RLVR, GRPO).
+          </p>
+          <div class="course-tags">
+            <span class="tag">Tokenization</span>
+            <span class="tag">Transformers &amp; MoE</span>
+            <span class="tag">FlashAttention</span>
+            <span class="tag">Triton GPU Kernels</span>
+            <span class="tag">ZeRO &amp; FSDP</span>
+            <span class="tag">Scaling Laws</span>
+            <span class="tag">SFT &amp; DPO</span>
+            <span class="tag">RLVR &amp; GRPO</span>
+          </div>
+          <div class="course-card-actions">
+            <a href="courses/cs336/index.html" class="btn">Explore CS336 &rarr;</a>
+            <a href="courses/cs336/lecture-1.html" class="btn btn-outline">Lecture 1</a>
+          </div>
+        </article>
+
+        <!-- CS231N Card -->
+        <article class="course-showcase-card">
+          <div class="course-badge-row">
+            <span class="course-code-badge badge-cs231n">CS231N</span>
+            <span class="course-count-badge">18 Lectures</span>
+          </div>
+          <h3><a href="courses/cs231n/index.html">Deep Learning for Computer Vision</a></h3>
+          <p class="course-instructors"><strong>Focus:</strong> Visual Recognition, Generative Vision &amp; 3D &bull; Stanford Spring 2026</p>
+          <p class="course-desc">
+            Comprehensive study of visual computing from convolutional neural networks and modern residual architectures
+            to Vision Transformers (ViT), object detection, video modeling, distributed visual training, self-supervised
+            representations, generative vision (VAEs, GANs, Diffusion), 3D vision (NeRF), and robot learning.
+          </p>
+          <div class="course-tags">
+            <span class="tag">CNNs &amp; ResNets</span>
+            <span class="tag">Vision Transformers (ViT)</span>
+            <span class="tag">Detection &amp; Segmentation</span>
+            <span class="tag">Video Understanding</span>
+            <span class="tag">Self-Supervised Learning</span>
+            <span class="tag">Diffusion Models</span>
+            <span class="tag">3D Vision &amp; NeRF</span>
+            <span class="tag">Robot Learning</span>
+          </div>
+          <div class="course-card-actions">
+            <a href="courses/cs231n/index.html" class="btn">Explore CS231N &rarr;</a>
+            <a href="courses/cs231n/lecture-1.html" class="btn btn-outline">Lecture 1</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Curated Pathways -->
+    <div class="card pathways-card">
+      <h2>Curated Study Pathways</h2>
+      <p>
+        Looking for a specific sub-discipline? Jump directly to key lectures across courses:
+      </p>
+      <div class="pathway-grid">
+        <div class="pathway-item">
+          <h4>📐 Foundations &amp; Optimization</h4>
+          <p>Loss formulations, gradient descent, exponential families, and backprop mechanics.</p>
+          <p><a href="courses/cs229/lecture-2.html">CS229 Lec 2–4</a> &bull; <a href="courses/cs231n/lecture-2.html">CS231N Lec 2–4</a></p>
+        </div>
+        <div class="pathway-item">
+          <h4>⚡ LLM Systems &amp; GPU Kernels</h4>
+          <p>GPU architecture, memory hierarchies, Triton programming, and ZeRO/FSDP parallelism.</p>
+          <p><a href="courses/cs336/lecture-5.html">CS336 Lec 5–8</a> &bull; <a href="courses/cs336/lecture-guest.html">CS336 Systems Guest</a></p>
+        </div>
+        <div class="pathway-item">
+          <h4>🌌 Generative AI &amp; Diffusion</h4>
+          <p>Score matching, DDPM, denoising score matching, latent diffusion, and continuous models.</p>
+          <p><a href="courses/cs229/lecture-11.html">CS229 Lec 11</a> &bull; <a href="courses/cs231n/lecture-14.html">CS231N Lec 14</a></p>
+        </div>
+        <div class="pathway-item">
+          <h4>👁️ Vision Transformers &amp; 3D</h4>
+          <p>Attention applied to visual tokens, self-attention patches, NeRF, and spatial 3D vision.</p>
+          <p><a href="courses/cs231n/lecture-8.html">CS231N Lec 8</a> &bull; <a href="courses/cs231n/lecture-15.html">CS231N Lec 15</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Info Table -->
     <div class="card">
-      <h2>Course Info</h2>
-      <table>
-        <tr>
-          <th>Course</th>
-          <td>CS229: Foundations and Paradigms of Machine Learning</td>
-        </tr>
-        <tr>
-          <th>Term</th>
-          <td>Spring 2026</td>
-        </tr>
-        <tr>
-          <th>Institution</th>
-          <td>Stanford University</td>
-        </tr>
-        <tr>
-          <th>Instructors</th>
-          <td>Chris Ré (Professor) and Tengyu Ma (Assistant Professor), Computer Science</td>
-        </tr>
-        <tr>
-          <th>Course Website</th>
-          <td><a href="https://cs229.stanford.edu/index.html-spr26" target="_blank"
-              rel="noopener">cs229.stanford.edu</a> (syllabus and course materials)</td>
-        </tr>
+      <h2>Curriculum Reference Matrix</h2>
+      <table class="course-matrix-table">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Primary Focus</th>
+            <th>Lectures</th>
+            <th>Instructors / Source</th>
+            <th>Official Stanford Syllabus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CS229</strong></td>
+            <td>Foundations, Supervised/Unsupervised Learning, Modern Paradigms</td>
+            <td>14 Notes</td>
+            <td>Prof. Christopher R&eacute;, Tengyu Ma</td>
+            <td><a href="https://cs229.stanford.edu/index.html-spr26" target="_blank" rel="noopener">cs229.stanford.edu</a></td>
+          </tr>
+          <tr>
+            <td><strong>CS336</strong></td>
+            <td>Language Modeling from Scratch (Systems, Kernels, Post-Training)</td>
+            <td>18 Notes</td>
+            <td>Stanford University Computer Science</td>
+            <td><a href="courses/cs336/index.html">CS336 Course Home</a></td>
+          </tr>
+          <tr>
+            <td><strong>CS231N</strong></td>
+            <td>Deep Learning for Computer Vision (CNNs, ViTs, Diffusion, 3D)</td>
+            <td>18 Notes</td>
+            <td>Stanford University Computer Science</td>
+            <td><a href="https://cs231n.stanford.edu/" target="_blank" rel="noopener">cs231n.stanford.edu</a></td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
     <footer class="site-footer">
-      <p>Stanford CS229 ML Lecture Notes &mdash; Spring 2026</p>
+      <p>Stanford AI &amp; Machine Learning Lecture Series &mdash; Spring 2026</p>
+      <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.35rem;">
+        Maintained by Kosal Chansothay &bull; Pure Vanilla HTML/CSS/JS &bull; MathJax &bull; Plotly Interactive
+      </p>
     </footer>
   </main>
 

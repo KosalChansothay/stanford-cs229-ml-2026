@@ -41,10 +41,10 @@
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 - **Algorithmic Logic (BPE Training & Encoding):**
   1. **Initialization:** Represent the training corpus as a sequence of raw bytes (UTF-8 encoding). Initialize the vocabulary with the 256 base bytes (IDs 0–255).
-  2. **Pair Counting:** Scan the sequence of token IDs to count the frequency of all adjacent pairs $(t\_i, t\_{i+1})$.
-  3. **Greedy Merge selection:** Select the pair $(t\_A, t\_B)$ that occurs with the maximum frequency in the corpus. Break ties deterministically (e.g., by selecting the first occurrence).
-  4. **Vocabulary Expansion:** Register a new token ID $T = 256 + m$ representing the pair $(t\_A, t\_B)$ and store this merge rule.
-  5. **Sequence Substitution:** Scan the corpus and replace every occurrence of the pair $[t\_A, t\_B]$ with the single token ID $T$.
+  2. **Pair Counting:** Scan the sequence of token IDs to count the frequency of all adjacent pairs $(t_i, t_{i+1})$.
+  3. **Greedy Merge selection:** Select the pair $(t_A, t_B)$ that occurs with the maximum frequency in the corpus. Break ties deterministically (e.g., by selecting the first occurrence).
+  4. **Vocabulary Expansion:** Register a new token ID $T = 256 + m$ representing the pair $(t_A, t_B)$ and store this merge rule.
+  5. **Sequence Substitution:** Scan the corpus and replace every occurrence of the pair $[t_A, t_B]$ with the single token ID $T$.
   6. **Iterate:** Repeat steps 2-5 until the vocabulary reaches the target size or no more pairs can be merged.
   7. **Encoding New Text:** Convert the new text to a sequence of bytes. Successively apply each learned merge rule in the exact chronological order of training.
   8. **Decoding:** Recursively expand token IDs back into their constituent byte sequences using the learned merge rules, then decode the final byte sequence back to a Unicode string using UTF-8.
@@ -167,6 +167,6 @@ class BytePairTokenizer:
   - **Whitespace Inconsistency:** Space handling is highly sensitive in BPE. "hello" and " hello" (with a preceding space) are processed as two entirely unrelated token IDs, meaning the model's semantic representations of them can be completely disconnected.
 - **Conceptual Questions:**
   1. *How does the choice of vocabulary size ($V$) in BPE impact the trade-off between transformer sequence length and softmax projection layer computation?*
-     - **Answer:** A larger $V$ increases the compression ratio (higher bytes-per-token), resulting in shorter token sequence lengths $L$, which quadratically reduces attention compute overhead ($O(L^2)$) and context window consumption. However, a larger $V$ increases the parameters in the embedding and output projection layers ($V \times D\_{model}$) and adds substantial compute overhead during the final softmax projection over $V$ options.
+     - **Answer:** A larger $V$ increases the compression ratio (higher bytes-per-token), resulting in shorter token sequence lengths $L$, which quadratically reduces attention compute overhead ($O(L^2)$) and context window consumption. However, a larger $V$ increases the parameters in the embedding and output projection layers ($V \times D_{model}$) and adds substantial compute overhead during the final softmax projection over $V$ options.
   2. *Why is the predictability of a scaling recipe considered as critical as its absolute optimality?*
      - **Answer:** When training at massive scales (e.g., $10^{25}$ FLOPs, costing hundreds of millions of dollars), hyperparameter tuning is impossible. You only get one shot. A scaling recipe must ensure hyperparameter transfer (where hyperparameters are predictable functions of scale) so that the final model's behavior is highly predictable from cheap, small-scale pilot runs. If hyperparameters fluctuate wildly between scales, predicting larger-scale behavior is impossible, creating extreme risk of complete failure.

@@ -15,22 +15,25 @@
 ## 2. Theoretical & Mathematical Primitives
 
 ### CLIP Contrastive Loss
-Given $N$ normalized image embeddings $I_i$ and text embeddings $T_j$, the cosine similarity matrix is computed as $S\_{i, j} = I_i^T T_j$. The bidirectional loss averages image-to-text and text-to-image cross-entropies:
+Given $N$ normalized image embeddings $I_i$ and text embeddings $T_j$, the cosine similarity matrix is computed as $S_{i, j} = I_i^T T_j$. The bidirectional loss averages image-to-text and text-to-image cross-entropies:
 
-$$\mathcal{L}\_{\text{CLIP}} = \frac{1}{2} \left( \mathcal{L}\_{I \to T} + \mathcal{L}\_{T \to I} \right)$$
-
+$$
+\mathcal{L}_{\text{CLIP}} = \frac{1}{2} \left( \mathcal{L}_{I \to T} + \mathcal{L}_{T \to I} \right)
+$$
 Where:
 
-$$\mathcal{L}\_{I \to T} = -\frac{1}{N} \sum\_{i=1}^N \log \frac{\exp(\tau \cdot S\_{i, i})}{\sum\_{j=1}^N \exp(\tau \cdot S\_{i, j})}$$
-
+$$
+\mathcal{L}_{I \to T} = -\frac{1}{N} \sum_{i=1}^N \log \frac{\exp(\tau \cdot S_{i, i})}{\sum_{j=1}^N \exp(\tau \cdot S_{i, j})}
+$$
 ### SigLIP Loss
 SigLIP converts contrastive matching into independent binary logistic regressions:
 
-$$\mathcal{L}\_{\text{SigLIP}} = -\frac{1}{N} \sum\_{i=1}^N \sum\_{j=1}^N \log \sigma \left( c\_{i, j} (\tau \cdot S\_{i, j} + b) \right)$$
-
+$$
+\mathcal{L}_{\text{SigLIP}} = -\frac{1}{N} \sum_{i=1}^N \sum_{j=1}^N \log \sigma \left( c_{i, j} (\tau \cdot S_{i, j} + b) \right)
+$$
 Where:
-- $c\_{i, j} = 1$ if $i = j$ (matching positive pair).
-- $c\_{i, j} = -1$ if $i \neq j$ (negative pair).
+- $c_{i, j} = 1$ if $i = j$ (matching positive pair).
+- $c_{i, j} = -1$ if $i \neq j$ (negative pair).
 - $b$: A learnable bias parameter.
 
 ### Multimodal RoPE (M-RoPE)

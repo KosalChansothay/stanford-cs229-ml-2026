@@ -26,31 +26,41 @@
 
 #### ក. ការកសាង ELBO (បច្ចេកទេសបំណែងចែក Q - The Q-Distribution Trick)
 យើងមានសំណុំទិន្នន័យ $\mathcal{D} = \{x^{(1)}, \dots, x^{(n)}\}$ និងម៉ូដែលអថេរលាក់កំបាំង $p(x, z; \theta)$។ លោការីតលទ្ធភាពរឹមមានការលំបាកខ្លាំងក្នុងការបង្កើនប្រសិទ្ធភាពដោយផ្ទាល់ ដោយសារតែផលបូកលើលំហអថេរលាក់កំបាំងស្ថិតនៅខាងក្នុងអនុគមន៍លោការីត៖
-$$l(\theta) = \sum_{i=1}^n \log p(x^{(i)}; \theta) = \sum_{i=1}^n \log \sum_{z^{(i)}} p(x^{(i)}, z^{(i)}; \theta)$$
-
+$$
+l(\theta) = \sum_{i=1}^n \log p(x^{(i)}; \theta) = \sum_{i=1}^n \log \sum_{z^{(i)}} p(x^{(i)}, z^{(i)}; \theta)
+$$
 ដើម្បីបង្កើតអនុគមន៍ជំនួសក្នុងតំបន់ យើងពិនិត្យមើលចំណុចទិន្នន័យទោលមួយ (លុបសន្ទស្សន៍ $i$ ដើម្បីសម្រួលដល់ការសរសេរ)។ តាង $Q(z)$ ជាបំណែងចែកប្រូបាប៊ីលីតេចៃដន្យណាមួយលើលំហអថេរលាក់កំបាំង ដែល $Q(z) \ge 0$ និង $\sum_{z} Q(z) = 1$៖
-$$\log p(x; \theta) = \log \sum_z p(x, z; \theta) = \log \sum_z Q(z) \frac{p(x, z; \theta)}{Q(z)}$$
-
+$$
+\log p(x; \theta) = \log \sum_z p(x, z; \theta) = \log \sum_z Q(z) \frac{p(x, z; \theta)}{Q(z)}
+$$
 យើងអាចបកស្រាយផលបូកនេះជាតម្លៃរំពឹងទុកគណិតវិទ្យាក្រោមបំណែងចែក $Q(z)$៖
-$$\log p(x; \theta) = \log \mathbb{E}_{z \sim Q} \left[ \frac{p(x, z; \theta)}{Q(z)} \right]$$
-
+$$
+\log p(x; \theta) = \log \mathbb{E}_{z \sim Q} \left[ \frac{p(x, z; \theta)}{Q(z)} \right]
+$$
 ដោយសារអនុគមន៍លោការីតធម្មជាតិ $\log(t)$ គឺជាអនុគមន៍ផតដាច់ខាត យើងអនុវត្ត **វិសមភាពហ្សង់សែន (Jensen's Inequality)** ($\log \mathbb{E}[X] \ge \mathbb{E}[\log X]$) ដើម្បីទាញលោការីតចូលទៅក្នុងតម្លៃរំពឹងទុក៖
-$$\log p(x; \theta) \ge \mathbb{E}_{z \sim Q} \left[ \log \frac{p(x, z; \theta)}{Q(z)} \right]$$
-$$\log p(x; \theta) \ge \sum_z Q(z) \log \frac{p(x, z; \theta)}{Q(z)} = \mathcal{L}(Q, \theta)$$
-
+$$
+\log p(x; \theta) \ge \mathbb{E}_{z \sim Q} \left[ \log \frac{p(x, z; \theta)}{Q(z)} \right]
+$$
+$$
+\log p(x; \theta) \ge \sum_z Q(z) \log \frac{p(x, z; \theta)}{Q(z)} = \mathcal{L}(Q, \theta)
+$$
 ធ្វើផលបូកលើគ្រប់ចំណុចទិន្នន័យទាំង $n$ យើងទទួលបាន **ព្រំដែនក្រោមនៃភស្តុតាងសកល (Global Evidence Lower Bound - ELBO)**៖
-$$l(\theta) \ge \sum_{i=1}^n \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$$
-
+$$
+l(\theta) \ge \sum_{i=1}^n \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+$$
 #### ខ. ការស្រាយបញ្ជាក់ភាពប៉ះស្មើគ្នានៃ ELBO (ដំណោះស្រាយនៃ E-Step)
 ដើម្បីធ្វើឱ្យព្រំដែនក្រោម $\mathcal{L}(Q, \theta)$ ប៉ះស្មើគ្នាល្អឥតខ្ចោះ (Tight) ទៅនឹងតម្លៃពិតនៅត្រង់ការប៉ាន់ស្មានបច្ចុប្បន្ន $\theta^{(t)}$ យើងត្រូវបំពេញលក្ខខណ្ឌដែលវិសមភាពហ្សង់សែនក្លាយជាសមភាព។ នេះកើតឡើងនៅពេលដែលអថេរចៃដន្យនៅខាងក្នុងតម្លៃរំពឹងទុកគឺជាចំនួនថេរធៀបនឹង $z$៖
-$$\frac{p(x, z; \theta^{(t)})}{Q(z)} = c \implies p(x, z; \theta^{(t)}) = c \cdot Q(z)$$
-
+$$
+\frac{p(x, z; \theta^{(t)})}{Q(z)} = c \implies p(x, z; \theta^{(t)}) = c \cdot Q(z)
+$$
 ដោយសារ $Q(z)$ ជាបំណែងចែកប្រូបាប៊ីលីតេដែលមានផលបូកស្មើ ១ យើងធ្វើផលបូកលើអង្គសងខាងធៀបនឹង $z$ ដើម្បីស្វែងរកតម្លៃថេរ $c$៖
-$$\sum_z p(x, z; \theta^{(t)}) = c \sum_z Q(z) \implies p(x; \theta^{(t)}) = c$$
-
+$$
+\sum_z p(x, z; \theta^{(t)}) = c \sum_z Q(z) \implies p(x; \theta^{(t)}) = c
+$$
 ជំនួសតម្លៃ $c$ ចូលក្នុងសមីការសមាមាត្រខាងលើវិញ យើងទទួលបាន៖
-$$Q(z) = \frac{p(x, z; \theta^{(t)})}{p(x; \theta^{(t)})} = p(z \mid x; \theta^{(t)})$$
-
+$$
+Q(z) = \frac{p(x, z; \theta^{(t)})}{p(x; \theta^{(t)})} = p(z \mid x; \theta^{(t)})
+$$
 ដូច្នេះ ព្រំដែនក្រោមគឺប៉ះស្មើគ្នាល្អឥតខ្ចោះ (ប៉ះខ្សែកោងលទ្ធភាពពិត) នៅពេល $Q(z)$ ត្រូវបានកំណត់ឱ្យស្មើនឹង **ប្រូបាប៊ីលីតេក្រោយ** នៃអថេរលាក់កំបាំង $z$ ដោយដឹងទិន្នន័យ $x$ និងប៉ារ៉ាម៉ែត្របច្ចុប្បន្ន $\theta^{(t)}$។
 
 <div id="plotly-em-geometry" class="plotly-chart" aria-label="Interactive Plotly chart: the EM step geometry with tangent lower bound, slider to advance iterations"></div>
@@ -65,23 +75,29 @@ $$Q(z) = \frac{p(x, z; \theta^{(t)})}{p(x; \theta^{(t)})} = p(z \mid x; \theta^{
 តាង $\mathcal{D} = \{x^{(1)}, \dots, x^{(n)}\}$ ជាសំណុំទិន្នន័យដែលបានតម្រឹមកណ្តាលមធ្យមរួចរាល់ ($\sum_i x^{(i)} = 0$) ដោយ $x^{(i)} \in \mathbb{R}^d$។ យើងចង់ស្វែងរកវ៉ិចទ័រទិសដៅឯកតា $u \in \mathbb{R}^d$ ($u^T u = 1$) ដែលធ្វើឱ្យកូអរដោនេបញ្ចាំងនៃចំណុចទិន្នន័យតាមបណ្តោយ $u$ មានវ៉ារ្យ៉ង់ជាក់ស្តែងអតិបរមា។
 
 ប្រវែងបញ្ចាំងនៃចំណុចទិន្នន័យ $x^{(i)}$ លើវ៉ិចទ័រឯកតា $u$ គឺកំណត់ដោយផលគុណស្កាលែ៖
-$$\text{proj}(x^{(i)}) = x^{(i)T} u$$
-
+$$
+\text{proj}(x^{(i)}) = x^{(i)T} u
+$$
 ដោយសារទិន្នន័យត្រូវបានតម្រឹមកណ្តាលមធ្យម មធ្យមនៃកូអរដោនេបញ្ចាំងក៏ស្មើនឹង $0$ ដែរ។ វ៉ារ្យ៉ង់ជាក់ស្តែងនៃទិន្នន័យបញ្ចាំងគឺ៖
-$$\sigma_{\text{proj}}^2 = \frac{1}{n} \sum_{i=1}^n (x^{(i)T} u)^2 = \frac{1}{n} \sum_{i=1}^n (u^T x^{(i)})(x^{(i)T} u) = u^T \left( \frac{1}{n} \sum_{i=1}^n x^{(i)} x^{(i)T} \right) u$$
-
+$$
+\sigma_{\text{proj}}^2 = \frac{1}{n} \sum_{i=1}^n (x^{(i)T} u)^2 = \frac{1}{n} \sum_{i=1}^n (u^T x^{(i)})(x^{(i)T} u) = u^T \left( \frac{1}{n} \sum_{i=1}^n x^{(i)} x^{(i)T} \right) u
+$$
 កន្សោមក្នុងវង់ក្រចកគឺជា **ម៉ាទ្រីសកូវ៉ារ្យ៉ង់ជាក់ស្តែង** $\Sigma \in \mathbb{R}^{d \times d}$៖
-$$\sigma_{\text{proj}}^2 = u^T \Sigma u$$
-
+$$
+\sigma_{\text{proj}}^2 = u^T \Sigma u
+$$
 ដើម្បីធ្វើអតិបរមាកម្មលើវ៉ារ្យ៉ង់បញ្ចាំងនេះ ក្រោមលក្ខខណ្ឌកំហិតណមឯកតា $u^T u = 1$ យើងបង្កើតអនុគមន៍ឡាក្រង់ (Lagrangian)៖
-$$\mathcal{L}(u, \lambda) = u^T \Sigma u - \lambda(u^T u - 1)$$
-
+$$
+\mathcal{L}(u, \lambda) = u^T \Sigma u - \lambda(u^T u - 1)
+$$
 គណនាជម្រាលធៀបនឹង $u$ ហើយកំណត់ឱ្យស្មើនឹង $0$៖
-$$\nabla_u \mathcal{L}(u, \lambda) = 2\Sigma u - 2\lambda u = 0 \implies \Sigma u = \lambda u$$
-
+$$
+\nabla_u \mathcal{L}(u, \lambda) = 2\Sigma u - 2\lambda u = 0 \implies \Sigma u = \lambda u
+$$
 នេះគឺជា **សមីការតម្លៃផ្ទាល់ស្តង់ដារ (Standard Eigenvalue Equation)**! គុណនឹង $u^T$ ពីខាងឆ្វេង៖
-$$u^T \Sigma u = \lambda u^T u = \lambda$$
-
+$$
+u^T \Sigma u = \lambda u^T u = \lambda
+$$
 ដូច្នេះ ដើម្បីធ្វើឱ្យវ៉ារ្យ៉ង់បញ្ចាំងមានតម្លៃអតិបរមា $u$ ត្រូវតែជា **វ៉ិចទ័រផ្ទាល់ (Eigenvector)** នៃម៉ាទ្រីសកូវ៉ារ្យ៉ង់ $\Sigma$ ដែលត្រូវគ្នាទៅនឹង **តម្លៃផ្ទាល់ធំបំផុត $\lambda_1$**។ សមាសភាគចម្បងបន្តបន្ទាប់ទៀត គឺជាវ៉ិចទ័រផ្ទាល់អរតូកូណាល់ដែលត្រូវគ្នាទៅនឹងតម្លៃផ្ទាល់រៀបតាមលំដាប់ចុះ $\lambda_2, \lambda_3, \dots$។
 
 ---
@@ -93,10 +109,13 @@ $$u^T \Sigma u = \lambda u^T u = \lambda$$
 1. **កំណត់តម្លៃដំបូង** នៃប៉ារ៉ាម៉ែត្រ $\theta^{(0)}$ ដោយចៃដន្យ ឬតាមក្បួនវិចារណញាណ។
 2. **ធ្វើសារឡើងវិញរហូតដល់រួមចំណុះ (Convergence)**៖
    - **E-Step (Expectation)**: សម្រាប់គំរូនីមួយៗ $i \in \{1, \dots, n\}$ កំណត់ $Q_i$ ឱ្យស្មើនឹងបំណែងចែកប្រូបាប៊ីលីតេក្រោយនៃអថេរលាក់កំបាំង ដោយដឹងទិន្នន័យ និងប៉ារ៉ាម៉ែត្របច្ចុប្បន្ន៖
-     $$Q_i^{(t)}(z^{(i)}) := p(z^{(i)} \mid x^{(i)}; \theta^{(t)})$$
+     $$
+     Q_i^{(t)}(z^{(i)}) := p(z^{(i)} \mid x^{(i)}; \theta^{(t)})
+     $$
    - **M-Step (Maximization)**: គណនាប៉ារ៉ាម៉ែត្រថ្មីដ៏ប្រសើរបំផុត $\theta^{(t+1)}$ ដោយធ្វើអតិបរមាកម្មលើតម្លៃរំពឹងទុកនៃលោការីតលទ្ធភាពរួមធៀបនឹងបំណែងចែក $Q$៖
-     $$\theta^{(t+1)} := \arg \max_{\theta} \sum_{i=1}^n \sum_{z^{(i)}} Q_i^{(t)}(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i^{(t)}(z^{(i)})}$$
-
+     $$
+     \theta^{(t+1)} := \arg \max_{\theta} \sum_{i=1}^n \sum_{z^{(i)}} Q_i^{(t)}(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i^{(t)}(z^{(i)})}
+     $$
 ---
 
 ### ៥. ការអនុវត្តជាក់ស្តែង & ឧទាហរណ៍កូដ Python (Implementation)

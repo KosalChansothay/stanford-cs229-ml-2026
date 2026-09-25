@@ -1,0 +1,116 @@
+---
+import LectureLayout from '../../../layouts/LectureLayout.astro';
+
+export async function getStaticPaths() {
+  const allNotes = import.meta.glob('../../../../notes/**/*.md');
+  const kmNotes = import.meta.glob('../../../../notes/**/*.km.md');
+  const kmKeys = new Set(Object.keys(kmNotes));
+
+  const courseMeta: Record<string, { name: string; code: 'cs229' | 'cs336' | 'cs231n' }> = {
+    cs229: { name: 'CS229: Machine Learning', code: 'cs229' },
+    cs336: { name: 'CS336: Language Modeling from Scratch', code: 'cs336' },
+    cs231n: { name: 'CS231N: Computer Vision & 3D Perception', code: 'cs231n' },
+  };
+
+  const courseLectures: Record<string, Array<{ slug: string; path: string; num: number; file: string }>> = {
+    cs229: [],
+    cs336: [],
+    cs231n: [],
+  };
+
+  for (const path of Object.keys(allNotes)) {
+    if (path.endsWith('.km.md')) continue;
+
+    // e.g. ../../../../notes/cs229/cs229-lecture-1-study-notes.md
+    const parts = path.split('/');
+    const course = parts[parts.length - 2];
+    const file = parts[parts.length - 1];
+
+    if (!courseLectures[course]) continue;
+
+    const match = file.match(/lecture-(\w+)/);
+    if (!match) continue;
+
+    const slugNum = match[1];
+    const num = slugNum === 'guest' ? 99 : parseInt(slugNum, 10);
+    const slug = `lecture-${slugNum}`;
+
+    courseLectures[course].push({
+      slug,
+      path,
+      num: isNaN(num) ? 999 : num,
+      file,
+    });
+  }
+
+  // Sort lectures sequentially by lecture number
+  for (const course of Object.keys(courseLectures)) {
+    courseLectures[course].sort((a, b) => a.num - b.num);
+  }
+
+  const paths = [];
+
+  for (const course of Object.keys(courseLectures)) {
+    const lectures = courseLectures[course];
+    for (let i = 0; i < lectures.length; i++) {
+      const item = lectures[i];
+      const prev = i > 0 ? { slug: lectures[i - 1].slug, title: lectures[i - 1].slug.toUpperCase().replace('-', ' ') } : null;
+      const next = i < lectures.length - 1 ? { slug: lectures[i + 1].slug, title: lectures[i + 1].slug.toUpperCase().replace('-', ' ') } : null;
+
+      const kmPath = item.path.replace('.md', '.km.md');
+      const hasKm = kmKeys.has(kmPath);
+
+      paths.push({
+        params: {
+          course,
+          lecture: item.slug,
+        },
+        props: {
+          courseCode: courseMeta[course].code,
+          courseName: courseMeta[course].name,
+          lectureSlug: item.slug,
+          noteLoader: allNotes[item.path],
+          prevLecture: prev,
+          nextLecture: next,
+          hasKm,
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const {
+  courseCode,
+  courseName,
+  lectureSlug,
+  noteLoader,
+  prevLecture,
+  nextLecture,
+  hasKm,
+} = Astro.props;
+
+const noteModule: any = await noteLoader();
+const Content = noteModule.default;
+const headings = noteModule.getHeadings ? noteModule.getHeadings() : [];
+
+// Extract title from first heading or fallback
+const firstH1 = headings.find((h: any) => h.depth === 1);
+const lectureTitle = firstH1 ? firstH1.text : `${courseCode.toUpperCase()} ${lectureSlug.toUpperCase().replace('-', ' ')}`;
+---
+
+<LectureLayout
+  title={lectureTitle}
+  courseCode={courseCode}
+  courseName={courseName}
+  lectureSlug={lectureSlug}
+  lectureTitle={lectureTitle}
+  headings={headings}
+  prevLecture={prevLecture}
+  nextLecture={nextLecture}
+  lang="en"
+  hasKm={hasKm}
+>
+  <Content />
+</LectureLayout>

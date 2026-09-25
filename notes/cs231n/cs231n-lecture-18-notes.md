@@ -23,15 +23,21 @@ While Lecture 18 is a high-level conceptual, historical, and philosophical talk 
 
 *   **Scene Graph Representation:**
     A visual scene graph is defined as a directed, labeled graph:
-    $$G = (V, E)$$
-    where $V = \{o_1, o_2, \dots, o_n\}$ represents the set of object entity nodes (with predicted class labels and spatial bounding boxes), and $E = \{r\_{1,2}, \dots\}$ represents the set of directed, labeled relationship edges mapping spatial, semantic, or action dependencies between entities.
+    $$
+    G = (V, E)
+    $$
+    where $V = \{o_1, o_2, \dots, o_n\}$ represents the set of object entity nodes (with predicted class labels and spatial bounding boxes), and $E = \{r_{1,2}, \dots\}$ represents the set of directed, labeled relationship edges mapping spatial, semantic, or action dependencies between entities.
 *   **The Perspective Projection Bottleneck (Mathematical Ill-Posedness):**
     Recovering 3D scene coordinate geometry $\mathbf{X} \in \mathbb{R}^3$ from a single 2D pixel coordinate $\mathbf{x} \in \mathbb{R}^2$ is mathematically ill-posed due to the projective collapse of depth:
-    $$\mathbf{x} \propto \mathbf{K} [\mathbf{R} \mid \mathbf{t}] \mathbf{X}$$
+    $$
+    \mathbf{x} \propto \mathbf{K} [\mathbf{R} \mid \mathbf{t}] \mathbf{X}
+    $$
     where $\mathbf{K}$ is the camera intrinsic matrix, and $[\mathbf{R} \mid \mathbf{t}]$ represents extrinsic rotation and translation. Depth is collapsed to a scalar multiplier, requiring stereoscopic triangulation or learned structural depth priors to invert.
 *   **Ambient Multi-Class Action Classification (Healthcare Monitoring):**
     Action classifiers in clinical spaces (e.g., hand hygiene compliance) process raw temporal video frames $X \in \mathbb{R}^{T \times C \times H \times W}$ to output a categorical probability distribution over $K$ actions:
-    $$P(y = k \mid X) = \frac{e^{\mathbf{w}_k^T \phi(X)}}{\sum\_{j=1}^{K} e^{\mathbf{w}_j^T \phi(X)}}$$
+    $$
+    P(y = k \mid X) = \frac{e^{\mathbf{w}_k^T \phi(X)}}{\sum_{j=1}^{K} e^{\mathbf{w}_j^T \phi(X)}}
+    $$
     where $\phi(X)$ is a temporal convolutional or spatio-temporal attention feature extractor.
 
 ---

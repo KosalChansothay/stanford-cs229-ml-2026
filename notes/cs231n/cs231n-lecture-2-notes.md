@@ -23,29 +23,39 @@
 ##### Distance Metrics
 Used to measure the similarity between two image tensors ($I_1, I_2$) in a flattened pixel space:
 *   **L1 (Manhattan) Distance:**
-    $$d_1(I_1, I_2) = \sum\_{p} |I_1^p - I_2^p|$$
+    $$
+    d_1(I_1, I_2) = \sum_{p} |I_1^p - I_2^p|
+    $$
     where $p$ indexes each individual pixel value (e.g., $32 \times 32 \times 3 = 3072$ coordinates).
 *   **L2 (Euclidean) Distance:**
-    $$d_2(I_1, I_2) = \sqrt{\sum\_{p} (I_1^p - I_2^p)^2}$$
+    $$
+    d_2(I_1, I_2) = \sqrt{\sum_{p} (I_1^p - I_2^p)^2}
+    $$
     which measures the straight-line distance in Euclidean space.
 
 ##### Parametric Score Mapping
 Maps raw flattened pixel vectors to class scores using a linear combination of learned parameters:
-$$f(x, W, b) = W x + b$$
+$$
+f(x, W, b) = W x + b
+$$
 *   $x \in \mathbb{R}^{D \times 1}$ is the input image flattened into a column vector (for CIFAR-10, $D = 32 \times 32 \times 3 = 3072$).
 *   $W \in \mathbb{R}^{C \times D}$ is the weight matrix, where each row acts as a high-dimensional template for a specific class ($C$ classes; e.g., $10$ for CIFAR-10).
 *   $b \in \mathbb{R}^{C \times 1}$ is the bias vector, which scales and shifts individual class scores independently of the input features.
 
 ##### Softmax Function (Multinomial Logistic Regression)
 Maps unbounded, raw class scores (logits) $s = f(x_i, W)$ to a normalized probability distribution over $C$ classes:
-$$P(Y = k \mid X = x_i) = \frac{e^{s_k}}{\sum\_{j=1}^{C} e^{s_j}}$$
-
+$$
+P(Y = k \mid X = x_i) = \frac{e^{s_k}}{\sum_{j=1}^{C} e^{s_j}}
+$$
 ##### Cross-Entropy Loss
 Quantifies the discrepancy (or "unhappiness") between predicted class probabilities and the target ground-truth label $y_i$ using negative log-likelihood:
-$$L_i = -\log P(Y = y_i \mid X = x_i) = -\log \left( \frac{e^{s\_{y_i}}}{\sum\_{j=1}^{C} e^{s_j}} \right)$$
+$$
+L_i = -\log P(Y = y_i \mid X = x_i) = -\log \left( \frac{e^{s_{y_i}}}{\sum_{j=1}^{C} e^{s_j}} \right)
+$$
 The total dataset loss is the average loss over all $N$ training examples:
-$$L = \frac{1}{N} \sum\_{i=1}^{N} L_i$$
-
+$$
+L = \frac{1}{N} \sum_{i=1}^{N} L_i
+$$
 ---
 
 #### 3. Architecture / Algorithm Walkthrough
@@ -118,7 +128,9 @@ if __name__ == "__main__":
     *   *The "Car" template* resembles a generic red, front-facing automobile template.
     *   *The "Horse" template* is often learned as a green-blob background with a vague brown shape in the middle, revealing a visual bias where the classifier associates the background "grass" directly with the horse class.
 3.  **Geometric Viewpoint (Decision Boundaries):** High-dimensional pixel space is partitioned by a set of linear hyperplanes. The decision boundary for any class represents the hyperplane where the class score equals zero:
-    $$W_k x + b_k = 0$$
+    $$
+    W_k x + b_k = 0
+    $$
     The classifier can only separate classes if they are linearly separable in the input space.
 
 ##### Visual Failure Modes of Raw Distance Heuristics

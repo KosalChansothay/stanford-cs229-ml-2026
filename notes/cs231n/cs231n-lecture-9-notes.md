@@ -22,36 +22,50 @@
 
 ##### A. Pixel-Wise Cross-Entropy Loss (Semantic Segmentation)
 For an image with height $H$ and width $W$, semantic segmentation is trained by treating each pixel as an independent classification problem:
-$$L\_{\text{seg}} = -\frac{1}{H \cdot W} \sum\_{h=1}^{H} \sum\_{w=1}^{W} \log\left( \frac{e^{s\_{h, w, y\_{h,w}}}}{\sum\_{c=1}^{C} e^{s\_{h, w, c}}} \right)$$
-where $s\_{h, w, c}$ is the unnormalized logit predicted for pixel $(h, w)$ for class $c$, and $y\_{h,w} \in \{1, \dots, C\}$ is the ground-truth class label at that pixel coordinate.
+$$
+L_{\text{seg}} = -\frac{1}{H \cdot W} \sum_{h=1}^{H} \sum_{w=1}^{W} \log\left( \frac{e^{s_{h, w, y_{h,w}}}}{\sum_{c=1}^{C} e^{s_{h, w, c}}} \right)
+$$
+where $s_{h, w, c}$ is the unnormalized logit predicted for pixel $(h, w)$ for class $c$, and $y_{h,w} \in \{1, \dots, C\}$ is the ground-truth class label at that pixel coordinate.
 
 ##### B. Multitask Joint Localization & Classification Loss
 Single-object localization uses a dual-head loss combining softmax classification and regression of bounding box offsets $(x, y, w, h)$:
-$$L\_{\text{multitask}} = L\_{\text{softmax}}(p, y) + \lambda \cdot \mathbb{I}(y \geq 1) \cdot \sum\_{j \in \{x, y, w, h\}} \|t_j - t^*_j\|_2^2$$
+$$
+L_{\text{multitask}} = L_{\text{softmax}}(p, y) + \lambda \cdot \mathbb{I}(y \geq 1) \cdot \sum_{j \in \{x, y, w, h\}} \|t_j - t^*_j\|_2^2
+$$
 where $p$ is the predicted class probability distribution, $y$ is the ground-truth class label ($y \ge 1$ represents foreground objects, filtering out background), $t = (t_x, t_y, t_w, t_h)$ is the predicted box coordinate offset vector, $t^*$ represents ground-truth coordinates, and $\lambda$ is a balancing hyperparameter.
 
 ##### C. Transposed Convolution Arithmetic
 Transposed convolution (sometimes called fractionally strided convolution) is the mathematical transpose of a standard convolution matrix operator. For an input with stride $S$, kernel size $K$, and padding $P$, the output dimension is upsampled as follows:
-$$O = S \cdot (I - 1) + K - 2P$$
+$$
+O = S \cdot (I - 1) + K - 2P
+$$
 Where standard convolution maps $1 \times K$ patches to a single scalar, transposed convolution multiplies a single input scalar by a $K \times K$ filter, writing the scaled filter to the output grid and summing overlapping regions.
 
 ##### D. Bipartite Matching Loss (Hungarian Matching in DETR)
 DETR avoids non-maximum suppression (NMS) by predicting a fixed-size set of $N$ predictions and computing a bipartite matching via the Hungarian algorithm to find a permutation of $N$ elements $\sigma \in \mathfrak{S}_N$ that minimizes matching cost:
-$$\hat{\sigma} = \arg\min\_{\sigma \in \mathfrak{S}_N} \sum\_{i=1}^{N} \mathcal{L}\_{\text{match}}(y_i, \hat{y}\_{\sigma(i)})$$
+$$
+\hat{\sigma} = \arg\min_{\sigma \in \mathfrak{S}_N} \sum_{i=1}^{N} \mathcal{L}_{\text{match}}(y_i, \hat{y}_{\sigma(i)})
+$$
 where the matching cost combines class probability and bounding box spatial alignment (such as L1 and generalized IoU losses).
 
 ##### E. Pixel Saliency Maps via Backpropagation
 To isolate which pixels are responsible for a specific class score $S_c(I)$ for image $I$, we compute the gradient of the unnormalized score with respect to the input image pixels:
-$$\text{Saliency}(I) = \max\_{c \in \{\text{channels}\}} \left| \frac{\partial S_c(I)}{\partial I\_{x, y}} \right|$$
+$$
+\text{Saliency}(I) = \max_{c \in \{\text{channels}\}} \left| \frac{\partial S_c(I)}{\partial I_{x, y}} \right|
+$$
 This represents the first-order Taylor expansion approximation of the image pixels' influence on the model's confidence.
 
 ##### F. Grad-CAM Formulation (Penultimate Feature Blending)
 Grad-CAM computes a spatial heat map by weighting penultimate convolutional feature maps $A^k \in \mathbb{R}^{H \times W}$:
 1.  **Gradient Weight Computation:** Global average pooling of the gradients of the class score $S_c$ with respect to the feature map $A^k$:
-    $$\alpha_c^k = \frac{1}{Z} \sum\_{i=1}^{H} \sum\_{j=1}^{W} \frac{\partial S_c}{\partial A\_{i, j}^k}$$
+    $$
+    \alpha_c^k = \frac{1}{Z} \sum_{i=1}^{H} \sum_{j=1}^{W} \frac{\partial S_c}{\partial A_{i, j}^k}
+    $$
     where $Z = H \times W$ is the spatial area.
 2.  **Weighted Combination and ReLU:**
-    $$L\_{\text{Grad-CAM}}^c = \text{ReLU}\left( \sum\_{k} \alpha_c^k A^k \right)$$
+    $$
+    L_{\text{Grad-CAM}}^c = \text{ReLU}\left( \sum_{k} \alpha_c^k A^k \right)
+    $$
     The $\text{ReLU}$ is strictly applied to retain only features that positively correlate with the class of interest, ignoring features that contribute to other categories.
 
 ---

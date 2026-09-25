@@ -1,0 +1,116 @@
+/* Bento Design System Tokens (Zero-Emoji, Soft Minimalist SaaS) */
+
+:root {
+  /* Surface & Background */
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --card-surface: #FFFFFF;
+  --card-surface-subtle: #F1F5F9;
+  --card-surface-hover: #F8FAFC;
+  
+  /* Borders & Dividers */
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.14);
+  --border-focus: #2563EB;
+  
+  /* Text & Typography */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+  
+  /* Brand Accents */
+  --brand-stanford: #8C1515;
+  --brand-mit: #A31F34;
+  --brand-accent: #2563EB;
+  --brand-accent-glow: rgba(37, 99, 235, 0.25);
+  --accent-cyan: #06B6D4;
+  --accent-emerald: #10B981;
+  --accent-lime: #A3E635;
+  --accent-lime-dark: #1A2E05;
+  --accent-amber: #F59E0B;
+  
+  /* Radii */
+  --radius-card: 22px;
+  --radius-media: 18px;
+  --radius-pill: 9999px;
+  --radius-circle: 50%;
+  
+  /* Soft Diffused Elevation */
+  --shadow-subtle: 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
+  --shadow-hover: 0 20px 40px -12px rgba(15, 23, 42, 0.12);
+  --shadow-glass: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 8px 24px -4px rgba(37, 99, 235, 0.35);
+
+  /* Layout Dimensions */
+  --sidebar-width: 280px;
+  --header-height: 64px;
+  --container-max: 1360px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-khmer: 'Google Sans', 'Kantumruy Pro', var(--font-sans);
+  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+}
+
+/* Dark Mode Tokens */
+[data-theme="dark"] {
+  --bg-primary: #080D1A;
+  --bg-secondary: #0F172A;
+  --card-surface: #111A2E;
+  --card-surface-subtle: #17233D;
+  --card-surface-hover: #1E2D4D;
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-focus: #3B82F6;
+  
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-inverse: #0F172A;
+  
+  --brand-stanford: #E11D48;
+  --brand-mit: #F43F5E;
+  --brand-accent: #3B82F6;
+  --brand-accent-glow: rgba(59, 130, 246, 0.35);
+  
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+  --shadow-glass: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Explicit Light Mode Tokens */
+[data-theme="light"] {
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --card-surface: #FFFFFF;
+  --card-surface-subtle: #F1F5F9;
+  --card-surface-hover: #F8FAFC;
+  
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.14);
+  --border-focus: #2563EB;
+  
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+  
+  --brand-stanford: #8C1515;
+  --brand-mit: #A31F34;
+  --brand-accent: #2563EB;
+  --brand-accent-glow: rgba(37, 99, 235, 0.25);
+  --accent-cyan: #06B6D4;
+  --accent-emerald: #10B981;
+  --accent-lime: #A3E635;
+  --accent-lime-dark: #1A2E05;
+  --accent-amber: #F59E0B;
+  
+  --shadow-subtle: 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
+  --shadow-hover: 0 20px 40px -12px rgba(15, 23, 42, 0.12);
+  --shadow-glass: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 8px 24px -4px rgba(37, 99, 235, 0.35);
+}
+

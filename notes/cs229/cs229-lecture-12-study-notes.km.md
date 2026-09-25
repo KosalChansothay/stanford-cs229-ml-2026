@@ -40,7 +40,6 @@ $$
 $$
 \min_{W} \frac{1}{n} \sum_{i=1}^n \mathcal{L}\left(W^T \phi_{\hat{\theta}}(x^{(i)}), y^{(i)}\right)
 $$
-
 #### គ. ការធ្វើសុទិដ្ឋិកម្ម និងការចាប់ផ្តើមតម្លៃនៃ Fine-Tuning
 ក្នុងវិធីសាស្ត្រ Fine-Tuning ទាំង $W$ និង $\theta$ ត្រូវបានចាត់ទុកជាអថេរដែលអាចផ្លាស់ប្តូរបាន។ ជាពិសេស ការចាប់ផ្តើមតម្លៃ (Initialization) ត្រូវបានកំណត់ចេញពីទម្ងន់ដែលបានបណ្តុះបណ្តាលជាមុន៖
 $$
@@ -50,7 +49,6 @@ $$
 $$
 \min_{W, \theta} \frac{1}{n} \sum_{i=1}^n \mathcal{L}\left(W^T \phi_\theta(x^{(i)}), y^{(i)}\right)
 $$
-
 *ចំណាំទ្រឹស្តី (Theoretical Note)*៖ ដោយសារបណ្តាញណឺរ៉ូនមានប៉ារ៉ាម៉ែត្រលើសលុប (Overparameterized) នោះមានចំណុចអប្បបរមាសកល (Global Minima) រាប់លានដែលអនុគមន៍បាត់បង់បណ្តុះបណ្តាលស្មើនឹងសូន្យ។ ការចាប់ផ្តើម $\theta$ ជាមួយ $\hat{\theta}$ ធានាថា Optimizer នឹងរត់ទៅរកអាងនៃទិដ្ឋភាពនៃការបាត់បង់ (Basin of Loss Landscape) ដែលមានសមត្ថភាពទូទៅកម្ម (Generalization) ខ្ពស់លើទិន្នន័យតេស្ត ចំណែកឯការចាប់ផ្តើមដោយចៃដន្យនឹងធ្លាក់ទៅក្នុងចំណុចអប្បបរមាអន់ដែលនាំឱ្យកើត Overfitting។
 
 #### ឃ. គណិតវិទ្យានៃ LoRA (Low-Rank Adaptation)
@@ -69,7 +67,6 @@ $$
 $$
 h_{\text{out}} = W_0 h_{\text{in}} + \Delta W h_{\text{in}} = W_0 h_{\text{in}} + A B h_{\text{in}}
 $$
-
 <div id="plotly-12-lora-diagram" class="plotly-chart" aria-label="Interactive Plotly chart: LoRA forward pass with frozen base and low-rank adapter branch"></div>
 
 <p><em>រូបភាព៖ ដំណើរការបញ្ជូនទៅមុខនៃ LoRA ដោយមានផ្លូវម៉ូដែលគោលបង្កក $W_0$ និងផ្លូវសម្របលំដាប់ទាបដែលអាចបង្វឹកបាន $A B$ (LoRA Forward Pass)។</em></p>

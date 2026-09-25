@@ -1,0 +1,100 @@
+---
+import LectureLayout from '../../../../layouts/LectureLayout.astro';
+
+export async function getStaticPaths() {
+  const kmNotes = import.meta.glob('../../../../../notes/**/*.km.md');
+
+  const courseMeta: Record<string, { name: string; code: 'cs229' | 'cs336' | 'cs231n' }> = {
+    cs229: { name: 'CS229: ការសិក្សាម៉ាស៊ីន (Machine Learning)', code: 'cs229' },
+  };
+
+  const courseLectures: Record<string, Array<{ slug: string; path: string; num: number; file: string }>> = {
+    cs229: [],
+  };
+
+  for (const path of Object.keys(kmNotes)) {
+    const parts = path.split('/');
+    const course = parts[parts.length - 2];
+    const file = parts[parts.length - 1];
+
+    if (!courseLectures[course]) continue;
+
+    const match = file.match(/lecture-(\w+)/);
+    if (!match) continue;
+
+    const slugNum = match[1];
+    const num = slugNum === 'guest' ? 99 : parseInt(slugNum, 10);
+    const slug = `lecture-${slugNum}`;
+
+    courseLectures[course].push({
+      slug,
+      path,
+      num: isNaN(num) ? 999 : num,
+      file,
+    });
+  }
+
+  for (const course of Object.keys(courseLectures)) {
+    courseLectures[course].sort((a, b) => a.num - b.num);
+  }
+
+  const paths = [];
+
+  for (const course of Object.keys(courseLectures)) {
+    const lectures = courseLectures[course];
+    for (let i = 0; i < lectures.length; i++) {
+      const item = lectures[i];
+      const prev = i > 0 ? { slug: lectures[i - 1].slug, title: `មេរៀនទី ${lectures[i - 1].num}` } : null;
+      const next = i < lectures.length - 1 ? { slug: lectures[i + 1].slug, title: `មេរៀនទី ${lectures[i + 1].num}` } : null;
+
+      paths.push({
+        params: {
+          course,
+          lecture: item.slug,
+        },
+        props: {
+          courseCode: courseMeta[course].code,
+          courseName: courseMeta[course].name,
+          lectureSlug: item.slug,
+          noteLoader: kmNotes[item.path],
+          prevLecture: prev,
+          nextLecture: next,
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const {
+  courseCode,
+  courseName,
+  lectureSlug,
+  noteLoader,
+  prevLecture,
+  nextLecture,
+} = Astro.props;
+
+const noteModule: any = await noteLoader();
+const Content = noteModule.default;
+const headings = noteModule.getHeadings ? noteModule.getHeadings() : [];
+
+const firstH1 = headings.find((h: any) => h.depth === 1);
+const lectureTitle = firstH1 ? firstH1.text : `${courseCode.toUpperCase()} ${lectureSlug}`;
+---
+
+<LectureLayout
+  title={lectureTitle}
+  courseCode={courseCode}
+  courseName={courseName}
+  lectureSlug={lectureSlug}
+  lectureTitle={lectureTitle}
+  headings={headings}
+  prevLecture={prevLecture}
+  nextLecture={nextLecture}
+  lang="km"
+  hasKm={true}
+>
+  <Content />
+</LectureLayout>

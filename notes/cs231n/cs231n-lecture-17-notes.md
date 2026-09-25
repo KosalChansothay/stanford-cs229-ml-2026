@@ -3,7 +3,7 @@
 ### CS231N Lecture 17: Robot Learning
 
 #### 0. Quick-Recall Summary
-*   **The Closed-Loop Interaction Axiom:** Unlike static computer vision tasks that map inputs $X$ to outputs $Y$, robot learning operates in a dynamic, closed-loop system where actions $a_t$ directly alter the physical environment, feeding back novel, out-of-distribution observations $s\_{t+1}$ and rewards $r_t$.
+*   **The Closed-Loop Interaction Axiom:** Unlike static computer vision tasks that map inputs $X$ to outputs $Y$, robot learning operates in a dynamic, closed-loop system where actions $a_t$ directly alter the physical environment, feeding back novel, out-of-distribution observations $s_{t+1}$ and rewards $r_t$.
 *   **The Three Core Pillars of Learning:** Robot control is categorized into three paradigms: (1) **Reinforcement Learning** (trial-and-error reward maximization), (2) **Model-Based Planning** (learning a world model to predict and plan transitions), and (3) **Imitation Learning** (distilling expert demonstrations into policies).
 *   **Active and Situated Perception:** Robotic vision is embodied; agents act as active perceivers that choose *where* to look, *how* to perturb the environment (e.g., pushing stacked objects to resolve semantic instance ambiguity), and focus exclusively on task-relevant regions.
 *   **Cascading Error (Covariate Shift):** The primary failure mode of basic behavior cloning (imitation learning) is error compounding. Tiny one-step prediction errors alter the state trajectory, driving the agent into unobserved, out-of-distribution regions where the policy has no training signal.
@@ -24,34 +24,47 @@
 Robot control is formally modeled as a Markov Decision Process defined by the tuple $\mathcal{M} = (\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$:
 *   **$\mathcal{S}$:** State space describing the physical system.
 *   **$\mathcal{A}$:** Action space (e.g., continuous joint torques or 6-DoF end-effector velocities).
-*   **$\mathcal{P}(s\_{t+1} | s_t, a_t)$:** Environmental transition probability distribution (stochastic dynamics).
+*   **$\mathcal{P}(s_{t+1} | s_t, a_t)$:** Environmental transition probability distribution (stochastic dynamics).
 *   **$\mathcal{R}(s_t, a_t)$:** Reward function mapping state-action pairs to scalar performance metrics.
 *   **$\gamma \in [0, 1)$:** Discount factor modeling the preference for immediate over delayed rewards.
 
 The global optimization objective is to find a policy $\pi_\theta(a_t | s_t)$ that maximizes expected cumulative discounted return:
-$$\max\_{\theta} \mathbb{E}\_{\tau \sim \pi_\theta} \left[ \sum\_{t=0}^{T} \gamma^t \mathcal{R}(s_t, a_t) \right]$$
+$$
+\max_{\theta} \mathbb{E}_{\tau \sim \pi_\theta} \left[ \sum_{t=0}^{T} \gamma^t \mathcal{R}(s_t, a_t) \right]
+$$
 where $\tau = (s_0, a_0, s_1, a_1, \dots, s_T, a_T)$ represents the trajectory rolled out under policy $\pi_\theta$.
 
 ##### Bellman Optimality Equation (Q-Learning)
 Deep Q-Networks (DQNs) model the state-action value function $Q^*(s, a)$, representing the expected future discounted reward when executing action $a$ in state $s$ and acting optimally thereafter:
-$$Q^*(s, a) = \mathcal{R}(s, a) + \gamma \mathbb{E}\_{s' \sim \mathcal{P}(\cdot | s, a)} \left[ \max\_{a\'} Q^*(s\', a\') \right]$$
+$$
+Q^*(s, a) = \mathcal{R}(s, a) + \gamma \mathbb{E}_{s' \sim \mathcal{P}(\cdot | s, a)} \left[ \max_{a\'} Q^*(s\', a\') \right]
+$$
 In practice, the network parameter $\theta$ is updated by minimizing the Mean Squared Bellman Error (MSBE):
-$$\mathcal{L}(\theta) = \mathbb{E}\_{(s, a, r, s') \sim \mathcal{D}} \left[ \left( r + \gamma \max\_{a\'} Q\_{\theta^-}(s\', a\') - Q_\theta(s, a) \right)^2 \right]$$
+$$
+\mathcal{L}(\theta) = \mathbb{E}_{(s, a, r, s') \sim \mathcal{D}} \left[ \left( r + \gamma \max_{a\'} Q_{\theta^-}(s\', a\') - Q_\theta(s, a) \right)^2 \right]
+$$
 where $\theta^-$ represents the weights of a lagging, target network used to stabilize optimization.
 
 ##### Model-Based Planning and Receding Horizon Control (MPC)
-Model-based agents learn a forward dynamics model (world model) $f_\phi(s_t, a_t) \approx s\_{t+1}$ by minimizing prediction error:
-$$\mathcal{L}(\phi) = \sum\_{t=0}^{T-1} \| f_\phi(s_t, a_t) - s\_{t+1} \|_2^2$$
+Model-based agents learn a forward dynamics model (world model) $f_\phi(s_t, a_t) \approx s_{t+1}$ by minimizing prediction error:
+$$
+\mathcal{L}(\phi) = \sum_{t=0}^{T-1} \| f_\phi(s_t, a_t) - s_{t+1} \|_2^2
+$$
 To plan, the agent solves an online trajectory optimization problem over a finite temporal horizon $H$ to reach a target state $s^*$:
-$$\min\_{a\_{t..t+H}} \sum\_{\tau=t}^{t+H} \| \hat{s}\_{\tau+1} - s^* \|_2^2 \quad \text{subject to} \quad \hat{s}\_{\tau+1} = f_\phi(\hat{s}_\tau, a_\tau)$$
-Using **Model Predictive Control (MPC)**, the agent executes only the first planned action $a_t$, receives the true feedback state $s\_{t+1}$ from the physical environment, and re-optimizes the sequence over the shifted horizon.
+$$
+\min_{a_{t..t+H}} \sum_{\tau=t}^{t+H} \| \hat{s}_{\tau+1} - s^* \|_2^2 \quad \text{subject to} \quad \hat{s}_{\tau+1} = f_\phi(\hat{s}_\tau, a_\tau)
+$$
+Using **Model Predictive Control (MPC)**, the agent executes only the first planned action $a_t$, receives the true feedback state $s_{t+1}$ from the physical environment, and re-optimizes the sequence over the shifted horizon.
 
 ##### Imitation Learning and Behavior Cloning
-Given a dataset of expert demonstrations $\mathcal{D} = \{(o_i, a_i)\}\_{i=1}^N$, **Behavior Cloning (BC)** optimizes the policy $\pi_\theta$ via supervised Maximum Likelihood Estimation:
-$$\mathcal{L}\_{BC}(\theta) = -\sum\_{(o_i, a_i) \in \mathcal{D}} \log \pi_\theta(a_i | o_i)$$
+Given a dataset of expert demonstrations $\mathcal{D} = \{(o_i, a_i)\}_{i=1}^N$, **Behavior Cloning (BC)** optimizes the policy $\pi_\theta$ via supervised Maximum Likelihood Estimation:
+$$
+\mathcal{L}_{BC}(\theta) = -\sum_{(o_i, a_i) \in \mathcal{D}} \log \pi_\theta(a_i | o_i)
+$$
 For continuous action spaces, this collapses to Mean Squared Error (MSE) minimization under a Gaussian policy assumption:
-$$\mathcal{L}\_{BC}(\theta) = \sum\_{(o_i, a_i) \in \mathcal{D}} \| \pi_\theta(o_i) - a_i \|_2^2$$
-
+$$
+\mathcal{L}_{BC}(\theta) = \sum_{(o_i, a_i) \in \mathcal{D}} \| \pi_\theta(o_i) - a_i \|_2^2
+$$
 ---
 
 #### 3. Architecture / Algorithm Walkthrough

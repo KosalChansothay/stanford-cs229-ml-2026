@@ -27,39 +27,50 @@
 
 #### ដំណើរការបង្កើតទិន្នន័យ (The Data-Generating Process)
 យើងសន្មតថាមានអនុគមន៍ពិតប្រាកដដែលលាក់កំបាំង $h^*(x)$ បង្កើតទំនាក់ទំនងក្នុងពិភពជាក់ស្តែង។ នៅពេលយើងសង្កេតចំណុចទិន្នន័យមួយ វាតែងតែត្រូវបានបំពុលដោយសំឡេងរំខានហ្គោស IID ដែលមានមធ្យមសូន្យ៖
-$$y = h^*(x) + \epsilon, \quad \mathbb{E}[\epsilon] = 0, \quad \text{Var}(\epsilon) = \mathbb{E}[\epsilon^2] = \sigma^2$$
-
+$$
+y = h^*(x) + \epsilon, \quad \mathbb{E}[\epsilon] = 0, \quad \text{Var}(\epsilon) = \mathbb{E}[\epsilon^2] = \sigma^2
+$$
 #### ការបំបែកសមាសធាតុ Bias-Variance (The Bias-Variance Decomposition)
 ដើម្បីវិភាគសមត្ថភាពធ្វើទូទៅកម្មនៃសម្មតិកម្ម $h_S$ ដែលបង្វឹកលើសំណុំទិន្នន័យចៃដន្យ $S$ យើងវាយតម្លៃ **តម្លៃរំពឹងទុកនៃកំហុសតេស្ត (Expected Test Error)** នៅត្រង់ចំណុចតេស្តថេរ $x$ មួយ ធៀបនឹងភាពចៃដន្យរួមនៃសំណុំទិន្នន័យបង្វឹក $S$ និងសំឡេងរំខានតេស្ត $\epsilon$៖
-$$\text{Expected Test Error} = \mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right]$$
-
+$$
+\text{Expected Test Error} = \mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right]
+$$
 ជំនួសនិយមន័យនៃគោលដៅ $y = h^*(x) + \epsilon$ ចូលទៅក្នុងតម្លៃរំពឹងទុក៖
-$$\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \mathbb{E}_{S, \epsilon} \left[ (h_S(x) - h^*(x) - \epsilon)^2 \right]$$
-
+$$
+\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \mathbb{E}_{S, \epsilon} \left[ (h_S(x) - h^*(x) - \epsilon)^2 \right]
+$$
 ពន្លាតកន្សោមការ៉េនេះ៖
-$$\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - h^*(x))^2 - 2\epsilon(h_S(x) - h^*(x)) + \epsilon^2 \right]$$
-
+$$
+\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - h^*(x))^2 - 2\epsilon(h_S(x) - h^*(x)) + \epsilon^2 \right]
+$$
 ដោយសារសំឡេងរំខានតេស្ត $\epsilon$ មានភាពឯករាជ្យពីសំណុំទិន្នន័យបង្វឹក $S$ ហើយមានមធ្យមស្មើនឹងសូន្យ ($\mathbb{E}[\epsilon] = 0$) តួខ្វែងនៅកណ្តាលត្រូវរលាយបាត់ស្មើនឹងសូន្យ៖
-$$\mathbb{E}_{S, \epsilon} \left[ -2\epsilon(h_S(x) - h^*(x)) \right] = -2 \mathbb{E}[\epsilon] \cdot \mathbb{E}_S[h_S(x) - h^*(x)] = 0$$
-
+$$
+\mathbb{E}_{S, \epsilon} \left[ -2\epsilon(h_S(x) - h^*(x)) \right] = -2 \mathbb{E}[\epsilon] \cdot \mathbb{E}_S[h_S(x) - h^*(x)] = 0
+$$
 ការណ៍នេះសម្រួលកន្សោមហានិភ័យមកត្រឹម៖
-$$\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \mathbb{E}_S \left[ (h_S(x) - h^*(x))^2 \right] + \sigma^2$$
-
+$$
+\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \mathbb{E}_S \left[ (h_S(x) - h^*(x))^2 \right] + \sigma^2
+$$
 ឥឡូវនេះ យើងផ្តោតលើតួទីមួយ។ តាង $\bar{h}(x) = \mathbb{E}_S[h_S(x)]$ ជា **អ្នកទស្សន៍ទាយមធ្យមរយៈពេលវែង** លើគ្រប់សំណុំទិន្នន័យបង្វឹក $S$ ទាំងអស់ដែលមានទំហំថេរ។ យើងបូក និងដក $\bar{h}(x)$ នៅក្នុងវង់ក្រចកការ៉េ៖
-$$\mathbb{E}_S \left[ (h_S(x) - h^*(x))^2 \right] = \mathbb{E}_S \left[ \left( (h_S(x) - \bar{h}(x)) + (\bar{h}(x) - h^*(x)) \right)^2 \right]$$
-
+$$
+\mathbb{E}_S \left[ (h_S(x) - h^*(x))^2 \right] = \mathbb{E}_S \left[ \left( (h_S(x) - \bar{h}(x)) + (\bar{h}(x) - h^*(x)) \right)^2 \right]
+$$
 ពន្លាតកន្សោមនេះ៖
-$$\mathbb{E}_S \left[ (h_S(x) - \bar{h}(x))^2 + 2(h_S(x) - \bar{h}(x))(\bar{h}(x) - h^*(x)) + (\bar{h}(x) - h^*(x))^2 \right]$$
-
+$$
+\mathbb{E}_S \left[ (h_S(x) - \bar{h}(x))^2 + 2(h_S(x) - \bar{h}(x))(\bar{h}(x) - h^*(x)) + (\bar{h}(x) - h^*(x))^2 \right]
+$$
 យើងគណនាតម្លៃរំពឹងទុកនៃតួនីមួយៗធៀបនឹង $S$។ ដោយសារ $(\bar{h}(x) - h^*(x))$ គឺជាចំនួនថេរធៀបនឹងការទាញចៃដន្យនៃ $S$ តម្លៃរំពឹងទុកនៃតួខ្វែងគឺ៖
-$$\mathbb{E}_S \left[ 2(h_S(x) - \bar{h}(x))(\bar{h}(x) - h^*(x)) \right] = 2(\bar{h}(x) - h^*(x)) \cdot \mathbb{E}_S[h_S(x) - \bar{h}(x)]$$
-
+$$
+\mathbb{E}_S \left[ 2(h_S(x) - \bar{h}(x))(\bar{h}(x) - h^*(x)) \right] = 2(\bar{h}(x) - h^*(x)) \cdot \mathbb{E}_S[h_S(x) - \bar{h}(x)]
+$$
 តាមនិយមន័យ $\mathbb{E}_S[h_S(x) - \bar{h}(x)] = \mathbb{E}_S[h_S(x)] - \bar{h}(x) = 0$។ ដូច្នេះ តួខ្វែងនេះគឺស្មើនឹងសូន្យពិតប្រាកដ។ នាំឱ្យយើងនៅសល់៖
-$$\mathbb{E}_S \left[ (h_S(x) - h^*(x))^2 \right] = \mathbb{E}_S \left[ (h_S(x) - \bar{h}(x))^2 \right] + (\bar{h}(x) - h^*(x))^2$$
-
+$$
+\mathbb{E}_S \left[ (h_S(x) - h^*(x))^2 \right] = \mathbb{E}_S \left[ (h_S(x) - \bar{h}(x))^2 \right] + (\bar{h}(x) - h^*(x))^2
+$$
 ច្របាច់បញ្ចូលតួទាំងអស់ឡើងវិញ យើងទទួលបាន **ការបំបែកសមាសធាតុ Bias-Variance-Noise ពេញលេញ**៖
-$$\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \sigma^2 + \text{Bias}(h_S(x))^2 + \text{Var}(h_S(x))$$
-
+$$
+\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \sigma^2 + \text{Bias}(h_S(x))^2 + \text{Var}(h_S(x))
+$$
 ដែលក្នុងនោះ៖
 - **សំឡេងរំខានមិនអាចជៀសវាងបាន (Unavoidable Noise)**: $\sigma^2 = \mathbb{E}[\epsilon^2]$
 - **គម្លាតលម្អៀងស្វ័យគុណពីរ (Bias Squared)**: $\text{Bias}(h_S(x))^2 = (\bar{h}(x) - h^*(x))^2$
@@ -71,18 +82,26 @@ $$\mathbb{E}_{S, \epsilon} \left[ (h_S(x) - y)^2 \right] = \sigma^2 + \text{Bias
 
 #### ការវិភាគតម្រែតម្រង់រីដ (Ridge Regression / L2 Regularization)
 ដើម្បីទប់ស្កាត់ការផ្គូផ្គងហួសកម្រិត និងកាត់បន្ថយវ៉ារ្យ៉ង់នៃម៉ូដែល យើងបន្ថែមទណ្ឌកម្ម $L_2$ Regularization (ដែលគ្រប់គ្រងដោយ Hyperparameter $\rho > 0$) ទៅលើអនុគមន៍គោលដៅ Ordinary Least Squares (OLS)។ តាង $X \in \mathbb{R}^{n \times d}$ ជាម៉ាទ្រីសរចនា (Design Matrix) និង $y \in \mathbb{R}^n$ ជាវ៉ិចទ័រស្លាក៖
-$$J(\theta) = \frac{1}{2} \|X\theta - y\|_2^2 + \frac{\rho}{2} \|\theta\|_2^2$$
-
+$$
+J(\theta) = \frac{1}{2} \|X\theta - y\|_2^2 + \frac{\rho}{2} \|\theta\|_2^2
+$$
 #### ការទាញរកប៉ារ៉ាម៉ែត្ររីដតាមបែបវិភាគ (Analytical Derivation)
 ដើម្បីស្វែងរកវ៉ិចទ័រប៉ារ៉ាម៉ែត្រល្អបំផុត $\theta$ យើងគណនាជម្រាលនៃ $J(\theta)$ ហើយកំណត់វាឱ្យស្មើនឹងសូន្យ៖
-$$\nabla_\theta J(\theta) = X^T(X\theta - y) + \rho \theta = 0$$
-$$(X^T X + \rho I)\theta = X^T y$$
-$$\theta_{\text{ridge}} = (X^T X + \rho I)^{-1} X^T y$$
-
+$$
+\nabla_\theta J(\theta) = X^T(X\theta - y) + \rho \theta = 0
+$$
+$$
+(X^T X + \rho I)\theta = X^T y
+$$
+$$
+\theta_{\text{ridge}} = (X^T X + \rho I)^{-1} X^T y
+$$
 #### ការវិភាគលើស្ថិរភាពលេខគណិត និងការកាត់បន្ថយវ៉ារ្យ៉ង់
 1. **បញ្ហាភាពទោលនៃម៉ាទ្រីស (The Singularity Problem)**: ក្នុងករណីដែលទិន្នន័យមានចំនួនតិចជាងចំនួនលក្ខណៈទិន្នន័យ ($n < d$) ម៉ាទ្រីស $X^T X$ គឺជាម៉ាទ្រីសទោលដែលគ្មានច្រាស (Non-invertible singular matrix) និងមានលំហសូន្យមិនទទេ។ វ៉ិចទ័រណាមួយពីលំហសូន្យនេះអាចបូកបន្ថែមទៅ $\theta$ ដោយមិនផ្លាស់ប្តូរការទស្សន៍ទាយឡើយ ដែលនាំឱ្យកើតមានប៉ារ៉ាម៉ែត្រត្រឹមត្រូវរាប់មិនអស់ និងបង្កើតការប៉ាន់ស្មានដែលមានវ៉ារ្យ៉ង់ខ្ពស់ខ្លាំងគ្មានស្ថិរភាព។
 2. **ការរំកិលតម្លៃផ្ទាល់ (Eigenvalue Shifting)**: ដោយសារ $X^T X$ គឺជាម៉ាទ្រីសស៊ីមេទ្រី និងវិជ្ជមានពាក់កណ្តាលកំណត់ តម្លៃផ្ទាល់របស់វាគឺមិនអវិជ្ជមាន ($\lambda_i \ge 0$)។ ការបន្ថែមតួ $\rho I$ ធ្វើឱ្យតម្លៃផ្ទាល់ទាំងអស់នៃប្រព័ន្ធរំកិលទៅ៖
-   $$\lambda_i \to \lambda_i + \rho$$
+   $$
+   \lambda_i \to \lambda_i + \rho
+   $$
    ដោយសារ $\rho > 0$ តម្លៃផ្ទាល់តូចបំផុតនៃ $(X^T X + \rho I)$ ត្រូវបានកំណត់ព្រំដែនដាច់ខាតឱ្យធំជាងសូន្យ ($\lambda_{\min} \ge \rho$) ដែលធានាថាម៉ាទ្រីសនេះតែងតែអាចរកច្រាសបានជានិច្ច។
 3. **ការគ្រប់គ្រងវ៉ារ្យ៉ង់ (Variance Control)**: វ៉ារ្យ៉ង់នៃប៉ារ៉ាម៉ែត្រប៉ាន់ស្មានគឺសមាមាត្រដោយផ្ទាល់ទៅនឹងច្រាសនៃតម្លៃផ្ទាល់។ ប្រសិនបើ $\lambda_i \approx 0$ ការប្រែប្រួលបន្តិចបន្តួចក្នុងទិន្នន័យបង្វឹកនឹងបណ្តាលឱ្យប៉ារ៉ាម៉ែត្រលោតផ្លាស់ប្តូរយ៉ាងខ្លាំង។ តាមរយៈការជំនួស $\frac{1}{\lambda_i}$ ដោយ $\frac{1}{\lambda_i + \rho}$ Ridge Regression បានទប់ស្កាត់ការប្រែប្រួលជ្រុលទាំងនេះ និងនាំស្ថិរភាពត្រឡប់មកវិញ ដោយគ្រាន់តែប្តូរមកវិញនូវកម្រិត Bias តិចតួចដែលអាចគ្រប់គ្រងបានប៉ុណ្ណោះ។
 
@@ -107,7 +126,9 @@ $$\theta_{\text{ridge}} = (X^T X + \rho I)^{-1} X^T y$$
    - បង្វឹកម៉ូដែលលើសំណុំបង្វឹក ដើម្បីទទួលបានប៉ារ៉ាម៉ែត្រ $\theta^{(i)}$។
    - គណនាកំហុស (Loss) នៃ $\theta^{(i)}$ លើផ្នត់សុពលកម្ម $F_i$។
 3. **ការគណនាមធ្យម (Average)**: គណនាមធ្យមនៃពិន្ទុសុពលកម្មលើការធ្វើសារឡើងវិញទាំង $k$ ដង៖
-   $$\text{CV Error} = \frac{1}{k} \sum_{i=1}^k \text{Error}(F_i; \theta^{(i)})$$
+   $$
+   \text{CV Error} = \frac{1}{k} \sum_{i=1}^k \text{Error}(F_i; \theta^{(i)})
+   $$
 4. **ការជ្រើសរើស (Select)**: អនុវត្តដំណើរការនេះលើបណ្តុំ Hyperparameter បេក្ខជនជាច្រើន ហើយជ្រើសរើសយកតម្លៃណាដែលផ្តល់ CV Error ទាបបំផុត។ បន្ទាប់ពីជ្រើសរើសបានហើយ ត្រូវបង្វឹកម៉ូដែលចុងក្រោយលើសំណុំទិន្នន័យ $D$ ទាំងមូលតែម្តង។
 
 #### ខ. ក្បួនដោះស្រាយ Hyperband (Successive Halving)

@@ -26,7 +26,6 @@
 $$
 P(x_1, x_2, \dots, x_T) = \prod_{t=1}^T P(x_t \mid x_1, x_2, \dots, x_{t-1})
 $$
-
 #### ខ. ឧបករណ៍ទស្សន៍ទាយពាក្យបន្ទាប់តាម Softmax (The Softmax Next-Word Predictor)
 សម្រាប់ជំហានពេលវេលា $t$ នីមួយៗ ម៉ូដែល Transformer ដែលមានប៉ារ៉ាម៉ែត្រ $\theta$ ផ្គូផ្គងប្រវត្តិនៃ Tokens ពីមុន $(x_0, x_1, \dots, x_{t-1})$ ទៅកាន់វ៉ិចទ័រនៃ Logits $U_t \in \mathbb{R}^{|V|}$៖
 $$
@@ -36,7 +35,6 @@ $$
 $$
 P(x_t = j \mid x_1, \dots, x_{t-1}; \theta) = \text{softmax}(U_t)_j = \frac{e^{U_{t, j}}}{\sum_{l=1}^{|V|} e^{U_{t, l}}}
 $$
-
 #### គ. អនុគមន៍បាត់បង់នៃការទស្សន៍ទាយ Token បន្ទាប់ (Next-Token Prediction Loss / Negative Log-Likelihood)
 នៅពេលបណ្តុះបណ្តាល ម៉ូដែលត្រូវបានបង្ហាញលំដាប់ពេញលេញនៃ Tokens។ យើងធ្វើសុទិដ្ឋិកម្មកាត់បន្ថយ Negative Log-Likelihood (NLL) នៃការទស្សន៍ទាយ Token បន្ទាប់ពិតប្រាកដ $x_t$ លើគ្រប់ទីតាំងទាំងអស់ $t \in \{1, \dots, T\}$៖
 $$
@@ -114,7 +112,6 @@ $$
 $$
 M_{i, j} = \begin{cases} 0 & j \le i \\ -\infty & j > i \end{cases}
 $$
-
 ---
 
 ### ៥. ប្លុកស្ថាបត្យកម្មគ្រឹះ (Architectural Building Blocks)
@@ -127,7 +124,6 @@ $$
    $$
    \text{MHA}(H^{\text{in}}) = \text{concat}\left( \text{Head}_1, \text{Head}_2, \dots, \text{Head}_{n_h} \right) W^O
    $$
-
 #### ខ. ការប្រៀបធៀបរវាង Multi-Layer Perceptrons (MLPs) និង Self-Attention
 នៅក្នុងប្លុក Transformer ស្រទាប់នីមួយៗត្រូវបានបែងចែកយ៉ាងច្បាស់លាស់៖
 - **Self-Attention**៖ រួមបញ្ចូលព័ត៌មានឆ្លងកាត់ទីតាំងពេលវេលាផ្សេងៗគ្នាក្នុងលំដាប់។ វាគឺជាប្រតិបត្តិការ *តែមួយគត់* ដែលទាក់ទងឆ្លងកាត់ជំហានផ្សេងៗគ្នាក្នុង Context Window។

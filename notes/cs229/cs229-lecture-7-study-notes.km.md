@@ -24,24 +24,31 @@
 #### ក. ការរៀនក្រោមការត្រួតពិនិត្យក្នុងរបបមិនលីនេអ៊ែរ (Nonlinear Supervised Learning)
 ក្នុងបរិបទ Supervised Learning ជាមួយសំណុំទិន្នន័យ $\{(x^{(i)}, y^{(i)})\}_{i=1}^n$ ដែល $x^{(i)} \in \mathbb{R}^d$ និងប៉ារ៉ាម៉ែត្រ $\theta$ តំណាងឱ្យទម្ងន់នៃសម្មតិកម្មមិនលីនេអ៊ែរ $h_\theta(x)$៖
 - **ការវិភាគតម្រែតម្រង់បន្តបន្ទាប់ (Continuous Regression)**: គោលដៅ $y^{(i)} \in \mathbb{R}$។ អនុគមន៍កំហុសការ៉េសម្រាប់គំរូទោលមួយគឺ៖
-  $$\mathcal{L}(\theta) = \left(y - h_\theta(x)\right)^2$$
+  $$
+  \mathcal{L}(\theta) = \left(y - h_\theta(x)\right)^2
+  $$
 - **ការធ្វើចំណាត់ថ្នាក់ពហុថ្នាក់ (Multi-class Classification)**: គោលដៅ $y^{(i)} \in \{1, 2, \dots, k\}$។ សម្មតិកម្មបង្កើតទិន្នផលជាវ៉ិចទ័រឡូជីត $k$ វិមាត្រ គឺ $h_\theta(x) \in \mathbb{R}^k$។
 
 #### ខ. អនុគមន៍សូហ្វម៉ាក់ (The Softmax Function)
 ដើម្បីផ្គូផ្គងវ៉ិចទ័រឡូជីតទៅកាន់បំណែងចែកប្រូបាប៊ីលីតេត្រឹមត្រូវនៅលើ Simplex (ដែលគ្រប់តម្លៃទាំងអស់មិនអវិជ្ជមាន និងមានផលបូកស្មើ ១) យើងអនុវត្តអនុគមន៍ Softmax លើធាតុនីមួយៗ៖
-$$P(y = j \mid x; \theta) = \frac{e^{h_{\theta, j}(x)}}{\sum_{l=1}^k e^{h_{\theta, l}(x)}}$$
+$$
+P(y = j \mid x; \theta) = \frac{e^{h_{\theta, j}(x)}}{\sum_{l=1}^k e^{h_{\theta, l}(x)}}
+$$
 ដែល $h_{\theta, j}(x)$ តំណាងឱ្យធាតុទី $j$ នៃវ៉ិចទ័រឡូជីត។
 
 #### គ. ការទាញរកកំហុស Cross-Entropy Loss
 ក្រោមក្របខ័ណ្ឌ Maximum Likelihood Estimation (MLE) យើងធ្វើអប្បបរមាកម្មលើលោការីតលទ្ធភាពអវិជ្ជមាន (Negative Log-Likelihood - NLL) នៃថ្នាក់ត្រឹមត្រូវ $y$៖
-$$\mathcal{L}_{\text{CE}}(\theta) = -\log P(y \mid x; \theta)$$
-
+$$
+\mathcal{L}_{\text{CE}}(\theta) = -\log P(y \mid x; \theta)
+$$
 ជំនួសរូបមន្ត Softmax ចូល៖
-$$\mathcal{L}_{\text{CE}}(\theta) = -\log \left( \frac{e^{h_{\theta, y}(x)}}{\sum_{l=1}^k e^{h_{\theta, l}(x)}} \right)$$
-
+$$
+\mathcal{L}_{\text{CE}}(\theta) = -\log \left( \frac{e^{h_{\theta, y}(x)}}{\sum_{l=1}^k e^{h_{\theta, l}(x)}} \right)
+$$
 អនុវត្តលក្ខណៈសម្បត្តិលោការីត $\log(A/B) = \log A - \log B$ យើងទទួលបានរូបមន្ត **Cross-Entropy Loss** ស្តង់ដារ៖
-$$\mathcal{L}_{\text{CE}}(\theta) = -h_{\theta, y}(x) + \log \sum_{l=1}^k e^{h_{\theta, l}(x)}$$
-
+$$
+\mathcal{L}_{\text{CE}}(\theta) = -h_{\theta, y}(x) + \log \sum_{l=1}^k e^{h_{\theta, l}(x)}
+$$
 *កំណត់សម្គាល់គំនិត*: រូបមន្តនេះគឺសមមូលទាំងស្រុងទៅនឹងគម្លាត Kullback-Leibler (KL Divergence) ឬ Cross-Entropy រវាងបំណែងចែកពិត (ដែលតំណាងដោយវ៉ិចទ័រស្លាក One-hot) និងបំណែងចែកប្រូបាប៊ីលីតេទស្សន៍ទាយរបស់ម៉ូដែល។
 
 ---
@@ -59,9 +66,13 @@ Stochastic Gradient Descent (SGD) និង Minibatch SGD គឺជាក្ប�
 2. **សម្រាប់ជំហានបង្វឹកនីមួយៗ**៖
    - ទាញយកកញ្ចប់តូច $\mathcal{B}$ ដែលមានទំហំ $B$ គំរូដោយចៃដន្យស្មើៗគ្នាពីសំណុំទិន្នន័យ។
    - គណនាជម្រាលមធ្យមនៃកំហុសលើកញ្ចប់ទិន្នន័យនោះ៖
-     $$\nabla_\theta \mathcal{L}_{\mathcal{B}}(\theta) = \frac{1}{B} \sum_{i \in \mathcal{B}} \nabla_\theta \mathcal{L}_i(\theta)$$
+     $$
+     \nabla_\theta \mathcal{L}_{\mathcal{B}}(\theta) = \frac{1}{B} \sum_{i \in \mathcal{B}} \nabla_\theta \mathcal{L}_i(\theta)
+     $$
    - ធ្វើបច្ចុប្បន្នភាពប៉ារ៉ាម៉ែត្រតាមទិសដៅចុះចោទបំផុត៖
-     $$\theta := \theta - \eta \nabla_\theta \mathcal{L}_{\mathcal{B}}(\theta)$$
+     $$
+     \theta := \theta - \eta \nabla_\theta \mathcal{L}_{\mathcal{B}}(\theta)
+     $$
      ដែល $\eta$ គឺជាអត្រារៀន (Learning Rate)។
 
 #### ការពង្រីកមាត្រដ្ឋានទំនើប & កម្រិតកំណត់នៃ GPU Hardware
@@ -79,33 +90,48 @@ Stochastic Gradient Descent (SGD) និង Minibatch SGD គឺជាក្ប�
 
 #### ក. ណឺរ៉ុនទោល (The Single Neuron)
 ប្លុកគ្រឹះដ៏សាមញ្ញបំផុតនៃបណ្តាញញាណទទួលវ៉ិចទ័រធាតុចូល $x \in \mathbb{R}^d$ គុណនឹងវ៉ិចទ័រទម្ងន់ $w \in \mathbb{R}^d$ បូកនឹងចំនួនថេរលម្អៀង $b \in \mathbb{R}$ និងអនុវត្តអនុគមន៍សកម្មកម្មមិនលីនេអ៊ែរ $\sigma$៖
-$$a = \sigma(w^T x + b)$$
-
+$$
+a = \sigma(w^T x + b)
+$$
 #### ខ. អនុគមន៍សកម្មកម្មចម្បងៗ (Primary Activation Functions)
 - **Rectified Linear Unit (ReLU)**: ទទួលបានការបំផុសគំនិតពីកម្រិតរំញោចនៃណឺរ៉ុនជីវសាស្ត្រ៖
-  $$\text{ReLU}(t) = \max(t, 0)$$
+  $$
+  \text{ReLU}(t) = \max(t, 0)
+  $$
 - **Sigmoid**: ធ្លាប់ពេញនិយមក្នុងប្រវត្តិសាស្ត្រ ប៉ុន្តែងាយរងគ្រោះនឹងបញ្ហាជម្រាលរលាយបាត់ (Vanishing Gradients)៖
-  $$\sigma(t) = \frac{1}{1 + e^{-t}}$$
+  $$
+  \sigma(t) = \frac{1}{1 + e^{-t}}
+  $$
 - **Hyperbolic Tangent (tanh)**: ផ្គូផ្គងតម្លៃទៅក្នុងចន្លោះ $(-1, 1)$៖
-  $$\tanh(t) = \frac{e^t - e^{-t}}{e^t + e^{-t}}$$
+  $$
+  \tanh(t) = \frac{e^t - e^{-t}}{e^t + e^{-t}}
+  $$
 - **Leaky ReLU**: រក្សាជម្រាលតូចមួយលើដែនអវិជ្ជមាន ដើម្បីការពារកុំឱ្យណឺរ៉ុនស្លាប់ (Dead Neurons)៖
-  $$\text{LeakyReLU}(t) = \max(\alpha t, t) \quad (0 < \alpha \ll 1)$$
+  $$
+  \text{LeakyReLU}(t) = \max(\alpha t, t) \quad (0 < \alpha \ll 1)
+  $$
 - **Gaussian Error Linear Unit (GELU)**: អនុគមន៍មិនលីនេអ៊ែររលូនដែលត្រូវបានប្រើប្រាស់យ៉ាងទូលំទូលាយក្នុងម៉ូដែល Transformer សម័យបច្ចុប្បន្ន៖
-  $$\text{GELU}(t) = t \cdot \Phi(t)$$
+  $$
+  \text{GELU}(t) = t \cdot \Phi(t)
+  $$
   ដែល $\Phi(t)$ គឺជាអនុគមន៍បំណែងចែកកើនប្រក្រតីស្តង់ដារ (Standard Normal CDF)។ ខុសពី ReLU អនុគមន៍ GELU មានកោងធ្លាក់ក្រោមសូន្យបន្តិចបន្តួចលើដែនអវិជ្ជមាន។
 
 #### គ. ការធ្វើវ៉ិចទ័រស្រទាប់តាមស្រទាប់នៃ MLP (Layer-by-Layer Vectorization)
 ដើម្បីគណនាស្រទាប់លាក់ទាំងមូលដែលមាន $m$ ណឺរ៉ុនប្រកបដោយប្រសិទ្ធភាព យើងប្រមូលផ្តុំវ៉ិចទ័រទម្ងន់ជាម៉ាទ្រីស $W^{(1)} \in \mathbb{R}^{m \times d}$ និងកន្សោមលម្អៀងជាវ៉ិចទ័រ $b^{(1)} \in \mathbb{R}^m$៖
-$$a^{(1)} = \sigma\left(W^{(1)} x + b^{(1)}\right)$$
-
+$$
+a^{(1)} = \sigma\left(W^{(1)} x + b^{(1)}\right)
+$$
 សម្រាប់បណ្តាញញាណផ្សាយទៅមុខជ្រៅៗ យើងអនុវត្តប្រតិបត្តិការនេះជាបន្តបន្ទាប់លើគ្រប់ស្រទាប់ $l \in \{1, 2, \dots, L\}$៖
-$$a^{(l)} = \sigma\left(W^{(l)} a^{(l-1)} + b^{(l)}\right)$$
+$$
+a^{(l)} = \sigma\left(W^{(l)} a^{(l-1)} + b^{(l)}\right)
+$$
 ដែល $a^{(0)} = x$ ហើយទិន្នផលនៃស្រទាប់ចុងក្រោយតំណាងឱ្យឡូជីត។
 
 #### ឃ. ការតភ្ជាប់សំណល់ (Residual Connections / ResNets)
 ដើម្បីកាត់បន្ថយបញ្ហាជម្រាលរលាយបាត់ (Vanishing Gradients) និងជួយឱ្យការបង្កើនប្រសិទ្ធភាពនៃម៉ូដែលជ្រៅៗដំណើរការទៅបាន ប្លុកសំណល់អនុញ្ញាតឱ្យធាតុចូលរំលងស្រទាប់លីនេអ៊ែរ៖
-$$\text{Res}(z) = \sigma\left(W^{(2)} \sigma\left(W^{(1)} z + b^{(1)}\right) + b^{(2)}\right) + z$$
-
+$$
+\text{Res}(z) = \sigma\left(W^{(2)} \sigma\left(W^{(1)} z + b^{(1)}\right) + b^{(2)}\right) + z
+$$
 *គំនិតវិចារណញាណ*: ជំនួសឱ្យការបង្ខំឱ្យស្រទាប់បណ្តាញកសាងម៉ូដែលផ្គូផ្គង $y \approx f(z)$ ស្រទាប់ទាំងនោះគ្រាន់តែកសាង *ម៉ូដែលសំណល់* $F(z) = f(z) - z$ ប៉ុណ្ណោះ។ ប្រសិនបើ $z$ គឺជាការប៉ាន់ស្មានដ៏ល្អមួយស្រាប់ហើយ ការកសាងម៉ូដែលកែតម្រូវគឺមានភាពងាយស្រួលជាងឆ្ងាយណាស់ និងជួយរក្សាស្ថិរភាពតម្លៃផ្ទាល់នៃម៉ាទ្រីសហេសស៊ានកំឡុងពេល Optimize។
 
 <div id="plotly-residual-block" class="plotly-chart" aria-label="Interactive Plotly diagram: a residual block with skip connection, hover each node for details"></div>
@@ -120,24 +146,36 @@ $$\text{Res}(z) = \sigma\left(W^{(2)} \sigma\left(W^{(1)} z + b^{(1)}\right) + b
 Layer Normalization ធ្វើមាត្រដ្ឋានទិន្នផល Activation នៃស្រទាប់ទោលមួយ លើគ្រប់វិមាត្រលក្ខណៈលាក់ $m$ ទាំងអស់ សម្រាប់គំរូបង្វឹកនីមួយៗដោយឡែកពីគ្នា។  
 សម្រាប់វ៉ិចទ័រស្រទាប់ $z \in \mathbb{R}^m$៖
 1. **គណនាមធ្យមជាក់ស្តែង (Empirical Mean)**:
-   $$\hat{\mu} = \frac{1}{m} \sum_{i=1}^m z_i$$
+   $$
+   \hat{\mu} = \frac{1}{m} \sum_{i=1}^m z_i
+   $$
 2. **គណនាវ៉ារ្យ៉ង់ជាក់ស្តែង (Empirical Variance)**:
-   $$\hat{\sigma}^2 = \frac{1}{m} \sum_{i=1}^m (z_i - \hat{\mu})^2$$
+   $$
+   \hat{\sigma}^2 = \frac{1}{m} \sum_{i=1}^m (z_i - \hat{\mu})^2
+   $$
 3. **ធ្វើមាត្រដ្ឋាន និងអនុវត្តប៉ារ៉ាម៉ែត្ររៀន ($\gamma, \beta \in \mathbb{R}^m$)**:
-   $$\text{LN}(z) = \gamma \odot \left( \frac{z - \hat{\mu}}{\hat{\sigma} + \epsilon} \right) + \beta$$
+   $$
+   \text{LN}(z) = \gamma \odot \left( \frac{z - \hat{\mu}}{\hat{\sigma} + \epsilon} \right) + \beta
+   $$
    ដែល $\odot$ តំណាងឱ្យផលគុណតាមធាតុនីមួយៗ ហើយ $\epsilon$ គឺជាចំនួនថេរតូចមួយសម្រាប់រក្សាស្ថិរភាពលេខគណិត។
 
 #### ខ. RMS Norm (Root Mean Square Normalization)
 ម៉ូដែលទំនើបៗ (ដូចជា LLaMA និងស្ថាបត្យកម្ម Transformer ឈានមុខគេបច្ចុប្បន្ន) ជំនួស LayerNorm ដោយ RMS Norm ដែលមានទម្រង់គណនាសាមញ្ញជាង និងលឿនជាង៖
 1. **គណនាឫសការ៉េមធ្យម (Root Mean Square)**:
-   $$\hat{\sigma} = \sqrt{\frac{1}{m} \sum_{i=1}^m z_i^2}$$
+   $$
+   \hat{\sigma} = \sqrt{\frac{1}{m} \sum_{i=1}^m z_i^2}
+   $$
 2. **ធ្វើមាត្រដ្ឋាន និងកែតម្រូវទំហំ**:
-   $$\text{RMSNorm}(z) = \gamma \odot \left( \frac{z}{\hat{\sigma} + \epsilon} \right)$$
+   $$
+   \text{RMSNorm}(z) = \gamma \odot \left( \frac{z}{\hat{\sigma} + \epsilon} \right)
+   $$
 *ចំណាំ*: RMS Norm កាត់បន្ថយការដកមធ្យមចោល ដែលជួយសន្សំសំចៃវដ្តគណនាដ៏មានតម្លៃរបស់ GPU ខណៈដែលនៅតែរក្សាបាននូវប្រសិទ្ធភាពខ្ពស់ដូចគ្នា។
 
 #### គ. លក្ខណៈសម្បត្តិគណិតវិទ្យា៖ ភាពមិនប្រែប្រួលតាមមាត្រដ្ឋាន (Scaling Invariance)
 ចំណុចខ្លាំងស្នូលនៃ LayerNorm និង RMSNorm គឺ **ភាពមិនប្រែប្រួលតាមមាត្រដ្ឋាន**។ សម្រាប់មេគុណមាត្រដ្ឋាន $\alpha > 0$ ណាមួយ៖
-$$\text{LN}(\alpha z) = \text{LN}(z)$$
+$$
+\text{LN}(\alpha z) = \text{LN}(z)
+$$
 - **អត្ថប្រយោជន៍**: ទប់ស្កាត់មិនឱ្យ Activation កម្រិតមធ្យមកើនឡើងលក្ខណៈអិចស្ប៉ូណង់ស្យែល (ដូចជាផ្ទុះឡើងដល់ $10^{20}$) ឬរលាយបាត់ទៅ $0$ កំឡុងពេលសាយភាយកាត់ស្រទាប់ជ្រៅៗ ដែលជួយសម្រួលដល់ការកំណត់តម្លៃដំបូង (Initialization)។
 - **លក្ខណៈពិសេសក្នុងការ Optimize**: ទោះបីជាដំណើរការផ្សាយទៅមុខ (Forward Pass) មិនប្រែប្រួលតាមមាត្រដ្ឋានក៏ដោយ ជម្រាល (Gradients) គឺ *មិនមាន* ភាពមិនប្រែប្រួលតាមមាត្រដ្ឋានឡើយ ដែលបង្កើតបានជារចនាសម្ព័ន្ធបង្កើនប្រសិទ្ធភាពស្វ័យស្ថិរភាពដ៏ស្មុគស្មាញ និងរឹងមាំ។
 

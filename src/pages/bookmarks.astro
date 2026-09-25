@@ -1,0 +1,534 @@
+---
+// Dedicated Saved Bookmarks Page (Strict Zero-Emoji, Bento Grid)
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { coursesInfo } from '../data/lectures';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout 
+  title="Saved Bookmarks — Frontier AI Lecture Series" 
+  description="Personalized study bookmark list for Stanford, MIT, and frontier machine learning curricula."
+  currentCourse="bookmarks"
+>
+  <div class="bookmarks-page">
+    <!-- Header Section -->
+    <header class="bookmarks-header">
+      <div class="header-pre-badge">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>STUDY DESK</span>
+      </div>
+
+      <div class="header-main-row">
+        <div>
+          <h1 class="bookmarks-title">Saved Bookmarks</h1>
+          <p class="bookmarks-subtitle">
+            Your personal collection of bookmarked lectures, stored directly in your browser.
+          </p>
+        </div>
+
+        <div class="header-actions">
+          <a href={`${baseUrl}/notes/`} class="action-btn outline-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Explore All Lectures</span>
+          </a>
+
+          <button id="clear-all-btn" class="action-btn danger-btn" type="button" style="display: none;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Clear All</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="bookmarks-stats-bar">
+        <span class="stat-item">
+          <strong><span id="saved-count">0</span></strong> lectures bookmarked
+        </span>
+        <span class="stat-sep">•</span>
+        <span class="stat-item">Spring 2026 Edition</span>
+      </div>
+    </header>
+
+    <!-- Bookmarks Container -->
+    <div id="bookmarks-container" class="bookmarks-grid">
+      <!-- Injected dynamically by client script -->
+    </div>
+
+    <!-- Empty State Container -->
+    <div id="bookmarks-empty-state" class="empty-state-card" style="display: none;">
+      <div class="empty-icon-wrap">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </div>
+      <h2 class="empty-title">No Bookmarks Saved Yet</h2>
+      <p class="empty-desc">
+        Click the bookmark icon on any lecture card in the notes catalog or the top navigation bar while reading a lecture to save it here for fast access.
+      </p>
+      <div class="empty-actions">
+        <a href={`${baseUrl}/notes/`} class="empty-cta-btn">
+          <span>Browse Notes Catalog</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .bookmarks-page {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+  }
+
+  .bookmarks-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .header-pre-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--brand-accent);
+    background: var(--brand-accent-glow);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-pill);
+    width: fit-content;
+  }
+
+  .header-main-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .bookmarks-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  @media (max-width: 640px) {
+    .bookmarks-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  .bookmarks-subtitle {
+    font-size: 0.96rem;
+    color: var(--text-secondary);
+    margin-top: 0.35rem;
+    max-width: 620px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.05rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .outline-btn {
+    background: var(--card-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+  }
+
+  .outline-btn:hover {
+    background: var(--card-surface-subtle);
+    border-color: var(--brand-accent);
+    color: var(--brand-accent);
+    transform: translateY(-1px);
+  }
+
+  .danger-btn {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+  }
+
+  .danger-btn:hover {
+    border-color: #EF4444;
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  .bookmarks-stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+  }
+
+  .bookmarks-stats-bar strong {
+    color: var(--text-primary);
+  }
+
+  .stat-sep {
+    opacity: 0.4;
+  }
+
+  /* Bookmarks Grid */
+  .bookmarks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 1100px) {
+    .bookmarks-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .bookmarks-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Bookmark Card Styling */
+  :global(.bm-card) {
+    background: var(--card-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 18px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+
+  :global(.bm-card:hover) {
+    border-color: var(--brand-accent);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  :global(.bm-card-header) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+  }
+
+  :global(.bm-course-pill) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.22rem 0.6rem;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.04em;
+  }
+
+  :global(.pill-cs229) {
+    background: rgba(140, 21, 21, 0.12);
+    color: #DC2626;
+    border: 1px solid rgba(140, 21, 21, 0.25);
+  }
+
+  :global(.pill-cs336) {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  :global(.pill-cs231n) {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3B82F6;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+  }
+
+  :global(.bm-remove-btn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-pill);
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  :global(.bm-remove-btn:hover) {
+    border-color: #EF4444;
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  :global(.bm-title-link) {
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  :global(.bm-title) {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.35;
+    transition: color 0.15s ease;
+  }
+
+  :global(.bm-card:hover .bm-title) {
+    color: var(--brand-accent);
+  }
+
+  :global(.bm-footer) {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  :global(.bm-read-link) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--brand-accent);
+    text-decoration: none;
+    transition: gap 0.15s ease;
+  }
+
+  :global(.bm-read-link:hover) {
+    gap: 0.6rem;
+  }
+
+  :global(.bm-tag) {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  /* Empty State Card */
+  .empty-state-card {
+    background: var(--card-surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .empty-icon-wrap {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--card-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .empty-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    max-width: 480px;
+    line-height: 1.6;
+  }
+
+  .empty-actions {
+    margin-top: 0.75rem;
+  }
+
+  .empty-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-accent);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-glow);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .empty-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px var(--brand-accent-glow);
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('bookmarks-container');
+    const emptyState = document.getElementById('bookmarks-empty-state');
+    const savedCountEl = document.getElementById('saved-count');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+
+    const getBookmarks = () => {
+      try {
+        const raw = localStorage.getItem('frontier_ai_bookmarks') || localStorage.getItem('stanford_ml_bookmarks');
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    };
+
+    const saveBookmarks = (items) => {
+      try {
+        localStorage.setItem('frontier_ai_bookmarks', JSON.stringify(items));
+        localStorage.setItem('stanford_ml_bookmarks', JSON.stringify(items));
+        document.dispatchEvent(new CustomEvent('bookmarks:updated', { detail: { bookmarks: items } }));
+      } catch (e) {}
+    };
+
+    const renderBookmarks = () => {
+      const items = getBookmarks();
+
+      if (savedCountEl) savedCountEl.textContent = items.length;
+
+      if (!items || items.length === 0) {
+        if (container) {
+          container.innerHTML = '';
+          container.style.display = 'none';
+        }
+        if (emptyState) emptyState.style.display = 'flex';
+        if (clearAllBtn) clearAllBtn.style.display = 'none';
+        return;
+      }
+
+      if (emptyState) emptyState.style.display = 'none';
+      if (clearAllBtn) clearAllBtn.style.display = 'inline-flex';
+      if (container) {
+        container.style.display = 'grid';
+        container.innerHTML = items.map((item) => {
+          const course = (item.course || 'cs229').toLowerCase();
+          const pillClass = `pill-${course}`;
+          const courseUpper = course.toUpperCase();
+          const slugUpper = (item.slug || '').toUpperCase().replace('-', ' ');
+
+          return `
+            <div class="bm-card" data-key="${item.key}">
+              <div class="bm-card-header">
+                <span class="bm-course-pill ${pillClass}">
+                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;"></span>
+                  ${courseUpper}
+                </span>
+
+                <button 
+                  class="bm-remove-btn" 
+                  type="button" 
+                  title="Remove bookmark"
+                  aria-label="Remove bookmark"
+                  data-key="${item.key}"
+                >
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+
+              <a href="${item.url}" class="bm-title-link">
+                <h3 class="bm-title">${item.title}</h3>
+              </a>
+
+              <div class="bm-footer">
+                <span class="bm-tag">${slugUpper}</span>
+                <a href="${item.url}" class="bm-read-link">
+                  <span>Study Lecture</span>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Attach remove listeners
+        container.querySelectorAll('.bm-remove-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const key = btn.getAttribute('data-key');
+            let cur = getBookmarks();
+            cur = cur.filter(b => b.key !== key);
+            saveBookmarks(cur);
+            renderBookmarks();
+          });
+        });
+      }
+    };
+
+    if (clearAllBtn) {
+      clearAllBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to remove all saved bookmarks?')) {
+          saveBookmarks([]);
+          renderBookmarks();
+        }
+      });
+    }
+
+    document.addEventListener('bookmarks:updated', renderBookmarks);
+    window.addEventListener('storage', renderBookmarks);
+    renderBookmarks();
+  });
+</script>

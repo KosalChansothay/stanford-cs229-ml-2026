@@ -1,0 +1,211 @@
+---
+import Sidebar from '../components/layout/Sidebar.astro';
+import MobileTopbar from '../components/layout/MobileTopbar.astro';
+import ThemeToggle from '../components/layout/ThemeToggle.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentCourse?: string;
+  currentLecture?: string;
+  lang?: 'en' | 'km';
+}
+
+const {
+  title = 'Frontier AI & Machine Learning Lecture Series — Spring 2026',
+  description = 'Bento-style academic study portal for frontier machine learning curricula from Stanford, MIT, and top universities.',
+  currentCourse = '',
+  currentLecture = '',
+  lang = 'en'
+} = Astro.props;
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Google Fonts: Google Sans, Inter, JetBrains Mono, Kantumruy Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- KaTeX CSS for Pre-rendered Math -->
+    <!-- Early Theme & Sidebar Initialization to Prevent FOUC -->
+    <script is:inline>
+      (function() {
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = saved || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+
+          var sidebarCollapsed = localStorage.getItem('sidebar_collapsed');
+          if (sidebarCollapsed === 'true') {
+            document.documentElement.classList.add('sidebar-collapsed');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <!-- Persistent Left Sidebar -->
+      <Sidebar currentCourse={currentCourse} currentLecture={currentLecture} lang={lang} />
+
+      <!-- Main Column -->
+      <div class="main-content-wrapper">
+        <MobileTopbar lang={lang} />
+
+        <!-- Desktop Topbar with Theme Toggle & Bookmarks -->
+        <header class="desktop-topbar">
+          <div class="desktop-topbar-left">
+            <button id="desktop-sidebar-toggle-btn" class="sidebar-desktop-toggle-btn" type="button" aria-label="Toggle sidebar" title="Toggle sidebar (Ctrl+B)">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+              </svg>
+            </button>
+            <span class="portal-badge">Frontier AI Curricula — Stanford • MIT Series</span>
+          </div>
+
+          <div class="desktop-topbar-right">
+            <a href={`${baseUrl}/bookmarks/`} class="desktop-util-btn" title="View Saved Bookmarks">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>Bookmarks</span>
+              <span id="desktop-bookmark-count" class="desktop-bm-badge">0</span>
+            </a>
+
+            <a href={lang === 'en' ? `${baseUrl}/km/` : `${baseUrl}/`} class="desktop-util-btn" title="Switch Language">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span class={lang === 'en' ? 'khmer-label' : ''}>{lang === 'en' ? 'ភាសាខ្មែរ' : 'English'}</span>
+            </a>
+
+            <div class="theme-wrapper">
+              <ThemeToggle />
+            </div>
+          </div>
+        </header>
+
+        <main class="content-container" id="main-content">
+          <slot />
+        </main>
+      </div>
+    </div>
+
+    <style>
+      .desktop-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 60px;
+        padding: 0 2.5rem;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(12px);
+      }
+
+      @media (max-width: 1024px) {
+        .desktop-topbar {
+          display: none;
+        }
+      }
+
+      .desktop-topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .portal-badge {
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .desktop-topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .desktop-util-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: var(--radius-pill);
+        background: var(--card-surface);
+        border: 1px solid var(--border-subtle);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        transition: all 0.15s ease;
+      }
+
+      .desktop-util-btn:hover {
+        background: var(--card-surface-subtle);
+        color: var(--text-primary);
+        border-color: var(--border-strong);
+      }
+
+      .desktop-bm-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 0.08rem 0.42rem;
+        border-radius: var(--radius-pill);
+        background: var(--brand-accent-glow);
+        color: var(--brand-accent);
+        line-height: 1.2;
+      }
+
+      .theme-wrapper {
+        display: flex;
+        align-items: center;
+      }
+    </style>
+
+    <script is:inline>
+      (() => {
+        const updateDesktopCount = () => {
+          const badge = document.getElementById('desktop-bookmark-count');
+          if (!badge) return;
+          try {
+            const raw = localStorage.getItem('frontier_ai_bookmarks') || localStorage.getItem('stanford_ml_bookmarks');
+            const list = raw ? JSON.parse(raw) : [];
+            badge.textContent = Array.isArray(list) ? list.length : 0;
+          } catch (e) {
+            badge.textContent = '0';
+          }
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', updateDesktopCount);
+        } else {
+          updateDesktopCount();
+        }
+        document.addEventListener('bookmarks:updated', updateDesktopCount);
+        window.addEventListener('storage', updateDesktopCount);
+      })();
+    </script>
+  </body>
+</html>

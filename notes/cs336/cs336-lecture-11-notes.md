@@ -19,34 +19,45 @@ To achieve stable feature learning as width $n 	o \infty$, we require two condit
 1. **Activation Scale**: $\mathbb{E}[\|x_l\|^2] = \Theta(1)$.
 2. **Feature Update Scale**: $\Delta x_l = O(1)$ after one gradient step.
 
-In standard parameterization (SP), when initializing weights $W \sim \mathcal{N}(0, \sigma^2)$ with $\sigma^2 = 1/\text{fan\_in}$, the output activation scales fine, but gradient steps scale as $O(1/n)$, vanishing as width increases.
+In standard parameterization (SP), when initializing weights $W \sim \mathcal{N}(0, \sigma^2)$ with $\sigma^2 = 1/\text{fan_in}$, the output activation scales fine, but gradient steps scale as $O(1/n)$, vanishing as width increases.
 
 ### MUP Parameter Scaling Rules
-Under MUP, for a layer with input dimension $n\_{\text{in}}$ and output dimension $n\_{\text{out}}$:
+Under MUP, for a layer with input dimension $n_{\text{in}}$ and output dimension $n_{\text{out}}$:
 - **Weight Initialization**:
-  $$W \sim \mathcal{N}\left(0, \sigma^2 \cdot \frac{1}{n\_{\text{in}}} \right)$$
+  $$
+  W \sim \mathcal{N}\left(0, \sigma^2 \cdot \frac{1}{n_{\text{in}}} \right)
+  $$
 - **Layer-wise Learning Rate Scaling**:
-  $$\eta\_{\text{layer}} = \eta_0 \cdot \frac{n\_{\text{out}}}{n\_{\text{in}}}$$
-- **For Adam Optimizer**: The learning rate must scale as $O(1/n\_{\text{in}})$ because Adam normalizes step sizes by gradient variances, altering the update dynamics:
-  $$\eta\_{\text{Adam}} = \frac{\eta_0}{n\_{\text{in}}}$$
-
+  $$
+  \eta_{\text{layer}} = \eta_0 \cdot \frac{n_{\text{out}}}{n_{\text{in}}}
+  $$
+- **For Adam Optimizer**: The learning rate must scale as $O(1/n_{\text{in}})$ because Adam normalizes step sizes by gradient variances, altering the update dynamics:
+  $$
+  \eta_{\text{Adam}} = \frac{\eta_0}{n_{\text{in}}}
+  $$
 ### Muon Spectral Orthogonalization
 Muon decomposes optimizer updates by treating 2D matrix weights $W$ through spectral orthogonalization. The update step is defined as:
 
-$$G \leftarrow \text{gradient of } W$$
-
-$$M_t \leftarrow \mu M\_{t-1} + (1 - \mu) G \quad \text{(Momentum step)}$$
-
-$$B_t \leftarrow \text{Newton-Schultz-5}(M_t) \quad \text{(Orthogonalized update)}$$
-
-$$W \leftarrow W - \eta \cdot B_t$$
-
+$$
+G \leftarrow \text{gradient of } W
+$$
+$$
+M_t \leftarrow \mu M_{t-1} + (1 - \mu) G \quad \text{(Momentum step)}
+$$
+$$
+B_t \leftarrow \text{Newton-Schultz-5}(M_t) \quad \text{(Orthogonalized update)}
+$$
+$$
+W \leftarrow W - \eta \cdot B_t
+$$
 Where **Newton-Schultz-5** iteratively solves for the orthogonalized matrix $O$ of momentum update $M_t$ (clamping singular values to 1) using only matrix multiplications:
 
-$$X_0 \leftarrow \frac{M_t}{\|M_t\|_2}$$
-
-$$X\_{k+1} \leftarrow X_k \left( \frac{15 I - 10 X_k^T X_k + 3 (X_k^T X_k)^2}{8}  \right)$$
-
+$$
+X_0 \leftarrow \frac{M_t}{\|M_t\|_2}
+$$
+$$
+X_{k+1} \leftarrow X_k \left( \frac{15 I - 10 X_k^T X_k + 3 (X_k^T X_k)^2}{8}  \right)
+$$
 ## 3. From-Scratch Algorithmic Workflows & Pseudocode
 
 ### Newton-Schultz-5 Matrix Orthogonalization Logic
@@ -54,7 +65,7 @@ $$X\_{k+1} \leftarrow X_k \left( \frac{15 I - 10 X_k^T X_k + 3 (X_k^T X_k)^2}{8}
 2. For $k$ steps (typically 5):
    - Compute $A = X_k^T \cdot X_k$.
    - Compute $B = A^2$.
-   - Update: $X\_{k+1} = \frac{1}{8} X_k (15 I - 10 A + 3 B)$.
+   - Update: $X_{k+1} = \frac{1}{8} X_k (15 I - 10 A + 3 B)$.
 3. Return $X_5$ as the orthogonalized parameter update direction.
 
 ### PyTorch/Pythonic Blueprint (Educational Newton-Schultz-5 step)
@@ -91,7 +102,7 @@ def newton_schultz_5(M, steps=5):
 
 <p><em>Figure: Warmup-Stable-Decay (WSD) maintains high learning rates during a prolonged stable phase, allowing arbitrary checkpoint decay without retraining.</em></p>
 
-- **Weight Decay in MUP**: Decoupled weight decay must be scaled as $O(1/n\_{\text{in}})$ under MUP to avoid parameter saturation and gradient explosion.
+- **Weight Decay in MUP**: Decoupled weight decay must be scaled as $O(1/n_{\text{in}})$ under MUP to avoid parameter saturation and gradient explosion.
 
 ## 6. Systems Warnings, Pitfalls, & Reflection Questions
 
