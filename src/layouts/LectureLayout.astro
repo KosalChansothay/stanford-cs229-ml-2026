@@ -882,14 +882,15 @@ const chartScriptUrl = `${baseUrl}/js/${courseCode}/${courseCode}-${lectureSlug.
   /* Copy Code Snippet Button */
   :global(.copy-code-btn) {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 14px;
+    right: 14px;
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #e2e8f0;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -899,7 +900,22 @@ const chartScriptUrl = `${baseUrl}/js/${courseCode}/${courseCode}-${lectureSlug.
   }
 
   :global(.copy-code-btn:hover) {
-    background: rgba(255, 255, 255, 0.2);
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #0f172a;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  :global(html[data-theme='dark'] .copy-code-btn) {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: none;
+    color: #94a3b8;
+  }
+
+  :global(html[data-theme='dark'] .copy-code-btn:hover) {
+    background: #334155;
+    border-color: rgba(255, 255, 255, 0.25);
     color: #ffffff;
   }
 
@@ -991,24 +1007,53 @@ const chartScriptUrl = `${baseUrl}/js/${courseCode}/${courseCode}-${lectureSlug.
   }
 
   :global(.lecture-markdown-body pre) {
-    background: #0f172a !important;
-    border: 1px solid var(--border-subtle);
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
-    padding: 1.25rem 1.5rem;
+    padding: 1.4rem 1.6rem;
     overflow-x: auto;
-    margin: 1.75rem 0;
+    margin: 2rem 0;
     font-family: var(--font-mono);
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  }
+
+  :global(.lecture-markdown-body pre code) {
+    font-family: var(--font-mono);
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  :global(html[data-theme='dark'] .lecture-markdown-body pre) {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+  }
+
+  /* Shiki dark mode token activation */
+  :global(html[data-theme='dark'] .lecture-markdown-body pre.astro-code),
+  :global(html[data-theme='dark'] .lecture-markdown-body pre.astro-code span) {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
   }
 
   :global(.lecture-markdown-body code:not(pre code)) {
-    background: var(--card-surface-subtle);
-    border: 1px solid var(--border-subtle);
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
     border-radius: 6px;
     padding: 0.2rem 0.45rem;
     font-family: var(--font-mono);
     font-size: 0.88em;
+    color: #0f172a;
+  }
+
+  :global(html[data-theme='dark'] .lecture-markdown-body code:not(pre code)) {
+    background: var(--card-surface-subtle);
+    border-color: var(--border-subtle);
     color: var(--brand-accent);
   }
 
