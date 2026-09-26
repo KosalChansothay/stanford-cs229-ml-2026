@@ -108,17 +108,17 @@
 
         Plotly.newPlot(el, data, {
             title: { text: '<b>House Price Prediction (Regression)</b><br><sup>Supervised learning: continuous output y = price</sup>', x: 0.5 },
-            xaxis: { title: 'Living area — square feet (feature x)', gridcolor: 'lightgray', range: [300, 3200] },
-            yaxis: { title: 'Price — $ thousands (target y)', gridcolor: 'lightgray' },
-            width: 780,
-            height: 560,
+            xaxis: { title: 'Living area — square feet (feature x)', gridcolor: 'rgba(15, 23, 42, 0.08)', range: [300, 3200] },
+            yaxis: { title: 'Price — $ thousands (target y)', gridcolor: 'rgba(15, 23, 42, 0.08)' },
+            height: 540,
             hovermode: 'closest',
             responsive: true,
-            legend: { x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.8)', bordercolor: 'lightgray', borderwidth: 1 },
-            paper_bgcolor: 'white',
-            plot_bgcolor: 'white',
-            margin: { t: 90 }
-        }, { displayModeBar: false });
+            autosize: true,
+            legend: { x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.85)', bordercolor: 'rgba(15, 23, 42, 0.12)', borderwidth: 1 },
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            margin: { l: 65, r: 35, t: 85, b: 65 }
+        }, { displayModeBar: false, responsive: true });
     }
 
     /* ======================================================================
@@ -128,61 +128,202 @@
         var el = document.getElementById(divId);
         if (!el) return;
 
-        /* 1. Synthetic 2D data: two classes separated by a linear boundary.
-              Boundary: 0.9*lot + 1.1*sqft - 2600 = 0  (theta^T x + theta0). */
-        var rand = mulberry32(21);
-        var n = 45;
-        var theta0 = -2600, theta1 = 0.9, theta2 = 1.1;
-        var houses = [], townhouses = [];
-        for (var i = 0; i < n; i++) {
-            var lot = 2 + rand() * 8;          // lot size, 1000s of sq ft
-            var sqft = 600 + rand() * 2400;    // living area, sq ft
-            var score = theta0 + theta1 * lot * 1000 + theta2 * sqft;
-            var pt = [lot, sqft];
-            if (score >= 0) houses.push(pt);
-            else townhouses.push(pt);
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+        /* 1. Synthetic 2D data: two distinct classes separated by a linear boundary.
+              Andrew Ng CS229 Lecture 1: Predicting housing type (Townhouse y=0 vs Single-Family y=1)
+              Features:
+                x1 = lot size (in thousands of sq ft)
+                x2 = living area (in sq ft)
+              Linear decision boundary: theta^T x = 0 <=> x2 = 2800 - 220 * x1
+        */
+        var rand = mulberry32(101);
+        var townhouses = [];
+        var houses = [];
+
+        // 26 Townhouses: smaller lot & compact area (theta^T x < 0)
+        while (townhouses.length < 26) {
+            var lot = 1.8 + rand() * 4.4; // 1.8k - 6.2k
+            var sqft = 650 + rand() * 1350; // 650 - 2000
+            var boundaryY = 2800 - 220 * lot;
+            if (sqft < boundaryY - 70) {
+                townhouses.push([+lot.toFixed(2), Math.round(sqft)]);
+            }
         }
 
-        /* 2. Decision boundary line across the plot range. */
-        var lineLot = [2, 10];
+        // 26 Single-family houses: larger lot & larger area (theta^T x > 0)
+        while (houses.length < 26) {
+            var lot = 3.6 + rand() * 6.5; // 3.6k - 10.1k
+            var sqft = 1350 + rand() * 1750; // 1350 - 3100
+            var boundaryY = 2800 - 220 * lot;
+            if (sqft > boundaryY + 70 && sqft <= 3150 && lot <= 10.2) {
+                houses.push([+lot.toFixed(2), Math.round(sqft)]);
+            }
+        }
+
+        /* 2. Linear Decision Boundary Line across the full visible domain [1.5, 10.5] */
+        var lineLot = [1.5, 10.5];
         var lineSqft = lineLot.map(function (lot) {
-            return -(theta0 + theta1 * lot * 1000) / theta2;
+            return 2800 - 220 * lot; // from 2470 down to 490
         });
 
-        var data = [{
-            x: houses.map(function (p) { return p[0]; }),
-            y: houses.map(function (p) { return p[1]; }),
-            mode: 'markers', type: 'scatter',
-            marker: { color: 'crimson', size: 11, symbol: 'triangle-up', line: { color: 'black', width: 1 } },
-            name: 'Single-family house (y = 1)',
-            hovertemplate: 'Lot: %{x:.1f}k sq ft<br>Area: %{y:,.0f} sq ft<extra></extra>'
-        }, {
-            x: townhouses.map(function (p) { return p[0]; }),
-            y: townhouses.map(function (p) { return p[1]; }),
-            mode: 'markers', type: 'scatter',
-            marker: { color: 'dodgerblue', size: 11, symbol: 'circle', line: { color: 'black', width: 1 } },
-            name: 'Townhouse (y = 0)',
-            hovertemplate: 'Lot: %{x:.1f}k sq ft<br>Area: %{y:,.0f} sq ft<extra></extra>'
-        }, {
-            x: lineLot, y: lineSqft, mode: 'lines', type: 'scatter',
-            line: { color: 'black', width: 3, dash: 'dash' },
-            name: 'Decision boundary (θᵀx = 0)',
-            hoverinfo: 'skip'
-        }];
+        var badgeBg = isDark ? 'rgba(15, 23, 42, 0.88)' : 'rgba(255, 255, 255, 0.92)';
+        var badgeBorder = isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(15, 23, 42, 0.12)';
+        var boundaryColor = isDark ? '#F1F5F9' : '#0F172A';
 
-        Plotly.newPlot(el, data, {
-            title: { text: '<b>Townhouse vs. Single-Family House (Classification)</b><br><sup>Supervised learning: discrete label y, linear decision boundary</sup>', x: 0.5 },
-            xaxis: { title: 'Lot size — thousands of sq ft (x₁)', gridcolor: 'lightgray', range: [1.5, 10.5] },
-            yaxis: { title: 'Living area — sq ft (x₂)', gridcolor: 'lightgray', range: [400, 3200] },
-            width: 780,
-            height: 560,
+        var data = [
+            // Class 1: Single-family houses (Upper right)
+            {
+                x: houses.map(function (p) { return p[0]; }),
+                y: houses.map(function (p) { return p[1]; }),
+                mode: 'markers',
+                type: 'scatter',
+                marker: {
+                    color: '#2563EB',
+                    size: 11,
+                    symbol: 'triangle-up',
+                    line: { color: '#1D4ED8', width: 1.5 }
+                },
+                name: 'Single-family house (y = 1)',
+                hovertemplate: '<b>Single-Family House</b><br>• Lot size: %{x:.2f}k sq ft<br>• Living area: %{y:,.0f} sq ft<br>• Label: y = 1 (θᵀx > 0)<extra></extra>'
+            },
+            // Class 0: Townhouses (Lower left)
+            {
+                x: townhouses.map(function (p) { return p[0]; }),
+                y: townhouses.map(function (p) { return p[1]; }),
+                mode: 'markers',
+                type: 'scatter',
+                marker: {
+                    color: '#E11D48',
+                    size: 10,
+                    symbol: 'circle',
+                    line: { color: '#BE123C', width: 1.5 }
+                },
+                name: 'Townhouse (y = 0)',
+                hovertemplate: '<b>Townhouse</b><br>• Lot size: %{x:.2f}k sq ft<br>• Living area: %{y:,.0f} sq ft<br>• Label: y = 0 (θᵀx < 0)<extra></extra>'
+            },
+            // Linear decision boundary
+            {
+                x: lineLot,
+                y: lineSqft,
+                mode: 'lines',
+                type: 'scatter',
+                line: {
+                    color: boundaryColor,
+                    width: 3,
+                    dash: 'dash'
+                },
+                name: 'Decision boundary (θᵀx = 0)',
+                hoverinfo: 'skip'
+            }
+        ];
+
+        var layout = {
+            title: {
+                text: '<b>Townhouse vs. Single-Family House (Classification)</b><br><sup>Supervised learning: linear decision boundary θᵀx = 0 separates the 2D feature space</sup>',
+                x: 0.5,
+                font: { size: 16 }
+            },
+            xaxis: {
+                title: 'Lot size — thousands of sq ft (x₁)',
+                gridcolor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)',
+                range: [1.5, 10.5],
+                zeroline: false
+            },
+            yaxis: {
+                title: 'Living area — sq ft (x₂)',
+                gridcolor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)',
+                range: [400, 3200],
+                zeroline: false
+            },
+            height: 540,
             hovermode: 'closest',
             responsive: true,
-            legend: { x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top', bgcolor: 'rgba(255,255,255,0.8)', bordercolor: 'lightgray', borderwidth: 1 },
-            paper_bgcolor: 'white',
-            plot_bgcolor: 'white',
-            margin: { t: 90 }
-        }, { displayModeBar: false });
+            autosize: true,
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                xanchor: 'left',
+                yanchor: 'top',
+                bgcolor: badgeBg,
+                bordercolor: badgeBorder,
+                borderwidth: 1,
+                font: { size: 12 }
+            },
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            margin: { l: 65, r: 35, t: 85, b: 65 },
+            shapes: [
+                // Half-space 1: Single-family region (upper-right)
+                {
+                    type: 'path',
+                    path: 'M 1.5 2470 L 10.5 490 L 10.5 3200 L 1.5 3200 Z',
+                    fillcolor: isDark ? 'rgba(37, 99, 235, 0.14)' : 'rgba(37, 99, 235, 0.07)',
+                    line: { width: 0 },
+                    layer: 'below'
+                },
+                // Half-space 2: Townhouse region (lower-left)
+                {
+                    type: 'path',
+                    path: 'M 1.5 400 L 10.5 400 L 10.5 490 L 1.5 2470 Z',
+                    fillcolor: isDark ? 'rgba(225, 29, 72, 0.13)' : 'rgba(225, 29, 72, 0.06)',
+                    line: { width: 0 },
+                    layer: 'below'
+                }
+            ],
+            annotations: [
+                // Zone label: Single-Family
+                {
+                    x: 8.6,
+                    y: 2850,
+                    xref: 'x',
+                    yref: 'y',
+                    text: '<b style="color:#2563EB;">Predicted: Single-Family (ŷ = 1)</b><br><span style="font-size:11px;opacity:0.85;">Half-space θᵀx > 0</span>',
+                    showarrow: false,
+                    align: 'center',
+                    bgcolor: badgeBg,
+                    bordercolor: 'rgba(37, 99, 235, 0.35)',
+                    borderwidth: 1,
+                    borderpad: 6
+                },
+                // Zone label: Townhouse
+                {
+                    x: 3.2,
+                    y: 720,
+                    xref: 'x',
+                    yref: 'y',
+                    text: '<b style="color:#E11D48;">Predicted: Townhouse (ŷ = 0)</b><br><span style="font-size:11px;opacity:0.85;">Half-space θᵀx < 0</span>',
+                    showarrow: false,
+                    align: 'center',
+                    bgcolor: badgeBg,
+                    bordercolor: 'rgba(225, 29, 72, 0.35)',
+                    borderwidth: 1,
+                    borderpad: 6
+                },
+                // Decision boundary pointer
+                {
+                    x: 5.8,
+                    y: 1524,
+                    xref: 'x',
+                    yref: 'y',
+                    text: '<b>Decision Boundary: θᵀx = 0</b>',
+                    showarrow: true,
+                    arrowhead: 2,
+                    arrowsize: 1,
+                    arrowwidth: 1.5,
+                    arrowcolor: boundaryColor,
+                    ax: 55,
+                    ay: -40,
+                    bgcolor: badgeBg,
+                    bordercolor: badgeBorder,
+                    borderwidth: 1,
+                    borderpad: 5,
+                    font: { size: 11, color: isDark ? '#F8FAFC' : '#0F172A' }
+                }
+            ]
+        };
+
+        Plotly.newPlot(el, data, layout, { displayModeBar: false, responsive: true });
     }
 
     /* ======================================================================
@@ -200,4 +341,11 @@
     if (document.readyState !== 'loading' && document.getElementById('plotly-house-price')) {
         window.renderLecture1Charts();
     }
+
+    /* Re-render charts when theme changes to update dark/light specific annotations and shapes */
+    document.addEventListener('theme:changed', function () {
+        if (document.getElementById('plotly-house-classification')) {
+            drawClassification('plotly-house-classification');
+        }
+    });
 })();
