@@ -56,13 +56,14 @@ const chartScriptUrl = `${baseUrl}/js/${courseCode}/${courseCode}-${lectureSlug.
     <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Synchronous Early Theme & Sidebar Initialization (Prevents FOUC) -->
+    <!-- Synchronous Early Theme & Sidebar Initialization to Prevent FOUC (Auto Day/Night Timezone Theme) -->
     <script is:inline>
       (function() {
         try {
-          var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var theme = saved || (prefersDark ? 'dark' : 'light');
+          var hour = new Date().getHours();
+          var autoTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+          var sessionOverride = sessionStorage.getItem('theme_manual');
+          var theme = (sessionOverride === 'light' || sessionOverride === 'dark') ? sessionOverride : autoTheme;
           document.documentElement.setAttribute('data-theme', theme);
 
           var sidebarCollapsed = localStorage.getItem('sidebar_collapsed');

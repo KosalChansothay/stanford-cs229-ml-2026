@@ -1,8 +1,8 @@
 ---
-// Minimalist Zero-Emoji Theme Toggle (Multi-instance safe)
+// Minimalist Zero-Emoji Theme Toggle (Multi-instance safe with Timezone Auto Day/Night)
 ---
 
-<button class="theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme" type="button">
+<button class="theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme (Auto: Light 6AM–6PM, Dark 6PM–6AM)" type="button">
   <!-- Sun Icon (shown in dark mode) -->
   <svg class="sun-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="5"></circle>
@@ -63,11 +63,19 @@
 <script is:inline>
   // Universal Theme Initializer & Event Binding across all instances
   (() => {
-    const applyTheme = (theme) => {
+    const getAutoTheme = () => {
+      const hour = new Date().getHours();
+      return (hour >= 6 && hour < 18) ? 'light' : 'dark';
+    };
+
+    const applyTheme = (theme, isManual = true) => {
       document.documentElement.setAttribute('data-theme', theme);
-      try {
-        localStorage.setItem('theme', theme);
-      } catch (e) {}
+      if (isManual) {
+        try {
+          sessionStorage.setItem('theme_manual', theme);
+          localStorage.setItem('theme', theme);
+        } catch (e) {}
+      }
       document.dispatchEvent(new CustomEvent('theme:changed', { detail: { theme } }));
     };
 
@@ -80,12 +88,43 @@
         btn.dataset.bound = 'true';
 
         btn.addEventListener('click', () => {
-          const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+          const currentTheme = document.documentElement.getAttribute('data-theme') || getAutoTheme();
           const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-          applyTheme(nextTheme);
+          const autoTheme = getAutoTheme();
+
+          if (nextTheme === autoTheme) {
+            // Revert back to automatic schedule mode
+            try {
+              sessionStorage.removeItem('theme_manual');
+              localStorage.removeItem('theme');
+            } catch (e) {}
+            applyTheme(nextTheme, false);
+          } else {
+            applyTheme(nextTheme, true);
+          }
         });
       });
     };
+
+    // Auto theme scheduler: automatically transitions when crossing 6am / 6pm if no manual override
+    const checkSchedule = () => {
+      try {
+        if (sessionStorage.getItem('theme_manual')) return;
+      } catch (e) {}
+      const expected = getAutoTheme();
+      const current = document.documentElement.getAttribute('data-theme');
+      if (current !== expected) {
+        applyTheme(expected, false);
+      }
+    };
+
+    // Check periodically every minute and on visibility change
+    setInterval(checkSchedule, 60000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkSchedule();
+      }
+    });
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', bindToggles);
