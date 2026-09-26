@@ -6,10 +6,14 @@ export async function getStaticPaths() {
 
   const courseMeta: Record<string, { name: string; code: 'cs229' | 'cs336' | 'cs231n' }> = {
     cs229: { name: 'CS229: ការសិក្សាម៉ាស៊ីន (Machine Learning)', code: 'cs229' },
+    cs336: { name: 'CS336: គំរូភាសាធំៗពីកម្រិតដំបូង (Language Modeling from Scratch)', code: 'cs336' },
+    cs231n: { name: 'CS231n: ការរៀនស៊ីជម្រៅសម្រាប់ការមើលឃើញដោយកុំព្យូទ័រ (Deep Learning for Computer Vision)', code: 'cs231n' },
   };
 
   const courseLectures: Record<string, Array<{ slug: string; path: string; num: number; file: string }>> = {
     cs229: [],
+    cs336: [],
+    cs231n: [],
   };
 
   for (const path of Object.keys(kmNotes)) {
