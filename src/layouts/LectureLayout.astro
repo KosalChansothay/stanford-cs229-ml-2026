@@ -1020,10 +1020,15 @@ const chartScriptUrl = `${baseUrl}/js/${courseCode}/${courseCode}-${lectureSlug.
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   }
 
-  :global(.lecture-markdown-body pre code) {
-    font-family: var(--font-mono);
-    font-size: inherit;
-    line-height: inherit;
+  :global(.lecture-markdown-body pre),
+  :global(.lecture-markdown-body pre *),
+  :global(.lecture-markdown-body code),
+  :global(.lecture-markdown-body code *),
+  :global(html[lang="km"] .lecture-markdown-body pre),
+  :global(html[lang="km"] .lecture-markdown-body pre *),
+  :global(html[lang="km"] .lecture-markdown-body code),
+  :global(html[lang="km"] .lecture-markdown-body code *) {
+    font-family: var(--font-mono), 'Kantumruy Pro', monospace !important;
   }
 
   :global(html[data-theme='dark'] .lecture-markdown-body pre) {

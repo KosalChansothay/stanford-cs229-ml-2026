@@ -42,15 +42,30 @@ a {
   text-decoration: none;
 }
 
-/* Khmer Language & Content Typography (Google Sans strictly for Khmer) */
+/* Khmer Language & Content Typography (Google Sans strictly for Khmer prose) */
 html[lang="km"],
 [lang="km"],
 .lang-km,
 .khmer-content,
-.khmer-label,
-:lang(km) {
+.khmer-label {
   font-family: var(--font-khmer);
   line-height: 1.8;
+}
+
+/* Code Snippets & Monospace Elements: ALWAYS use standard monospace font across all languages */
+pre,
+code,
+kbd,
+samp,
+pre *,
+code *,
+.astro-code,
+.astro-code *,
+html[lang="km"] pre,
+html[lang="km"] code,
+html[lang="km"] pre *,
+html[lang="km"] code * {
+  font-family: var(--font-mono), 'Kantumruy Pro', monospace !important;
 }
 
 /* Platform-wide buttons use standard font (Inter) */
